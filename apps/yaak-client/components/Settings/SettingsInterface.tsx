@@ -50,8 +50,8 @@ export function SettingsInterface() {
     return null;
   }
 
-  // Use current i18n language as the source of truth for the dropdown
-  const displayLanguage = settings.language || currentLanguage || "auto";
+  // Display the language from settings, or "auto" if null
+  const displayLanguage = settings.language ?? "auto";
 
   return (
     <VStack space={1.5} className="mb-4">

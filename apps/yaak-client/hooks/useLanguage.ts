@@ -44,7 +44,7 @@ export function useLanguage() {
     }
 
     void initLanguage();
-  }, []);
+  }, [settings?.language, i18n]);
 
   const changeLanguage = async (language: string) => {
     if (!settings) return;
