@@ -1,4 +1,4 @@
-import { type } from "@tauri-apps/plugin-os";
+import { locale, type } from "@tauri-apps/plugin-os";
 import { useFonts } from "@yaakapp-internal/fonts";
 import { useLicense } from "@yaakapp-internal/license";
 import type { EditorKeymap, Settings } from "@yaakapp-internal/models";
@@ -43,7 +43,7 @@ export function SettingsInterface() {
   const workspace = useAtomValue(activeWorkspaceAtom);
   const settings = useAtomValue(settingsAtom);
   const fonts = useFonts();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { changeLanguage } = useLanguage();
 
   if (settings == null || workspace == null) {
@@ -65,7 +65,29 @@ export function SettingsInterface() {
             value={settings.language || "auto"}
             onChange={async (v) => {
               if (v === "auto") {
+                // Update database to null (auto)
                 await patchModel(settings, { language: null });
+
+                // Detect and apply system language immediately
+                try {
+                  const systemLocale = await locale();
+                  let targetLanguage = "en";
+
+                  if (systemLocale) {
+                    if (
+                      systemLocale.startsWith("zh-CN") ||
+                      systemLocale.startsWith("zh-Hans") ||
+                      systemLocale.startsWith("zh-SG")
+                    ) {
+                      targetLanguage = "zh-CN";
+                    }
+                  }
+
+                  await i18n.changeLanguage(targetLanguage);
+                } catch {
+                  // Fallback to English if detection fails
+                  await i18n.changeLanguage("en");
+                }
               } else {
                 await changeLanguage(v);
               }
