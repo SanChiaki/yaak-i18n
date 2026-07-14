@@ -1,0 +1,80 @@
+{
+  "title": "Settings",
+  "general": {
+    "title": "General",
+    "description": "Configure general settings for update behavior and more."
+  },
+  "interface": {
+    "title": "Interface",
+    "description": "Customize how Yaak looks and feels."
+  },
+  "theme": {
+    "title": "Theme",
+    "description": "Select a theme to customize Yaak's appearance."
+  },
+  "hotkeys": {
+    "title": "Hotkeys",
+    "description": "View and customize keyboard shortcuts."
+  },
+  "plugins": {
+    "title": "Plugins",
+    "description": "Manage installed plugins."
+  },
+  "proxy": {
+    "title": "Proxy",
+    "description": "Configure HTTP proxy settings."
+  },
+  "certificates": {
+    "title": "Certificates",
+    "description": "Manage client certificates."
+  },
+  "license": {
+    "title": "License",
+    "description": "Manage your Yaak license."
+  },
+  "language": {
+    "title": "Language",
+    "description": "Choose your preferred interface language.",
+    "label": "Interface Language",
+    "auto": "Auto (System Language)",
+    "en": "English",
+    "zhCN": "简体中文"
+  },
+  "updates": {
+    "title": "Updates",
+    "channel": {
+      "title": "Update Channel",
+      "description": "Choose whether Yaak should use stable releases or beta releases.",
+      "stable": "Stable",
+      "beta": "Beta"
+    },
+    "behavior": {
+      "title": "Update Behavior",
+      "description": "Choose whether updates are installed automatically or manually.",
+      "auto": "Auto",
+      "manual": "Manual"
+    },
+    "checkForUpdates": "Check for updates",
+    "checking": "Checking for updates..."
+  },
+  "appearance": {
+    "title": "Appearance",
+    "fontSize": {
+      "title": "Font Size",
+      "description": "Adjust the interface font size."
+    },
+    "density": {
+      "title": "Interface Density",
+      "description": "Adjust spacing between interface elements.",
+      "compact": "Compact",
+      "comfortable": "Comfortable",
+      "spacious": "Spacious"
+    },
+    "sidebarPosition": {
+      "title": "Sidebar Position",
+      "description": "Choose whether the sidebar appears on the left or right.",
+      "left": "Left",
+      "right": "Right"
+    }
+  }
+}

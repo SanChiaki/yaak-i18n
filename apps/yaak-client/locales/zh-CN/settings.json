@@ -1,0 +1,80 @@
+{
+  "title": "设置",
+  "general": {
+    "title": "通用",
+    "description": "配置更新行为等通用设置。"
+  },
+  "interface": {
+    "title": "界面",
+    "description": "自定义 Yaak 的外观和感觉。"
+  },
+  "theme": {
+    "title": "主题",
+    "description": "选择主题来自定义 Yaak 的外观。"
+  },
+  "hotkeys": {
+    "title": "快捷键",
+    "description": "查看和自定义键盘快捷键。"
+  },
+  "plugins": {
+    "title": "插件",
+    "description": "管理已安装的插件。"
+  },
+  "proxy": {
+    "title": "代理",
+    "description": "配置 HTTP 代理设置。"
+  },
+  "certificates": {
+    "title": "证书",
+    "description": "管理客户端证书。"
+  },
+  "license": {
+    "title": "许可证",
+    "description": "管理你的 Yaak 许可证。"
+  },
+  "language": {
+    "title": "语言",
+    "description": "选择应用界面语言。",
+    "label": "界面语言",
+    "auto": "自动（系统语言）",
+    "en": "English",
+    "zhCN": "简体中文"
+  },
+  "updates": {
+    "title": "更新",
+    "channel": {
+      "title": "更新渠道",
+      "description": "选择 Yaak 应该使用稳定版本还是测试版本。",
+      "stable": "稳定版",
+      "beta": "测试版"
+    },
+    "behavior": {
+      "title": "更新行为",
+      "description": "选择是自动安装更新还是手动安装。",
+      "auto": "自动",
+      "manual": "手动"
+    },
+    "checkForUpdates": "检查更新",
+    "checking": "正在检查更新..."
+  },
+  "appearance": {
+    "title": "外观",
+    "fontSize": {
+      "title": "字体大小",
+      "description": "调整界面字体大小。"
+    },
+    "density": {
+      "title": "界面密度",
+      "description": "调整界面元素的间距。",
+      "compact": "紧凑",
+      "comfortable": "舒适",
+      "spacious": "宽松"
+    },
+    "sidebarPosition": {
+      "title": "侧边栏位置",
+      "description": "选择侧边栏显示在左侧还是右侧。",
+      "left": "左侧",
+      "right": "右侧"
+    }
+  }
+}

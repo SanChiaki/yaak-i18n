@@ -1,0 +1,26 @@
+{
+  "request": {
+    "title": "请求",
+    "new": "新建请求",
+    "send": "发送请求",
+    "sending": "发送中...",
+    "method": "方法",
+    "url": "URL",
+    "headers": "请求头",
+    "body": "请求体",
+    "auth": "认证",
+    "query": "查询参数",
+    "pathParams": "路径参数"
+  },
+  "response": {
+    "title": "响应",
+    "status": "状态",
+    "time": "耗时",
+    "size": "大小",
+    "headers": "响应头",
+    "body": "响应体",
+    "preview": "预览",
+    "raw": "原始数据",
+    "noResponse": "暂无响应"
+  }
+}

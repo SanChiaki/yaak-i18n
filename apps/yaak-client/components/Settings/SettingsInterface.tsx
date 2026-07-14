@@ -6,7 +6,9 @@ import { patchModel, settingsAtom } from "@yaakapp-internal/models";
 import { clamp, Heading, VStack } from "@yaakapp-internal/ui";
 import { useAtomValue } from "jotai";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { activeWorkspaceAtom } from "../../hooks/useActiveWorkspace";
+import { useLanguage } from "../../hooks/useLanguage";
 import { showConfirm } from "../../lib/confirm";
 import { invokeCmd } from "../../lib/tauri";
 import { CargoFeature } from "../CargoFeature";
@@ -41,6 +43,8 @@ export function SettingsInterface() {
   const workspace = useAtomValue(activeWorkspaceAtom);
   const settings = useAtomValue(settingsAtom);
   const fonts = useFonts();
+  const { t } = useTranslation();
+  const { currentLanguage, changeLanguage } = useLanguage();
 
   if (settings == null || workspace == null) {
     return null;
@@ -49,10 +53,31 @@ export function SettingsInterface() {
   return (
     <VStack space={1.5} className="mb-4">
       <div className="mb-3">
-        <Heading>Interface</Heading>
-        <p className="text-text-subtle">Tweak settings related to the user interface.</p>
+        <Heading>{t("settings:interface.title")}</Heading>
+        <p className="text-text-subtle">{t("settings:interface.description")}</p>
       </div>
       <SettingsList className="space-y-8">
+        <SettingsSection title={t("settings:language.title")}>
+          <SettingRowSelect
+            title={t("settings:language.label")}
+            description={t("settings:language.description")}
+            name="language"
+            value={settings.language || "auto"}
+            onChange={async (v) => {
+              if (v === "auto") {
+                await patchModel(settings, { language: null });
+              } else {
+                await changeLanguage(v);
+              }
+            }}
+            options={[
+              { label: t("settings:language.auto"), value: "auto" },
+              { label: t("settings:language.en"), value: "en" },
+              { label: t("settings:language.zhCN"), value: "zh-CN" },
+            ]}
+          />
+        </SettingsSection>
+
         <SettingsSection title="Workspaces">
           <SettingRowSelect
             title="Open workspace behavior"

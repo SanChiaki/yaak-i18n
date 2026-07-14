@@ -1,0 +1,26 @@
+{
+  "request": {
+    "title": "Request",
+    "new": "New Request",
+    "send": "Send Request",
+    "sending": "Sending...",
+    "method": "Method",
+    "url": "URL",
+    "headers": "Headers",
+    "body": "Body",
+    "auth": "Auth",
+    "query": "Query Params",
+    "pathParams": "Path Params"
+  },
+  "response": {
+    "title": "Response",
+    "status": "Status",
+    "time": "Time",
+    "size": "Size",
+    "headers": "Headers",
+    "body": "Body",
+    "preview": "Preview",
+    "raw": "Raw",
+    "noResponse": "No response yet"
+  }
+}

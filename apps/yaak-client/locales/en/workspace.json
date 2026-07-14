@@ -1,0 +1,40 @@
+{
+  "workspace": {
+    "title": "Workspace",
+    "create": "Create Workspace",
+    "delete": "Delete Workspace",
+    "rename": "Rename Workspace",
+    "switch": "Switch Workspace",
+    "settings": "Workspace Settings",
+    "deleteConfirm": "Delete workspace '{{name}}'?",
+    "deleteDescription": "This action cannot be undone. All requests, folders, and environments will be deleted."
+  },
+  "folder": {
+    "title": "Folder",
+    "create": "Create Folder",
+    "delete": "Delete Folder",
+    "rename": "Rename Folder",
+    "deleteConfirm": "Delete folder '{{name}}'?"
+  },
+  "environment": {
+    "title": "Environment",
+    "create": "Create Environment",
+    "delete": "Delete Environment",
+    "rename": "Rename Environment",
+    "activate": "Activate Environment",
+    "base": "Base Environment",
+    "sub": "Sub Environment",
+    "deleteConfirm": "Delete environment '{{name}}'?"
+  },
+  "cookieJar": {
+    "title": "Cookie Jar",
+    "manage": "Manage Cookies",
+    "add": "Add Cookie",
+    "delete": "Delete Cookie"
+  },
+  "settings": {
+    "title": "Settings",
+    "workspace": "Workspace Settings",
+    "global": "Global Settings"
+  }
+}

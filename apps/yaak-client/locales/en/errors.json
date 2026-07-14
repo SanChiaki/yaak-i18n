@@ -1,0 +1,26 @@
+{
+  "network": {
+    "offline": "Network connection lost",
+    "timeout": "Request timeout",
+    "failed": "Request failed"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidUrl": "Invalid URL",
+    "invalidEmail": "Invalid email address",
+    "invalidJson": "Invalid JSON format"
+  },
+  "file": {
+    "notFound": "File not found",
+    "readError": "Failed to read file",
+    "writeError": "Failed to write file"
+  },
+  "import": {
+    "failed": "Import failed",
+    "invalidFormat": "Invalid file format"
+  },
+  "export": {
+    "failed": "Export failed"
+  },
+  "unknown": "Unknown error"
+}

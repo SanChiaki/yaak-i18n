@@ -1,0 +1,40 @@
+{
+  "workspace": {
+    "title": "工作区",
+    "create": "创建工作区",
+    "delete": "删除工作区",
+    "rename": "重命名工作区",
+    "switch": "切换工作区",
+    "settings": "工作区设置",
+    "deleteConfirm": "删除工作区 '{{name}}'？",
+    "deleteDescription": "此操作无法撤销。所有请求、文件夹和环境都将被删除。"
+  },
+  "folder": {
+    "title": "文件夹",
+    "create": "创建文件夹",
+    "delete": "删除文件夹",
+    "rename": "重命名文件夹",
+    "deleteConfirm": "删除文件夹 '{{name}}'？"
+  },
+  "environment": {
+    "title": "环境",
+    "create": "创建环境",
+    "delete": "删除环境",
+    "rename": "重命名环境",
+    "activate": "激活环境",
+    "base": "基础环境",
+    "sub": "子环境",
+    "deleteConfirm": "删除环境 '{{name}}'？"
+  },
+  "cookieJar": {
+    "title": "Cookie 管理器",
+    "manage": "管理 Cookie",
+    "add": "添加 Cookie",
+    "delete": "删除 Cookie"
+  },
+  "settings": {
+    "title": "设置",
+    "workspace": "工作区设置",
+    "global": "全局设置"
+  }
+}

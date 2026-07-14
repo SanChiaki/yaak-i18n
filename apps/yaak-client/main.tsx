@@ -1,4 +1,5 @@
 import "./main.css";
+import "./i18n";
 import { RouterProvider } from "@tanstack/react-router";
 import { type } from "@tauri-apps/plugin-os";
 import { changeModelStoreWorkspace, initModelStore } from "@yaakapp-internal/models";

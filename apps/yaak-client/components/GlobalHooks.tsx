@@ -3,6 +3,7 @@ import { useSubscribeActiveWorkspaceId } from "../hooks/useActiveWorkspace";
 import { useActiveWorkspaceChangedToast } from "../hooks/useActiveWorkspaceChangedToast";
 import { useHotKey, useSubscribeHotKeys } from "../hooks/useHotKey";
 import { useSubscribeHttpAuthentication } from "../hooks/useHttpAuthentication";
+import { useLanguage } from "../hooks/useLanguage";
 import { useSyncFontSizeSetting } from "../hooks/useSyncFontSizeSetting";
 import { useSyncWorkspaceChildModels } from "../hooks/useSyncWorkspaceChildModels";
 import { useSyncZoomSetting } from "../hooks/useSyncZoomSetting";
@@ -13,6 +14,7 @@ import { renameModelWithPrompt } from "../lib/renameModelWithPrompt";
 export function GlobalHooks() {
   useSyncZoomSetting();
   useSyncFontSizeSetting();
+  useLanguage(); // Initialize language detection and sync
 
   useSubscribeActiveWorkspaceId();
 

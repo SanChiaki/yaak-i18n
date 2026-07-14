@@ -41,6 +41,7 @@ impl<'a> ClientDb<'a> {
             auto_download_updates: true,
             check_notifications: true,
             hotkeys: HashMap::new(),
+            language: None,
         };
         self.upsert(&settings, &UpdateSource::Background).expect("Failed to upsert settings")
     }

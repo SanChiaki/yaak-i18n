@@ -1,0 +1,26 @@
+{
+  "network": {
+    "offline": "网络连接已断开",
+    "timeout": "请求超时",
+    "failed": "请求失败"
+  },
+  "validation": {
+    "required": "此字段为必填项",
+    "invalidUrl": "无效的 URL",
+    "invalidEmail": "无效的邮箱地址",
+    "invalidJson": "无效的 JSON 格式"
+  },
+  "file": {
+    "notFound": "文件未找到",
+    "readError": "读取文件失败",
+    "writeError": "写入文件失败"
+  },
+  "import": {
+    "failed": "导入失败",
+    "invalidFormat": "无效的文件格式"
+  },
+  "export": {
+    "failed": "导出失败"
+  },
+  "unknown": "未知错误"
+}

@@ -246,6 +246,8 @@ pub struct Settings {
     pub auto_download_updates: bool,
     pub check_notifications: bool,
     pub hotkeys: HashMap<String, Vec<String>>,
+    #[serde(default)]
+    pub language: Option<String>,
 }
 
 impl UpsertModelInfo for Settings {
