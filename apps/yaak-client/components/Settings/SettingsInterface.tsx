@@ -44,11 +44,14 @@ export function SettingsInterface() {
   const settings = useAtomValue(settingsAtom);
   const fonts = useFonts();
   const { t, i18n } = useTranslation();
-  const { changeLanguage } = useLanguage();
+  const { changeLanguage, currentLanguage } = useLanguage();
 
   if (settings == null || workspace == null) {
     return null;
   }
+
+  // Use current i18n language as the source of truth for the dropdown
+  const displayLanguage = settings.language || currentLanguage || "auto";
 
   return (
     <VStack space={1.5} className="mb-4">
@@ -62,7 +65,7 @@ export function SettingsInterface() {
             title={t("settings:language.label")}
             description={t("settings:language.description")}
             name="language"
-            value={settings.language || "auto"}
+            value={displayLanguage}
             onChange={async (v) => {
               if (v === "auto") {
                 // Update database to null (auto)

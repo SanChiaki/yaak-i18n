@@ -6,6 +6,7 @@ import { pluginsAtom, settingsAtom } from "@yaakapp-internal/models";
 import { HeaderSize, HStack, Icon } from "@yaakapp-internal/ui";
 import classNames from "classnames";
 import { useAtomValue } from "jotai";
+import { useTranslation } from "react-i18next";
 import { useKeyPressEvent } from "react-use";
 import { appInfo } from "../../lib/appInfo";
 import { capitalize } from "../../lib/capitalize";
@@ -45,12 +46,37 @@ const tabs = [
 export type SettingsTab = (typeof tabs)[number];
 
 export default function Settings({ hide }: Props) {
+  const { t } = useTranslation();
   const { tab: tabFromQuery } = useSearch({ from: "/workspaces/$workspaceId/settings" });
   // Parse tab and subtab (e.g., "plugins:installed")
   const [mainTab, subtab] = tabFromQuery?.split(":") ?? [];
   const settings = useAtomValue(settingsAtom);
   const plugins = useAtomValue(pluginsAtom);
   const licenseCheck = useLicense();
+
+  // Tab labels mapping
+  const getTabLabel = (tab: string) => {
+    switch (tab) {
+      case TAB_GENERAL:
+        return t("settings:general.title");
+      case TAB_INTERFACE:
+        return t("settings:interface.title");
+      case TAB_THEME:
+        return t("settings:theme.title");
+      case TAB_SHORTCUTS:
+        return t("settings:hotkeys.title");
+      case TAB_PLUGINS:
+        return t("settings:plugins.title");
+      case TAB_PROXY:
+        return t("settings:proxy.title");
+      case TAB_CERTIFICATES:
+        return t("settings:certificates.title");
+      case TAB_LICENSE:
+        return t("settings:license.title");
+      default:
+        return capitalize(tab);
+    }
+  };
 
   // Close settings window on escape
   // TODO: Could this be put in a better place? Eg. in Rust key listener when creating the window
@@ -85,7 +111,9 @@ export default function Settings({ hide }: Props) {
             justifyContent="center"
             className="w-full h-full grid grid-cols-[1fr_auto] pointer-events-none"
           >
-            <div className={classNames(type() === "macos" ? "text-center" : "pl-2")}>Settings</div>
+            <div className={classNames(type() === "macos" ? "text-center" : "pl-2")}>
+              {t("settings:title")}
+            </div>
           </HStack>
         </HeaderSize>
       )}
@@ -98,7 +126,7 @@ export default function Settings({ hide }: Props) {
         tabs={tabs.map(
           (value): TabItem => ({
             value,
-            label: capitalize(value),
+            label: getTabLabel(value),
             hidden: !appInfo.featureLicense && value === TAB_LICENSE,
             leftSlot:
               value === TAB_GENERAL ? (
