@@ -404,6 +404,7 @@ export type Settings = {
   autoDownloadUpdates: boolean;
   checkNotifications: boolean;
   hotkeys: { [key in string]?: Array<string> };
+  language: string | null;
 };
 
 export type SyncState = {
