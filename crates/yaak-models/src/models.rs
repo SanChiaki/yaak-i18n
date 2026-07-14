@@ -307,6 +307,7 @@ impl UpsertModelInfo for Settings {
             (CheckNotifications, self.check_notifications.into()),
             (Proxy, proxy.into()),
             (Hotkeys, hotkeys.into()),
+            (Language, self.language.clone().into()),
         ])
     }
 
