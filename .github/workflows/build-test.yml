@@ -1,0 +1,110 @@
+name: Build Test Version (No Signing)
+
+on:
+  push:
+    tags: ["v*-test"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build"
+        required: false
+        default: "manual-build"
+
+jobs:
+  build-unsigned:
+    permissions:
+      contents: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "macos-latest"
+            args: "--target aarch64-apple-darwin"
+            target: "aarch64-apple-darwin"
+            os: "macos"
+            arch: "arm64"
+          - platform: "macos-latest"
+            args: "--target x86_64-apple-darwin"
+            target: "x86_64-apple-darwin"
+            os: "macos"
+            arch: "x64"
+          - platform: "windows-latest"
+            args: ""
+            target: ""
+            os: "windows"
+            arch: "x64"
+          - platform: "ubuntu-22.04"
+            args: ""
+            target: ""
+            os: "ubuntu"
+            arch: "x64"
+
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: "24"
+          cache: true
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: ci
+          cache-on-failure: true
+
+      - name: Install dependencies (Linux only)
+        if: matrix.os == 'ubuntu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: vp install
+
+      - name: Bootstrap project
+        run: npm run bootstrap
+        env:
+          YAAK_TARGET_ARCH: ${{ matrix.arch }}
+
+      - name: Build application
+        uses: tauri-apps/tauri-action@v0
+        env:
+          YAAK_TARGET_ARCH: ${{ matrix.arch }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: "${{ github.event.inputs.tag || github.ref_name }}"
+          releaseName: "Test Build ${{ github.event.inputs.tag || github.ref_name }}"
+          releaseBody: "Unsigned test build for i18n feature verification"
+          releaseDraft: true
+          prerelease: true
+          projectPath: ./crates-tauri/yaak-app-client
+          args: "${{ matrix.args }}"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: yaak-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            src-tauri/target/release/bundle/**/*.dmg
+            src-tauri/target/release/bundle/**/*.exe
+            src-tauri/target/release/bundle/**/*.msi
+            src-tauri/target/release/bundle/**/*.deb
+            src-tauri/target/release/bundle/**/*.AppImage
+          if-no-files-found: warn
