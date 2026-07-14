@@ -373,6 +373,7 @@ impl UpsertModelInfo for Settings {
             colored_methods: row.get("colored_methods")?,
             check_notifications: row.get("check_notifications")?,
             hotkeys: serde_json::from_str(&hotkeys).unwrap_or_default(),
+            language: row.get("language")?,
         })
     }
 }
