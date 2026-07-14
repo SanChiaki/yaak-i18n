@@ -1,5 +1,6 @@
 import type { HttpRequest } from "@yaakapp-internal/models";
 import { patchModelById } from "@yaakapp-internal/models";
+import i18n from "../i18n";
 import { createRequestAndNavigate } from "../lib/createRequestAndNavigate";
 import { jotaiStore } from "../lib/jotai";
 import { invokeCmd } from "../lib/tauri";
@@ -24,12 +25,9 @@ export function useImportCurl() {
         workspaceId,
       });
 
-      let verb: string;
       if (overwriteRequestId == null) {
-        verb = "Created";
         await createRequestAndNavigate(importedRequest);
       } else {
-        verb = "Updated";
         await patchModelById(importedRequest.model, overwriteRequestId, (r: HttpRequest) => ({
           ...importedRequest,
           id: r.id,
@@ -45,7 +43,11 @@ export function useImportCurl() {
 
       showToast({
         color: "success",
-        message: `${verb} request from Curl`,
+        message: i18n.t(
+          overwriteRequestId == null
+            ? "request:curlImport.createdRequest"
+            : "request:curlImport.updatedRequest",
+        ),
       });
     },
   });

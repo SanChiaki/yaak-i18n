@@ -1,10 +1,12 @@
 import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { InlineCode } from "@yaakapp-internal/ui";
 import { showToast } from "../lib/toast";
 import { activeWorkspaceAtom } from "./useActiveWorkspace";
 
 export function useActiveWorkspaceChangedToast() {
+  const { t } = useTranslation();
   const activeWorkspace = useAtomValue(activeWorkspaceAtom);
   const [id, setId] = useState<string | null>(activeWorkspace?.id ?? null);
 
@@ -22,10 +24,10 @@ export function useActiveWorkspaceChangedToast() {
       timeout: 3000,
       message: (
         <>
-          Activated workspace{" "}
+          {t("workspace:workspace.activated")}{" "}
           <InlineCode className="whitespace-nowrap">{activeWorkspace.name}</InlineCode>
         </>
       ),
     });
-  }, [activeWorkspace, id]);
+  }, [activeWorkspace, id, t]);
 }

@@ -1,6 +1,7 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import classNames from "classnames";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Props = { className?: string } & (
   | {
@@ -12,6 +13,7 @@ type Props = { className?: string } & (
 );
 
 export function ImageViewer({ className, ...props }: Props) {
+  const { t } = useTranslation();
   const [src, setSrc] = useState<string>();
   const bodyPath = "bodyPath" in props ? props.bodyPath : null;
   const data = "data" in props ? props.data : null;
@@ -32,7 +34,7 @@ export function ImageViewer({ className, ...props }: Props) {
   return (
     <img
       src={src}
-      alt="Response preview"
+      alt={t("common:responsePreview")}
       className={classNames(className, "max-w-full max-h-full")}
     />
   );

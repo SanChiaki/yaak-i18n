@@ -2,12 +2,12 @@ import type { BatchUpsertResult } from "@yaakapp-internal/models";
 import { FormattedError, VStack } from "@yaakapp-internal/ui";
 import { Button } from "../components/core/Button";
 import { ImportDataDialog } from "../components/ImportDataDialog";
+import i18n from "../i18n";
 import { activeWorkspaceAtom } from "../hooks/useActiveWorkspace";
 import { createFastMutation } from "../hooks/useFastMutation";
 import { showAlert } from "./alert";
 import { showDialog } from "./dialog";
 import { jotaiStore } from "./jotai";
-import { pluralizeCount } from "./pluralize";
 import { router } from "./router";
 import { invokeCmd } from "./tauri";
 
@@ -16,7 +16,7 @@ export const importData = createFastMutation({
   onError: (err: string) => {
     showAlert({
       id: "import-failed",
-      title: "Import Failed",
+      title: i18n.t("common:dataImport.failed"),
       size: "md",
       body: <FormattedError>{err}</FormattedError>,
     });
@@ -25,7 +25,7 @@ export const importData = createFastMutation({
     return new Promise<void>((resolve, reject) => {
       showDialog({
         id: "import",
-        title: "Import Data",
+        title: i18n.t("common:dataImport.title"),
         size: "sm",
         render: ({ hide }) => {
           const importAndHide = async (filePath: string) => {
@@ -59,7 +59,7 @@ async function performImport(filePath: string): Promise<boolean> {
 
   showDialog({
     id: "import-complete",
-    title: "Import Complete",
+    title: i18n.t("common:dataImport.complete"),
     size: "sm",
     hideX: true,
     render: ({ hide }) => {
@@ -67,27 +67,39 @@ async function performImport(filePath: string): Promise<boolean> {
         <VStack space={3} className="pb-4">
           <ul className="list-disc pl-6">
             {imported.workspaces.length > 0 && (
-              <li>{pluralizeCount("Workspace", imported.workspaces.length)}</li>
+              <li>
+                {i18n.t("common:dataImport.workspaces", { count: imported.workspaces.length })}
+              </li>
             )}
             {imported.environments.length > 0 && (
-              <li>{pluralizeCount("Environment", imported.environments.length)}</li>
+              <li>
+                {i18n.t("common:dataImport.environments", { count: imported.environments.length })}
+              </li>
             )}
             {imported.folders.length > 0 && (
-              <li>{pluralizeCount("Folder", imported.folders.length)}</li>
+              <li>{i18n.t("common:dataImport.folders", { count: imported.folders.length })}</li>
             )}
             {imported.httpRequests.length > 0 && (
-              <li>{pluralizeCount("HTTP Request", imported.httpRequests.length)}</li>
+              <li>
+                {i18n.t("common:dataImport.httpRequests", { count: imported.httpRequests.length })}
+              </li>
             )}
             {imported.grpcRequests.length > 0 && (
-              <li>{pluralizeCount("GRPC Request", imported.grpcRequests.length)}</li>
+              <li>
+                {i18n.t("common:dataImport.grpcRequests", { count: imported.grpcRequests.length })}
+              </li>
             )}
             {imported.websocketRequests.length > 0 && (
-              <li>{pluralizeCount("Websocket Request", imported.websocketRequests.length)}</li>
+              <li>
+                {i18n.t("common:dataImport.websocketRequests", {
+                  count: imported.websocketRequests.length,
+                })}
+              </li>
             )}
           </ul>
           <div>
             <Button className="ml-auto" onClick={hide} color="primary">
-              Done
+              {i18n.t("common:done")}
             </Button>
           </div>
         </VStack>

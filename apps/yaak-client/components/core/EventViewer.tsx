@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { format } from "date-fns";
 import type { ReactNode } from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useEventViewerKeyboard } from "../../hooks/useEventViewerKeyboard";
 import { CopyIconButton } from "../CopyIconButton";
 import { AutoScroller } from "./AutoScroller";
@@ -68,10 +69,13 @@ export function EventViewer<T>({
   defaultRatio = 0.4,
   enableKeyboardNav = true,
   isLoading = false,
-  loadingMessage = "Loading events...",
-  emptyMessage = "No events recorded",
+  loadingMessage,
+  emptyMessage,
   onActiveIndexChange,
 }: EventViewerProps<T>) {
+  const { t } = useTranslation();
+  const resolvedLoadingMessage = loadingMessage ?? t("common:ui.loadingEvents");
+  const resolvedEmptyMessage = emptyMessage ?? t("common:ui.noEvents");
   const [activeIndex, setActiveIndexInternal] = useState<number | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
@@ -138,11 +142,11 @@ export function EventViewer<T>({
   }, []);
 
   if (isLoading) {
-    return <div className="p-3 text-text-subtlest italic">{loadingMessage}</div>;
+    return <div className="p-3 text-text-subtlest italic">{resolvedLoadingMessage}</div>;
   }
 
   if (events.length === 0 && !error) {
-    return <div className="p-3 text-text-subtlest italic">{emptyMessage}</div>;
+    return <div className="p-3 text-text-subtlest italic">{resolvedEmptyMessage}</div>;
   }
 
   return (
@@ -230,6 +234,7 @@ export function EventDetailHeader({
   copyText,
   onClose,
 }: EventDetailHeaderProps) {
+  const { t } = useTranslation();
   const formattedTime = timestamp ? format(new Date(`${timestamp}Z`), "HH:mm:ss.SSS") : null;
 
   return (
@@ -252,7 +257,13 @@ export function EventDetailHeader({
           </Button>
         ))}
         {copyText != null && (
-          <CopyIconButton text={copyText} size="xs" title="Copy" variant="border" iconSize="sm" />
+          <CopyIconButton
+            text={copyText}
+            size="xs"
+            title={t("common:copy")}
+            variant="border"
+            iconSize="sm"
+          />
         )}
         {formattedTime && (
           <span className="text-text-subtlest font-mono text-editor ml-2">{formattedTime}</span>
@@ -269,7 +280,7 @@ export function EventDetailHeader({
             className="text-text-subtle -mr-3"
             size="xs"
             icon="x"
-            title="Close event panel"
+            title={t("common:ui.closeEventPanel")}
             onClick={onClose}
           />
         </div>

@@ -1,4 +1,5 @@
 import { showErrorToast } from "./toast";
+import i18n from "../i18n";
 
 /**
  * Handles a fire-and-forget promise by catching and reporting errors
@@ -9,7 +10,7 @@ export function fireAndForget(promise: Promise<unknown>) {
     console.error("Unhandled async error:", err);
     showErrorToast({
       id: "async-error",
-      title: "Unexpected Error",
+      title: i18n.t("common:unexpectedError"),
       message: err instanceof Error ? err.message : String(err),
     });
   });

@@ -5,6 +5,7 @@ import { Banner, Icon, InlineCode, SplitLayout, Tree } from "@yaakapp-internal/u
 import { atom, useAtomValue } from "jotai";
 import { atomFamily } from "jotai-family";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createSubEnvironmentAndActivate } from "../commands/createEnvironment";
 import { activeWorkspaceAtom, activeWorkspaceIdAtom } from "../hooks/useActiveWorkspace";
 import {
@@ -15,6 +16,7 @@ import { useHotKey } from "../hooks/useHotKey";
 import { atomWithKVStorage } from "../lib/atoms/atomWithKVStorage";
 import { deleteModelWithConfirm } from "../lib/deleteModelWithConfirm";
 import { fireAndForget } from "../lib/fireAndForget";
+import i18n from "../i18n";
 import { jotaiStore } from "../lib/jotai";
 import { isBaseEnvironment, isSubEnvironment } from "../lib/model_util";
 import { resolvedModelName } from "../lib/resolvedModelName";
@@ -41,6 +43,7 @@ interface Props {
 type TreeModel = Environment | Workspace;
 
 export function EnvironmentEditDialog({ initialEnvironmentId, setRef }: Props) {
+  const { t } = useTranslation();
   const { allEnvironments, baseEnvironment, baseEnvironments } = useEnvironmentsBreakdown();
   const [selectedEnvironmentId, setSelectedEnvironmentId] = useState<string | null>(
     initialEnvironmentId ?? null,
@@ -68,10 +71,7 @@ export function EnvironmentEditDialog({ initialEnvironmentId, setRef }: Props) {
         <div className="grid grid-rows-[auto_minmax(0,1fr)]">
           {baseEnvironments.length > 1 ? (
             <div className="p-3">
-              <Banner color="notice">
-                There are multiple base environments for this workspace. Please delete the
-                environments you no longer need.
-              </Banner>
+              <Banner color="notice">{t("workspace:environment.multipleBaseWarning")}</Banner>
             </div>
           ) : (
             <span />
@@ -79,7 +79,8 @@ export function EnvironmentEditDialog({ initialEnvironmentId, setRef }: Props) {
           {selectedEnvironment == null ? (
             <div className="p-3 mt-10">
               <Banner color="danger">
-                Failed to find selected environment <InlineCode>{selectedEnvironmentId}</InlineCode>
+                {t("workspace:environment.selectedNotFound")}{" "}
+                <InlineCode>{selectedEnvironmentId}</InlineCode>
               </Banner>
             </div>
           ) : (
@@ -96,15 +97,6 @@ export function EnvironmentEditDialog({ initialEnvironmentId, setRef }: Props) {
   );
 }
 
-const sharableTooltip = (
-  <IconTooltip
-    tabIndex={-1}
-    icon="eye"
-    iconSize="sm"
-    content="This environment will be included in Directory Sync and data exports"
-  />
-);
-
 function EnvironmentEditDialogSidebar({
   selectedEnvironmentId,
   setSelectedEnvironmentId,
@@ -112,6 +104,7 @@ function EnvironmentEditDialogSidebar({
   selectedEnvironmentId: string | null;
   setSelectedEnvironmentId: (id: string | null) => void;
 }) {
+  const { t } = useTranslation();
   const activeWorkspaceId = useAtomValue(activeWorkspaceIdAtom) ?? "";
   const treeId = `environment.${activeWorkspaceId}.sidebar`;
   const treeRef = useRef<TreeHandle>(null);
@@ -193,7 +186,7 @@ function EnvironmentEditDialogSidebar({
     (items: TreeModel[]): ContextMenuProps["items"] => {
       const environment = items[0];
       const addEnvironmentItem: DropdownItem = {
-        label: "Create Sub Environment",
+        label: t("workspace:environment.createSub"),
         leftSlot: <Icon icon="plus" />,
         onSelect: async () => {
           await createSubEnvironment();
@@ -211,7 +204,7 @@ function EnvironmentEditDialogSidebar({
 
       const menuItems: DropdownItem[] = [
         {
-          label: "Rename",
+          label: t("common:rename"),
           leftSlot: <Icon icon="pencil" />,
           hidden: isBaseEnvironment(environment) || !singleEnvironment,
           hotKeyAction: "sidebar.selected.rename",
@@ -223,7 +216,7 @@ function EnvironmentEditDialogSidebar({
           },
         },
         {
-          label: "Duplicate",
+          label: t("common:duplicate"),
           leftSlot: <Icon icon="copy" />,
           hidden: isBaseEnvironment(environment),
           hotKeyAction: "sidebar.selected.duplicate",
@@ -231,13 +224,17 @@ function EnvironmentEditDialogSidebar({
           onSelect: () => handleDuplicateSelected(items),
         },
         {
-          label: environment.color ? "Change Color" : "Assign Color",
+          label: environment.color
+            ? t("workspace:environment.changeColor")
+            : t("workspace:environment.assignColor"),
           leftSlot: <Icon icon="palette" />,
           hidden: isBaseEnvironment(environment) || !singleEnvironment,
           onSelect: async () => showColorPicker(environment),
         },
         {
-          label: `Make ${environment.public ? "Private" : "Sharable"}`,
+          label: environment.public
+            ? t("workspace:environment.makePrivate")
+            : t("workspace:environment.makeSharable"),
           leftSlot: <Icon icon={environment.public ? "eye_closed" : "eye"} />,
           rightSlot: <EnvironmentSharableTooltip />,
           hidden: items.length > 1,
@@ -247,7 +244,7 @@ function EnvironmentEditDialogSidebar({
         },
         {
           color: "danger",
-          label: "Delete",
+          label: t("common:delete"),
           hotKeyAction: "sidebar.selected.delete",
           hotKeyLabelOnly: true,
           hidden: !canDeleteEnvironment,
@@ -269,6 +266,7 @@ function EnvironmentEditDialogSidebar({
       handleDeleteEnvironment,
       handleDuplicateSelected,
       handleRenameSelected,
+      t,
     ],
   );
 
@@ -394,6 +392,7 @@ function ItemLeftSlotInner({ item }: { item: TreeModel }) {
 }
 
 function ItemRightSlot({ item }: { item: TreeModel }) {
+  const { t } = useTranslation();
   const { baseEnvironments } = useEnvironmentsBreakdown();
   return (
     <>
@@ -404,7 +403,7 @@ function ItemRightSlot({ item }: { item: TreeModel }) {
           iconSize="sm"
           icon="plus_circle"
           className="opacity-50 hover:opacity-100"
-          title="Add Sub-Environment"
+          title={t("workspace:environment.addSub")}
           onClick={createSubEnvironment}
         />
       )}
@@ -416,7 +415,9 @@ function ItemInner({ item }: { item: TreeModel }) {
   return (
     <div className="grid grid-cols-[auto_minmax(0,1fr)] w-full items-center">
       {item.model === "environment" && item.public ? (
-        <div className="mr-2 flex items-center">{sharableTooltip}</div>
+        <div className="mr-2 flex items-center">
+          <SharableTooltip />
+        </div>
       ) : (
         <span aria-hidden />
       )}
@@ -435,10 +436,22 @@ async function createSubEnvironment() {
 function getEditOptions(item: TreeModel) {
   const options: ReturnType<NonNullable<TreeProps<TreeModel>["getEditOptions"]>> = {
     defaultValue: item.name,
-    placeholder: "Name",
+    placeholder: i18n.t("common:name"),
     async onChange(item, name) {
       await patchModel(item, { name });
     },
   };
   return options;
+}
+
+function SharableTooltip() {
+  const { t } = useTranslation();
+  return (
+    <IconTooltip
+      tabIndex={-1}
+      icon="eye"
+      iconSize="sm"
+      content={t("workspace:environment.sharableTooltip")}
+    />
+  );
 }

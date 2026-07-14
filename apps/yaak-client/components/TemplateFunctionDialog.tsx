@@ -12,6 +12,7 @@ import { parseTemplate } from "@yaakapp-internal/templates";
 import { HStack, InlineCode, LoadingIcon, useDebouncedValue } from "@yaakapp-internal/ui";
 import classNames from "classnames";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { activeWorkspaceAtom } from "../hooks/useActiveWorkspace";
 import { useRenderTemplate } from "../hooks/useRenderTemplate";
 import { useTemplateFunctionConfig } from "../hooks/useTemplateFunctionConfig";
@@ -23,6 +24,7 @@ import { useToggle } from "../hooks/useToggle";
 import { showDialog } from "../lib/dialog";
 import { convertTemplateToInsecure } from "../lib/encryption";
 import { jotaiStore } from "../lib/jotai";
+import { localizePluginText } from "../lib/localizePluginText";
 import { setupOrConfigureEncryption } from "../lib/setupOrConfigureEncryption";
 import { Button } from "./core/Button";
 import { collectArgumentValues } from "./core/Editor/twig/util";
@@ -88,6 +90,7 @@ function InitializedTemplateFunctionDialog({
 }: Omit<Props, "initialTokens"> & {
   initialArgValues: Record<string, string | boolean>;
 }) {
+  const { t } = useTranslation();
   const previewType = ogPreviewType == null ? "live" : ogPreviewType;
   const [showSecretsInPreview, toggleShowSecretsInPreview] = useToggle(false);
   const [argValues, setArgValues] = useState<Record<string, string | boolean>>(initialArgValues);
@@ -170,7 +173,7 @@ function InitializedTemplateFunctionDialog({
         {name === "secure" ? (
           <PlainInput
             required
-            label="Value"
+            label={t("common:value")}
             name="value"
             type="password"
             placeholder="••••••••••••"
@@ -193,14 +196,18 @@ function InitializedTemplateFunctionDialog({
           <div className="w-full grid grid-cols-1 grid-rows-[auto_auto]">
             <HStack space={0.5}>
               <HStack className="text-sm text-text-subtle" space={1.5}>
-                Rendered Preview
+                {t("common:template.renderedPreview")}
                 {rendered.isLoading && <LoadingIcon size="xs" />}
               </HStack>
               <IconButton
                 size="xs"
                 iconSize="sm"
                 icon={showSecretsInPreview ? "lock" : "lock_open"}
-                title={showSecretsInPreview ? "Show preview" : "Hide preview"}
+                title={
+                  showSecretsInPreview
+                    ? t("common:template.showPreview")
+                    : t("common:template.hidePreview")
+                }
                 onClick={toggleShowSecretsInPreview}
                 className={classNames(
                   "ml-auto text-text-subtlest",
@@ -221,10 +228,10 @@ function InitializedTemplateFunctionDialog({
                   </em>
                 ) : dataContainsSecrets && !showSecretsInPreview ? (
                   <span className="italic text-text-subtle">
-                    ------ sensitive values hidden ------
+                    {t("common:template.sensitiveHidden")}
                   </span>
                 ) : tooLarge ? (
-                  "too large to preview"
+                  t("common:template.tooLarge")
                 ) : (
                   rendered.data || <>&nbsp;</>
                 )}
@@ -234,7 +241,7 @@ function InitializedTemplateFunctionDialog({
                   size="xs"
                   icon="refresh"
                   className="text-text-subtle"
-                  title="Refresh preview"
+                  title={t("common:template.refreshPreview")}
                   spin={rendered.isPending}
                   onClick={() => {
                     setRenderKey(new Date().toISOString());
@@ -249,11 +256,11 @@ function InitializedTemplateFunctionDialog({
         <div className="flex justify-stretch w-full flex-grow gap-2 [&>*]:flex-1">
           {templateFunction.data.name === "secure" && (
             <Button variant="border" color="secondary" onClick={setupOrConfigureEncryption}>
-              Reveal Encryption Key
+              {t("common:template.revealEncryptionKey")}
             </Button>
           )}
           <Button type="submit" color="primary">
-            Save
+            {t("common:save")}
           </Button>
         </div>
       </div>
@@ -274,7 +281,7 @@ TemplateFunctionDialog.show = (
     className: "h-[60rem]",
     noPadding: true,
     title: <InlineCode>{fn.name}(…)</InlineCode>,
-    description: fn.description,
+    description: fn.description ? localizePluginText(fn.description) : undefined,
     render: ({ hide }) => {
       const model = jotaiStore.get(activeWorkspaceAtom);
       if (model == null) return null;

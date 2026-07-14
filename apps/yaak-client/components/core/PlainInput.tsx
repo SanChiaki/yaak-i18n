@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { useRandomKey } from "../../hooks/useRandomKey";
 import { useStateWithDeps } from "../../hooks/useStateWithDeps";
 import { generateId } from "../../lib/generateId";
@@ -70,6 +71,7 @@ export const PlainInput = forwardRef<{ focus: () => void }, PlainInputProps>(fun
   },
   ref,
 ) {
+  const { t } = useTranslation();
   // Track a local key for updates. If the default value is changed when the input is not in focus,
   // regenerate this to force the field to update.
   const [focusedUpdateKey, regenerateFocusedUpdateKey] = useRandomKey();
@@ -129,9 +131,9 @@ export const PlainInput = forwardRef<{ focus: () => void }, PlainInputProps>(fun
         if (typeof validate === "function" && !validate(value)) return false;
         return true;
       };
-      inputRef.current?.setCustomValidity(isValid(value) ? "" : "Invalid value");
+      inputRef.current?.setCustomValidity(isValid(value) ? "" : t("common:invalidValue"));
     },
-    [onChange, required, setHasChanged, validate],
+    [onChange, required, setHasChanged, t, validate],
   );
 
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -218,8 +220,12 @@ export const PlainInput = forwardRef<{ focus: () => void }, PlainInputProps>(fun
           <IconButton
             title={
               obscured
-                ? `Show ${typeof label === "string" ? label : "field"}`
-                : `Obscure ${typeof label === "string" ? label : "field"}`
+                ? t("common:password.show", {
+                    label: typeof label === "string" ? label : t("common:password.field"),
+                  })
+                : t("common:password.obscure", {
+                    label: typeof label === "string" ? label : t("common:password.field"),
+                  })
             }
             size="xs"
             className="mr-0.5 group/obscure !h-auto my-0.5"

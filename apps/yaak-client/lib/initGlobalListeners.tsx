@@ -18,6 +18,7 @@ import { HStack, Icon, VStack } from "@yaakapp-internal/ui";
 import { openSettings } from "../commands/openSettings";
 import { Button } from "../components/core/Button";
 import { ButtonInfiniteLoading } from "../components/core/ButtonInfiniteLoading";
+import i18n from "../i18n";
 
 // Listen for toasts
 import { listenToTauriEvent } from "../hooks/useListenToTauriEvent";
@@ -25,6 +26,7 @@ import { updateAvailableAtom } from "./atoms";
 import { stringToColor } from "./color";
 import { generateId } from "./generateId";
 import { jotaiStore } from "./jotai";
+import { localizePluginText } from "./localizePluginText";
 import { showPrompt } from "./prompt";
 import { showPromptForm } from "./prompt-form";
 import { invokeCmd } from "./tauri";
@@ -32,7 +34,10 @@ import { showToast } from "./toast";
 
 export function initGlobalListeners() {
   listenToTauriEvent<ShowToastRequest>("show_toast", (event) => {
-    showToast({ ...event.payload });
+    showToast({
+      ...event.payload,
+      message: localizePluginText(event.payload.message),
+    });
   });
 
   // Show errors for any plugins that failed to load during startup
@@ -43,7 +48,7 @@ export function initGlobalListeners() {
         id: `plugin-init-error-${name}`,
         color: "danger",
         timeout: null,
-        message: `Failed to load plugin "${name}": ${err}`,
+        message: i18n.t("common:pluginUpdates.loadFailed", { name, error: err }),
       });
     }
   });
@@ -56,7 +61,23 @@ export function initGlobalListeners() {
   // Listen for plugin events
   listenToTauriEvent<InternalEvent>("plugin_event", async ({ payload: event }) => {
     if (event.payload.type === "prompt_text_request") {
-      const value = await showPrompt(event.payload);
+      const value = await showPrompt({
+        ...event.payload,
+        title: localizePluginText(event.payload.title),
+        label: localizePluginText(event.payload.label),
+        description: event.payload.description
+          ? localizePluginText(event.payload.description)
+          : undefined,
+        placeholder: event.payload.placeholder
+          ? localizePluginText(event.payload.placeholder)
+          : undefined,
+        confirmText: event.payload.confirmText
+          ? localizePluginText(event.payload.confirmText)
+          : undefined,
+        cancelText: event.payload.cancelText
+          ? localizePluginText(event.payload.cancelText)
+          : undefined,
+      });
       const result: InternalEvent = {
         id: generateId(),
         replyId: event.id,
@@ -98,12 +119,18 @@ export function initGlobalListeners() {
 
       const values = await showPromptForm({
         id: event.payload.id,
-        title: event.payload.title,
-        description: event.payload.description,
+        title: localizePluginText(event.payload.title),
+        description: event.payload.description
+          ? localizePluginText(event.payload.description)
+          : undefined,
         size: event.payload.size,
         inputs: event.payload.inputs,
-        confirmText: event.payload.confirmText,
-        cancelText: event.payload.cancelText,
+        confirmText: event.payload.confirmText
+          ? localizePluginText(event.payload.confirmText)
+          : undefined,
+        cancelText: event.payload.cancelText
+          ? localizePluginText(event.payload.cancelText)
+          : undefined,
         onValuesChange: debounce((values) => emitFormResponse(values, false), 150),
         onInputsUpdated: (cb) => activeForms.set(event.id, cb),
       });
@@ -146,8 +173,8 @@ function showUpdateInstalledToast(version: string) {
     timeout: null,
     message: (
       <VStack>
-        <h2 className="font-semibold">Yaak {version} was installed</h2>
-        <p className="text-text-subtle text-sm">Start using the new version now?</p>
+        <h2 className="font-semibold">{i18n.t("common:updates.installed", { version })}</h2>
+        <p className="text-text-subtle text-sm">{i18n.t("common:updates.restartPrompt")}</p>
       </VStack>
     ),
     action: ({ hide }) => (
@@ -155,13 +182,13 @@ function showUpdateInstalledToast(version: string) {
         size="xs"
         className="mr-auto min-w-[5rem]"
         color="primary"
-        loadingChildren="Restarting..."
+        loadingChildren={i18n.t("common:updates.restarting")}
         onClick={() => {
           hide();
           setTimeout(() => invokeCmd("cmd_restart", {}), 200);
         }}
       >
-        Relaunch Yaak
+        {i18n.t("common:updates.relaunch")}
       </ButtonInfiniteLoading>
     ),
   });
@@ -182,9 +209,11 @@ async function showUpdateAvailableToast(updateInfo: UpdateInfo) {
     timeout: null,
     message: (
       <VStack>
-        <h2 className="font-semibold">Yaak {version} is available</h2>
+        <h2 className="font-semibold">{i18n.t("common:updates.available", { version })}</h2>
         <p className="text-text-subtle text-sm">
-          {downloaded ? "Do you want to install" : "Download and install"} the update?
+          {downloaded
+            ? i18n.t("common:updates.installPrompt")
+            : i18n.t("common:updates.downloadPrompt")}
         </p>
       </VStack>
     ),
@@ -194,7 +223,9 @@ async function showUpdateAvailableToast(updateInfo: UpdateInfo) {
           size="xs"
           color="info"
           className="min-w-[10rem]"
-          loadingChildren={downloaded ? "Installing..." : "Downloading..."}
+          loadingChildren={
+            downloaded ? i18n.t("common:updates.installing") : i18n.t("common:updates.downloading")
+          }
           onClick={async () => {
             await emit<UpdateResponse>(replyEventId, {
               type: "action",
@@ -202,7 +233,9 @@ async function showUpdateAvailableToast(updateInfo: UpdateInfo) {
             });
           }}
         >
-          {downloaded ? "Install Now" : "Download and Install"}
+          {downloaded
+            ? i18n.t("common:updates.installNow")
+            : i18n.t("common:updates.downloadAndInstall")}
         </ButtonInfiniteLoading>
         <Button
           size="xs"
@@ -213,7 +246,7 @@ async function showUpdateAvailableToast(updateInfo: UpdateInfo) {
             await openUrl(`https://yaak.app/changelog/${version}`);
           }}
         >
-          What&apos;s New
+          {i18n.t("common:updates.whatsNew")}
         </Button>
       </HStack>
     ),
@@ -231,13 +264,13 @@ function showPluginUpdatesToast(updateInfo: PluginUpdateNotification) {
     timeout: null,
     message: (
       <VStack>
-        <h2 className="font-semibold">
-          {count === 1 ? "1 plugin update" : `${count} plugin updates`} available
-        </h2>
+        <h2 className="font-semibold">{i18n.t("common:pluginUpdates.available", { count })}</h2>
         <p className="text-text-subtle text-sm">
           {count === 1
             ? pluginNames[0]
-            : `${pluginNames.slice(0, 2).join(", ")}${count > 2 ? `, and ${count - 2} more` : ""}`}
+            : `${pluginNames.slice(0, 2).join(", ")}${
+                count > 2 ? i18n.t("common:pluginUpdates.more", { count: count - 2 }) : ""
+              }`}
         </p>
       </VStack>
     ),
@@ -247,19 +280,19 @@ function showPluginUpdatesToast(updateInfo: PluginUpdateNotification) {
           size="xs"
           color="info"
           className="min-w-[5rem]"
-          loadingChildren="Updating..."
+          loadingChildren={i18n.t("common:pluginUpdates.updating")}
           onClick={async () => {
             const updated = await updateAllPlugins();
             hide();
             if (updated.length > 0) {
               showToast({
                 color: "success",
-                message: `Successfully updated ${updated.length} plugin${updated.length === 1 ? "" : "s"}`,
+                message: i18n.t("common:pluginUpdates.updated", { count: updated.length }),
               });
             }
           }}
         >
-          Update All
+          {i18n.t("common:pluginUpdates.updateAll")}
         </ButtonInfiniteLoading>
         <Button
           size="xs"
@@ -270,7 +303,7 @@ function showPluginUpdatesToast(updateInfo: PluginUpdateNotification) {
             openSettings.mutate("plugins:installed");
           }}
         >
-          View Updates
+          {i18n.t("common:pluginUpdates.viewUpdates")}
         </Button>
       </HStack>
     ),

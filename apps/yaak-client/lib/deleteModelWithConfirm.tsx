@@ -1,9 +1,9 @@
 import type { AnyModel } from "@yaakapp-internal/models";
-import { deleteModel, modelTypeLabel } from "@yaakapp-internal/models";
+import { deleteModel } from "@yaakapp-internal/models";
 import { InlineCode } from "@yaakapp-internal/ui";
 import { Prose } from "../components/Prose";
 import { showConfirmDelete } from "./confirm";
-import { pluralizeCount } from "./pluralize";
+import i18n from "../i18n";
 import { resolvedModelName } from "./resolvedModelName";
 
 export async function deleteModelWithConfirm(
@@ -18,22 +18,21 @@ export async function deleteModelWithConfirm(
   const firstModel = models[0];
   if (firstModel == null) return false;
 
-  const descriptor =
-    models.length === 1 ? modelTypeLabel(firstModel) : pluralizeCount("Item", models.length);
+  const firstModelName = resolvedModelName(firstModel);
   const confirmed = await showConfirmDelete({
     id: `delete-model-${models.map((m) => m.id).join(",")}`,
-    title: `Delete ${descriptor}`,
+    title:
+      models.length === 1
+        ? i18n.t("common:deleteModel.titleOne", { name: firstModelName })
+        : i18n.t("common:deleteModel.titleMany", { count: models.length }),
     requireTyping: options.confirmName,
     description: (
       <>
-        Permanently delete{" "}
         {models.length === 1 ? (
-          <>
-            <InlineCode>{resolvedModelName(firstModel)}</InlineCode>?
-          </>
+          i18n.t("common:deleteModel.descriptionOne", { name: firstModelName })
         ) : models.length < 10 ? (
           <>
-            the following?
+            {i18n.t("common:deleteModel.descriptionMany")}
             <Prose className="mt-2">
               <ul>
                 {models.map((m) => (
@@ -45,7 +44,7 @@ export async function deleteModelWithConfirm(
             </Prose>
           </>
         ) : (
-          `all ${pluralizeCount("item", models.length)}?`
+          i18n.t("common:deleteModel.descriptionAll", { count: models.length })
         )}
       </>
     ),

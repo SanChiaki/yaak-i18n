@@ -5,6 +5,7 @@ import { createFastMutation } from "../hooks/useFastMutation";
 import { showDialog } from "../lib/dialog";
 import { jotaiStore } from "../lib/jotai";
 import { setWorkspaceSearchParams } from "../lib/setWorkspaceSearchParams";
+import i18n from "../i18n";
 
 export const createSubEnvironmentAndActivate = createFastMutation<
   string | null,
@@ -25,8 +26,8 @@ export const createSubEnvironmentAndActivate = createFastMutation<
     return new Promise<string | null>((resolve) => {
       showDialog({
         id: "new-environment",
-        title: "New Environment",
-        description: "Create multiple environments with different sets of variables",
+        title: i18n.t("workspace:environment.new"),
+        description: i18n.t("workspace:environment.newDescription"),
         size: "sm",
         onClose: () => resolve(null),
         render: ({ hide }) => (

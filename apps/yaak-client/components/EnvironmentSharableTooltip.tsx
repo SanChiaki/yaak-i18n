@@ -1,7 +1,7 @@
+import { useTranslation } from "react-i18next";
 import { IconTooltip } from "./core/IconTooltip";
 
 export function EnvironmentSharableTooltip() {
-  return (
-    <IconTooltip content="Sharable environments are included in Directory Sync and data export." />
-  );
+  const { t } = useTranslation();
+  return <IconTooltip content={t("workspace:environment.sharableTooltip")} />;
 }

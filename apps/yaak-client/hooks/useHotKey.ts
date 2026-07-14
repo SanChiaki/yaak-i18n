@@ -3,6 +3,7 @@ import { debounce } from "@yaakapp-internal/lib";
 import { settingsAtom } from "@yaakapp-internal/models";
 import { atom, useAtomValue } from "jotai";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { capitalize } from "../lib/capitalize";
 import { jotaiStore } from "../lib/jotai";
 
@@ -155,6 +156,36 @@ const hotkeyLabels: Record<HotkeyAction, string> = {
   "url_bar.focus": "Focus URL",
   "workspace_settings.show": "Open Workspace Settings",
 };
+
+const hotkeyLabelKeys = {
+  "app.zoom_in": "settings:hotkeys.actions.app.zoom_in",
+  "app.zoom_out": "settings:hotkeys.actions.app.zoom_out",
+  "app.zoom_reset": "settings:hotkeys.actions.app.zoom_reset",
+  "command_palette.toggle": "settings:hotkeys.actions.command_palette.toggle",
+  "cookies_editor.show": "settings:hotkeys.actions.cookies_editor.show",
+  "editor.autocomplete": "settings:hotkeys.actions.editor.autocomplete",
+  "environment_editor.toggle": "settings:hotkeys.actions.environment_editor.toggle",
+  "hotkeys.showHelp": "settings:hotkeys.actions.hotkeys.showHelp",
+  "model.create": "settings:hotkeys.actions.model.create",
+  "model.duplicate": "settings:hotkeys.actions.model.duplicate",
+  "request.rename": "settings:hotkeys.actions.request.rename",
+  "request.send": "settings:hotkeys.actions.request.send",
+  "switcher.next": "settings:hotkeys.actions.switcher.next",
+  "switcher.prev": "settings:hotkeys.actions.switcher.prev",
+  "switcher.toggle": "settings:hotkeys.actions.switcher.toggle",
+  "settings.show": "settings:hotkeys.actions.settings.show",
+  "sidebar.filter": "settings:hotkeys.actions.sidebar.filter",
+  "sidebar.expand_all": "settings:hotkeys.actions.sidebar.expand_all",
+  "sidebar.collapse_all": "settings:hotkeys.actions.sidebar.collapse_all",
+  "sidebar.selected.delete": "settings:hotkeys.actions.sidebar.selected.delete",
+  "sidebar.selected.duplicate": "settings:hotkeys.actions.sidebar.selected.duplicate",
+  "sidebar.selected.move": "settings:hotkeys.actions.sidebar.selected.move",
+  "sidebar.selected.rename": "settings:hotkeys.actions.sidebar.selected.rename",
+  "sidebar.focus": "settings:hotkeys.actions.sidebar.focus",
+  "sidebar.context_menu": "settings:hotkeys.actions.sidebar.context_menu",
+  "url_bar.focus": "settings:hotkeys.actions.url_bar.focus",
+  "workspace_settings.show": "settings:hotkeys.actions.workspace_settings.show",
+} as const satisfies Record<HotkeyAction, string>;
 
 const layoutInsensitiveKeys = [
   "Equal",
@@ -309,7 +340,12 @@ function handleKeyDown(e: KeyboardEvent) {
 }
 
 export function useHotkeyLabel(action: HotkeyAction): string {
-  return hotkeyLabels[action];
+  const { t } = useTranslation();
+  return t(hotkeyLabelKeys[action]);
+}
+
+export function getHotkeyLabelKey(action: HotkeyAction) {
+  return hotkeyLabelKeys[action];
 }
 
 export function getHotkeyScope(action: HotkeyAction): string {

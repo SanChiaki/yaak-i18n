@@ -336,6 +336,7 @@ impl UpsertModelInfo for Settings {
             SettingsIden::ColoredMethods,
             SettingsIden::CheckNotifications,
             SettingsIden::Hotkeys,
+            SettingsIden::Language,
         ]
     }
 

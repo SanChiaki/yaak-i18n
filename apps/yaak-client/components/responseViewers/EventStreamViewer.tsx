@@ -3,6 +3,7 @@ import type { ServerSentEvent } from "@yaakapp-internal/sse";
 import { HStack, Icon, InlineCode, VStack } from "@yaakapp-internal/ui";
 import classNames from "classnames";
 import { Fragment, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useFormatText } from "../../hooks/useFormatText";
 import { useResponseBodyEventSource } from "../../hooks/useResponseBodyEventSource";
 import { isJSON } from "../../lib/contentType";
@@ -27,6 +28,7 @@ export function EventStreamViewer({ response }: Props) {
 }
 
 function ActualEventStreamViewer({ response }: Props) {
+  const { t } = useTranslation();
   const [showLarge, setShowLarge] = useState<boolean>(false);
   const [showingLarge, setShowingLarge] = useState<boolean>(false);
   const events = useResponseBodyEventSource(response);
@@ -42,7 +44,13 @@ function ActualEventStreamViewer({ response }: Props) {
         <EventViewerRow
           isActive={isActive}
           onClick={onClick}
-          icon={<Icon color="info" title="Server Message" icon="arrow_big_down_dash" />}
+          icon={
+            <Icon
+              color="info"
+              title={t("request:protocol.serverMessage")}
+              icon="arrow_big_down_dash"
+            />
+          }
           content={
             <HStack space={2} className="items-center">
               <EventLabels event={event} index={index} isActive={isActive} />
@@ -83,6 +91,7 @@ function EventDetail({
   setShowingLarge: (v: boolean) => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const language = useMemo<"text" | "json">(() => {
     if (!event?.data) return "text";
     return isJSON(event?.data) ? "json" : "text";
@@ -91,13 +100,13 @@ function EventDetail({
   return (
     <div className="flex flex-col h-full">
       <EventDetailHeader
-        title="Message Received"
+        title={t("request:protocol.messageReceived")}
         prefix={<EventLabels event={event} index={index} />}
         onClose={onClose}
       />
       {!showLarge && event.data.length > 1000 * 1000 ? (
         <VStack space={2} className="italic text-text-subtlest">
-          Message previews larger than 1MB are hidden
+          {t("request:protocol.largePreviewHidden")}
           <div>
             <Button
               onClick={() => {
@@ -112,7 +121,7 @@ function EventDetail({
               variant="border"
               size="xs"
             >
-              Try Showing
+              {t("request:protocol.tryShowing")}
             </Button>
           </div>
         </VStack>

@@ -1,6 +1,7 @@
 import type { HttpResponse } from "@yaakapp-internal/models";
 import { Banner, HStack, InlineCode } from "@yaakapp-internal/ui";
 import { type ReactNode, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useSaveResponse } from "../hooks/useSaveResponse";
 import { useToggle } from "../hooks/useToggle";
 import { isProbablyTextContentType } from "../lib/contentType";
@@ -18,6 +19,7 @@ interface Props {
 const LARGE_BYTES = 2 * 1000 * 1000;
 
 export function ConfirmLargeResponse({ children, response }: Props) {
+  const { t } = useTranslation();
   const { mutate: saveResponse } = useSaveResponse(response);
   const [showLargeResponse, toggleShowLargeResponse] = useToggle();
   const isProbablyText = useMemo(() => {
@@ -31,18 +33,18 @@ export function ConfirmLargeResponse({ children, response }: Props) {
     return (
       <Banner color="primary" className="flex flex-col gap-3">
         <p>
-          Showing responses over{" "}
+          {t("request:large.showingResponsesOver")}{" "}
           <InlineCode>
             <SizeTag contentLength={LARGE_BYTES} />
           </InlineCode>{" "}
-          may impact performance
+          {t("request:large.performanceImpact")}
         </p>
         <HStack wrap space={2}>
           <Button color="primary" size="xs" onClick={toggleShowLargeResponse}>
-            Reveal Response
+            {t("request:large.revealResponse")}
           </Button>
           <Button color="secondary" variant="border" size="xs" onClick={() => saveResponse()}>
-            Save to File
+            {t("request:response.saveToFile")}
           </Button>
           {isProbablyText && (
             <CopyButton

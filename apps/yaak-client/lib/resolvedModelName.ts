@@ -1,5 +1,6 @@
 import type { AnyModel } from "@yaakapp-internal/models";
 import { foldersAtom } from "@yaakapp-internal/models";
+import i18n from "../i18n";
 import { jotaiStore } from "./jotai";
 
 export function resolvedModelName(r: AnyModel | null): string {
@@ -19,11 +20,11 @@ export function resolvedModelName(r: AnyModel | null): string {
   if (withoutVariables.trim() === "") {
     return r.model === "http_request"
       ? r.bodyType && r.bodyType === "graphql"
-        ? "GraphQL Request"
-        : "HTTP Request"
+        ? i18n.t("request:request.defaultGraphqlName")
+        : i18n.t("request:request.defaultHttpName")
       : r.model === "websocket_request"
-        ? "WebSocket Request"
-        : "gRPC Request";
+        ? i18n.t("request:request.defaultWebsocketName")
+        : i18n.t("request:request.defaultGrpcName");
   }
 
   // GRPC gets nice short names

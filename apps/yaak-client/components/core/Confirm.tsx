@@ -2,6 +2,7 @@ import type { Color } from "@yaakapp-internal/plugins";
 import { HStack } from "@yaakapp-internal/ui";
 import type { FormEvent } from "react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CopyIconButton } from "../CopyIconButton";
 import { Button } from "./Button";
 import { PlainInput } from "./PlainInput";
@@ -21,6 +22,7 @@ export function Confirm({
   requireTyping,
   color = "primary",
 }: ConfirmProps) {
+  const { t } = useTranslation();
   const [confirm, setConfirm] = useState<string>("");
   const handleHide = () => {
     onResult(false);
@@ -48,25 +50,21 @@ export function Confirm({
             <CopyIconButton
               tabIndex={-1}
               text={requireTyping}
-              title="Copy name"
+              title={t("common:ui.copyName")}
               className="text-text-subtlest"
               iconSize="sm"
               size="2xs"
             />
           }
-          label={
-            <>
-              Type <strong>{requireTyping}</strong> to confirm
-            </>
-          }
+          label={t("common:ui.typeToConfirm", { name: requireTyping })}
         />
       )}
       <HStack space={2} justifyContent="start" className="mt-2 mb-4 flex-row-reverse">
         <Button type="submit" color={color} disabled={!didConfirm}>
-          {confirmText ?? "Confirm"}
+          {confirmText ?? t("common:confirm")}
         </Button>
         <Button onClick={handleHide} variant="border">
-          Cancel
+          {t("common:cancel")}
         </Button>
       </HStack>
     </form>

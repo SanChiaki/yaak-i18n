@@ -122,7 +122,7 @@ export default function Settings({ hide }: Props) {
         defaultValue={mainTab || tabFromQuery}
         addBorders
         tabListClassName="min-w-[10rem] bg-surface x-theme-sidebar border-r border-border pl-3"
-        label="Settings"
+        label={t("settings:title")}
         tabs={tabs.map(
           (value): TabItem => ({
             value,

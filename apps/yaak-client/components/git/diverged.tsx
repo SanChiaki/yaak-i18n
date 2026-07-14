@@ -1,16 +1,13 @@
 import type { DivergedStrategy } from "@yaakapp-internal/git";
 import { HStack, InlineCode } from "@yaakapp-internal/ui";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { showDialog } from "../../lib/dialog";
 import { Button } from "../core/Button";
 import { RadioCards } from "../core/RadioCards";
+import i18n from "../../i18n";
 
 type Resolution = "force_reset" | "merge";
-
-const resolutionLabel: Record<Resolution, string> = {
-  force_reset: "Force Pull",
-  merge: "Merge",
-};
 
 interface DivergedDialogProps {
   remote: string;
@@ -20,6 +17,7 @@ interface DivergedDialogProps {
 }
 
 function DivergedDialog({ remote, branch, onResult, onHide }: DivergedDialogProps) {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<Resolution | null>(null);
 
   const handleSubmit = () => {
@@ -36,11 +34,11 @@ function DivergedDialog({ remote, branch, onResult, onHide }: DivergedDialogProp
   return (
     <div className="flex flex-col gap-4 mb-4">
       <p className="text-text-subtle">
-        Your local branch has diverged from{" "}
+        {t("workspace:git.divergedFrom")}{" "}
         <InlineCode>
           {remote}/{branch}
         </InlineCode>
-        . How would you like to resolve this?
+        {t("workspace:git.resolvePrompt")}
       </p>
       <RadioCards
         name="diverged-strategy"
@@ -49,13 +47,13 @@ function DivergedDialog({ remote, branch, onResult, onHide }: DivergedDialogProp
         options={[
           {
             value: "merge",
-            label: "Merge Commit",
-            description: "Combining local and remote changes into a single merge commit",
+            label: t("workspace:git.mergeCommit"),
+            description: t("workspace:git.mergeCommitDescription"),
           },
           {
             value: "force_reset",
-            label: "Force Pull",
-            description: "Discard local commits and reset to match the remote branch",
+            label: t("workspace:git.forcePull"),
+            description: t("workspace:git.forcePullDescription"),
           },
         ]}
       />
@@ -65,10 +63,14 @@ function DivergedDialog({ remote, branch, onResult, onHide }: DivergedDialogProp
           disabled={selected == null}
           onClick={handleSubmit}
         >
-          {selected != null ? resolutionLabel[selected] : "Select an option"}
+          {selected === "force_reset"
+            ? t("workspace:git.forcePull")
+            : selected === "merge"
+              ? t("workspace:git.merge")
+              : t("common:ui.selectOption")}
         </Button>
         <Button variant="border" onClick={handleCancel}>
-          Cancel
+          {t("common:cancel")}
         </Button>
       </HStack>
     </div>
@@ -85,7 +87,7 @@ export async function promptDivergedStrategy({
   return new Promise((resolve) => {
     showDialog({
       id: "git-diverged",
-      title: "Branches Diverged",
+      title: i18n.t("workspace:git.branchesDiverged"),
       hideX: true,
       size: "sm",
       disableBackdropClose: true,

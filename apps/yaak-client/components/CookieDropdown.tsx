@@ -1,6 +1,7 @@
 import { cookieJarsAtom, patchModel } from "@yaakapp-internal/models";
 import { useAtomValue } from "jotai";
 import { memo, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useActiveCookieJar } from "../hooks/useActiveCookieJar";
 import { useCreateCookieJar } from "../hooks/useCreateCookieJar";
 import { deleteModelWithConfirm } from "../lib/deleteModelWithConfirm";
@@ -8,10 +9,11 @@ import { showPrompt } from "../lib/prompt";
 import { setWorkspaceSearchParams } from "../lib/setWorkspaceSearchParams";
 import { CookieDialog } from "./CookieDialog";
 import { Dropdown, type DropdownItem } from "./core/Dropdown";
-import { Icon, InlineCode } from "@yaakapp-internal/ui";
+import { Icon } from "@yaakapp-internal/ui";
 import { IconButton } from "./core/IconButton";
 
 export const CookieDropdown = memo(function CookieDropdown() {
+  const { t } = useTranslation();
   const activeCookieJar = useActiveCookieJar();
   const createCookieJar = useCreateCookieJar();
   const cookieJars = useAtomValue(cookieJarsAtom);
@@ -31,7 +33,7 @@ export const CookieDropdown = memo(function CookieDropdown() {
             { type: "separator", label: activeCookieJar.name },
             {
               key: "manage",
-              label: "Manage Cookies",
+              label: t("workspace:cookieJar.manage"),
               leftSlot: <Icon icon="cookie" />,
               onSelect: () => {
                 if (activeCookieJar == null) return;
@@ -40,20 +42,18 @@ export const CookieDropdown = memo(function CookieDropdown() {
             },
             {
               key: "rename",
-              label: "Rename",
+              label: t("common:rename"),
               leftSlot: <Icon icon="pencil" />,
               onSelect: async () => {
                 const name = await showPrompt({
                   id: "rename-cookie-jar",
-                  title: "Rename Cookie Jar",
-                  description: (
-                    <>
-                      Enter a new name for <InlineCode>{activeCookieJar?.name}</InlineCode>
-                    </>
-                  ),
-                  label: "Name",
-                  confirmText: "Save",
-                  placeholder: "New name",
+                  title: t("workspace:cookieJar.rename"),
+                  description: t("workspace:cookieJar.renameDescription", {
+                    name: activeCookieJar?.name,
+                  }),
+                  label: t("common:name"),
+                  confirmText: t("common:save"),
+                  placeholder: t("workspace:cookieJar.newName"),
                   defaultValue: activeCookieJar?.name,
                 });
                 if (name == null) return;
@@ -63,7 +63,7 @@ export const CookieDropdown = memo(function CookieDropdown() {
             ...(((cookieJars ?? []).length > 1 // Never delete the last one
               ? [
                   {
-                    label: "Delete",
+                    label: t("common:delete"),
                     leftSlot: <Icon icon="trash" />,
                     color: "danger",
                     onSelect: async () => {
@@ -77,16 +77,21 @@ export const CookieDropdown = memo(function CookieDropdown() {
       { type: "separator" },
       {
         key: "create-cookie-jar",
-        label: "New Cookie Jar",
+        label: t("workspace:cookieJar.new"),
         leftSlot: <Icon icon="plus" />,
         onSelect: () => createCookieJar.mutate(),
       },
     ];
-  }, [activeCookieJar, cookieJars, createCookieJar]);
+  }, [activeCookieJar, cookieJars, createCookieJar, t]);
 
   return (
     <Dropdown items={items}>
-      <IconButton size="sm" icon="cookie" iconColor="secondary" title="Cookie Jar" />
+      <IconButton
+        size="sm"
+        icon="cookie"
+        iconColor="secondary"
+        title={t("workspace:cookieJar.title")}
+      />
     </Dropdown>
   );
 });

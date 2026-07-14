@@ -1,6 +1,7 @@
 import type { HttpRequest } from "@yaakapp-internal/models";
 import { Banner, HStack, InlineCode, VStack } from "@yaakapp-internal/ui";
 import mime from "mime";
+import { useTranslation } from "react-i18next";
 import { useKeyValue } from "../hooks/useKeyValue";
 import { Button } from "./core/Button";
 import { SelectFile } from "./SelectFile";
@@ -20,6 +21,7 @@ export function BinaryFileEditor({
   onChangeContentType,
   requestId,
 }: Props) {
+  const { t } = useTranslation();
   const ignoreContentType = useKeyValue<boolean>({
     namespace: "global",
     key: ["ignore_content_type", requestId],
@@ -40,12 +42,12 @@ export function BinaryFileEditor({
       {filePath != null && mimeType !== contentType && !ignoreContentType.value && (
         <Banner className="mt-3 !py-5">
           <div className="mb-4 text-center">
-            <div>Set Content-Type header</div>
-            <InlineCode>{mimeType}</InlineCode> for current request?
+            <div>{t("request:binary.setContentType")}</div>
+            <InlineCode>{mimeType}</InlineCode> {t("request:binary.forCurrentRequest")}
           </div>
           <HStack space={1.5} justifyContent="center">
             <Button size="sm" variant="border" onClick={() => ignoreContentType.set(true)}>
-              Ignore
+              {t("request:binary.ignore")}
             </Button>
             <Button
               variant="solid"
@@ -53,7 +55,7 @@ export function BinaryFileEditor({
               size="sm"
               onClick={() => onChangeContentType(mimeType)}
             >
-              Set Header
+              {t("request:binary.setHeader")}
             </Button>
           </HStack>
         </Banner>

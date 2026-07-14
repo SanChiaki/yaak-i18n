@@ -1,5 +1,6 @@
 import { showPromptForm } from "../../lib/prompt-form";
 import { Banner, InlineCode } from "@yaakapp-internal/ui";
+import i18n from "../../i18n";
 
 export interface GitCredentials {
   username: string;
@@ -14,20 +15,24 @@ export async function promptCredentials({
   error: string | null;
 }): Promise<GitCredentials | null> {
   const isGitHub = /github\.com/i.test(remoteUrl);
-  const userLabel = isGitHub ? "GitHub Username" : "Username";
-  const passLabel = isGitHub ? "GitHub Personal Access Token" : "Password / Token";
-  const userDescription = isGitHub ? "Use your GitHub username (not your email)." : undefined;
+  const userLabel = isGitHub
+    ? i18n.t("workspace:git.githubUsername")
+    : i18n.t("workspace:git.username");
+  const passLabel = isGitHub
+    ? i18n.t("workspace:git.githubToken")
+    : i18n.t("workspace:git.passwordToken");
+  const userDescription = isGitHub ? i18n.t("workspace:git.githubUsernameHelp") : undefined;
   const passDescription = isGitHub
-    ? "GitHub requires a Personal Access Token (PAT) for write operations over HTTPS. Passwords are not supported."
-    : "Enter your password or access token for this Git server.";
+    ? i18n.t("workspace:git.githubTokenHelp")
+    : i18n.t("workspace:git.passwordTokenHelp");
   const r = await showPromptForm({
     id: "git-credentials",
-    title: "Credentials Required",
+    title: i18n.t("workspace:git.credentialsRequired"),
     description: error ? (
       <Banner color="danger">{error}</Banner>
     ) : (
       <>
-        Enter credentials for <InlineCode>{remoteUrl}</InlineCode>
+        {i18n.t("workspace:git.enterCredentials")} <InlineCode>{remoteUrl}</InlineCode>
       </>
     ),
     inputs: [

@@ -2,6 +2,7 @@ import type { HttpRequest } from "@yaakapp-internal/models";
 import { patchModel } from "@yaakapp-internal/models";
 import { Banner, HStack, InlineCode } from "@yaakapp-internal/ui";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { useToggle } from "../hooks/useToggle";
 import { showConfirm } from "../lib/confirm";
 import { Button } from "./core/Button";
@@ -16,6 +17,7 @@ interface Props {
 const LARGE_TEXT_BYTES = 2 * 1000 * 1000;
 
 export function ConfirmLargeRequestBody({ children, request }: Props) {
+  const { t } = useTranslation();
   const [showLargeResponse, toggleShowLargeResponse] = useToggle();
 
   if (request.body?.text == null) {
@@ -29,22 +31,22 @@ export function ConfirmLargeRequestBody({ children, request }: Props) {
     return (
       <Banner color="primary" className="flex flex-col gap-3">
         <p>
-          Rendering content over{" "}
+          {t("request:large.renderingOver")}{" "}
           <InlineCode>
             <SizeTag contentLength={tooLargeBytes} />
           </InlineCode>{" "}
-          may impact performance.
+          {t("request:large.performanceImpact")}
         </p>
         <p>
-          See{" "}
+          {t("request:large.see")}{" "}
           <Link href="https://feedback.yaak.app/en/help/articles/1198684-working-with-large-values">
-            Working With Large Values
+            {t("request:large.guide")}
           </Link>{" "}
-          for tips.
+          {t("request:large.forTips")}
         </p>
         <HStack wrap space={2}>
           <Button color="primary" size="xs" onClick={toggleShowLargeResponse}>
-            Reveal Body
+            {t("request:large.revealBody")}
           </Button>
           <Button
             color="danger"
@@ -53,9 +55,9 @@ export function ConfirmLargeRequestBody({ children, request }: Props) {
             onClick={async () => {
               const confirm = await showConfirm({
                 id: `delete-body-${request.id}`,
-                confirmText: "Delete Body",
-                title: "Delete Body Text",
-                description: "Are you sure you want to delete the request body text?",
+                confirmText: t("request:large.deleteBody"),
+                title: t("request:large.deleteBodyText"),
+                description: t("request:large.deleteBodyDescription"),
                 color: "danger",
               });
               if (confirm) {
@@ -63,7 +65,7 @@ export function ConfirmLargeRequestBody({ children, request }: Props) {
               }
             }}
           >
-            Delete Body
+            {t("request:large.deleteBody")}
           </Button>
         </HStack>
       </Banner>

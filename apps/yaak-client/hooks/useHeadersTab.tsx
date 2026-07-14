@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { CountBadge } from "../components/core/CountBadge";
 import type { TabItem } from "../components/core/Tabs/Tabs";
 import type { HeaderModel } from "./useInheritedHeaders";
@@ -9,6 +10,7 @@ export function useHeadersTab<T extends string>(
   model: HeaderModel | null,
   label?: string,
 ) {
+  const { t } = useTranslation();
   const inheritedHeaders = useInheritedHeaders(model);
 
   return useMemo<TabItem[]>(() => {
@@ -22,10 +24,10 @@ export function useHeadersTab<T extends string>(
 
     const tab: TabItem = {
       value: tabValue,
-      label: label ?? "Headers",
+      label: label ?? t("request:request.headers"),
       rightSlot: <CountBadge count={numHeaders} />,
     };
 
     return [tab];
-  }, [inheritedHeaders, label, model, tabValue]);
+  }, [inheritedHeaders, label, model, tabValue, t]);
 }

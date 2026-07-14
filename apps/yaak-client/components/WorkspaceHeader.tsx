@@ -2,6 +2,7 @@ import { HStack, Icon } from "@yaakapp-internal/ui";
 import classNames from "classnames";
 import { useAtom, useAtomValue } from "jotai";
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { activeWorkspaceAtom, activeWorkspaceMetaAtom } from "../hooks/useActiveWorkspace";
 import { useToggleCommandPalette } from "../hooks/useToggleCommandPalette";
 import { workspaceLayoutAtom } from "../lib/atoms";
@@ -26,6 +27,7 @@ export const WorkspaceHeader = memo(function WorkspaceHeader({
   className,
   floatingSidebar,
 }: Props) {
+  const { t } = useTranslation();
   const togglePalette = useToggleCommandPalette();
   const [workspaceLayout, setWorkspaceLayout] = useAtom(workspaceLayoutAtom);
   const workspace = useAtomValue(activeWorkspaceAtom);
@@ -59,7 +61,7 @@ export const WorkspaceHeader = memo(function WorkspaceHeader({
         <ImportCurlButton />
         {showEncryptionSetup ? (
           <PillButton color="danger" onClick={setupOrConfigureEncryption}>
-            Enter Encryption Key
+            {t("common:toolbar.enterEncryptionKey")}
           </PillButton>
         ) : (
           <LicenseBadge />
@@ -72,7 +74,12 @@ export const WorkspaceHeader = memo(function WorkspaceHeader({
                 ? "columns_2"
                 : "rows_2"
           }
-          title={`Change to ${workspaceLayout === "horizontal" ? "vertical" : "horizontal"} layout`}
+          title={t("common:toolbar.changeLayout", {
+            layout:
+              workspaceLayout === "horizontal"
+                ? t("common:toolbar.vertical")
+                : t("common:toolbar.horizontal"),
+          })}
           size="sm"
           iconColor="secondary"
           onClick={() =>
@@ -81,7 +88,7 @@ export const WorkspaceHeader = memo(function WorkspaceHeader({
         />
         <IconButton
           icon="search"
-          title="Search or execute a command"
+          title={t("common:toolbar.searchCommands")}
           size="sm"
           hotkeyAction="command_palette.toggle"
           iconColor="secondary"

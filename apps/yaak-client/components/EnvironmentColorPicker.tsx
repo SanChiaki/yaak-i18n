@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ColorIndicator } from "./ColorIndicator";
 import { Banner } from "@yaakapp-internal/ui";
 import { Button } from "./core/Button";
@@ -11,6 +12,7 @@ export function EnvironmentColorPicker({
   color: string | null;
   onChange: (color: string | null) => void;
 }) {
+  const { t } = useTranslation();
   const [color, setColor] = useState<string | null>(defaultColor);
   return (
     <form
@@ -20,13 +22,11 @@ export function EnvironmentColorPicker({
         onChange(color);
       }}
     >
-      <Banner color="secondary">
-        This color will be used to color the interface when this environment is active
-      </Banner>
+      <Banner color="secondary">{t("workspace:environment.colorPickerDescription")}</Banner>
       <ColorPickerWithThemeColors color={color} onChange={setColor} />
       <Button type="submit" color="secondary">
         {color != null && <ColorIndicator color={color} />}
-        Save
+        {t("common:save")}
       </Button>
     </form>
   );

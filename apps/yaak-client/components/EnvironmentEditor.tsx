@@ -4,6 +4,7 @@ import type { GenericCompletionOption } from "@yaakapp-internal/plugins";
 import { Heading } from "@yaakapp-internal/ui";
 import classNames from "classnames";
 import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useEnvironmentsBreakdown } from "../hooks/useEnvironmentsBreakdown";
 import { useIsEncryptionEnabled } from "../hooks/useIsEncryptionEnabled";
 import { useKeyValue } from "../hooks/useKeyValue";
@@ -31,6 +32,7 @@ interface Props {
 }
 
 export function EnvironmentEditor({ environment, hideName, className, setRef }: Props) {
+  const { t } = useTranslation();
   const workspaceId = environment.workspaceId;
   const isEncryptionEnabled = useIsEncryptionEnabled();
   const valueVisibility = useKeyValue<boolean>({
@@ -114,16 +116,18 @@ export function EnvironmentEditor({ environment, hideName, className, setRef }: 
           {isEncryptionEnabled ? (
             !allVariableAreEncrypted ? (
               <PillButton color="notice" onClick={() => encryptEnvironment(environment)}>
-                Encrypt All Variables
+                {t("workspace:environment.encryptAllVariables")}
               </PillButton>
             ) : (
               <PillButton color="secondary" onClick={setupOrConfigureEncryption}>
-                Encryption Settings
+                {t("workspace:environment.encryptionSettings")}
               </PillButton>
             )
           ) : (
             <PillButton color="secondary" onClick={() => valueVisibility.set((v) => !v)}>
-              {valueVisibility.value ? "Hide Values" : "Show Values"}
+              {valueVisibility.value
+                ? t("workspace:environment.hideValues")
+                : t("workspace:environment.showValues")}
             </PillButton>
           )}
           <PillButton
@@ -133,7 +137,9 @@ export function EnvironmentEditor({ environment, hideName, className, setRef }: 
               await patchModel(environment, { public: !environment.public });
             }}
           >
-            {environment.public ? "Sharable" : "Private"}
+            {environment.public
+              ? t("workspace:environment.sharable")
+              : t("workspace:environment.private")}
           </PillButton>
         </Heading>
         {environment.public && (!isEncryptionEnabled || !allVariableAreEncrypted) && (
@@ -143,13 +149,13 @@ export function EnvironmentEditor({ environment, hideName, className, setRef }: 
             className="mr-3"
             actions={[
               {
-                label: "Encrypt Variables",
+                label: t("workspace:environment.encryptVariables"),
                 onClick: () => encryptEnvironment(environment),
                 color: "success",
               },
             ]}
           >
-            This sharable environment contains plain-text secrets
+            {t("workspace:environment.plainTextSecretsWarning")}
           </DismissibleBanner>
         )}
       </div>

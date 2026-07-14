@@ -27,6 +27,7 @@ import {
   useMemo,
   useRef,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { activeEnvironmentAtom } from "../../../hooks/useActiveEnvironment";
 import type { WrappedEnvironmentVariable } from "../../../hooks/useEnvironmentVariables";
 import { useEnvironmentVariables } from "../../../hooks/useEnvironmentVariables";
@@ -141,6 +142,7 @@ function EditorInner({
   wrapLines,
   setRef,
 }: EditorProps) {
+  const { t } = useTranslation();
   const settings = useAtomValue(settingsAtom);
 
   const allEnvironmentVariables = useEnvironmentVariables(forcedEnvironmentId ?? null);
@@ -479,7 +481,7 @@ function EditorInner({
           showConfirm
           key="format"
           size="sm"
-          title="Reformat contents"
+          title={t("common:ui.reformatContents")}
           icon="magic_wand"
           variant="border"
           className={classNames(actionClassName)}
@@ -510,7 +512,7 @@ function EditorInner({
       }),
     );
     return results;
-  }, [actions, format, onChange]);
+  }, [actions, format, onChange, t]);
 
   const cmContainer = (
     <div

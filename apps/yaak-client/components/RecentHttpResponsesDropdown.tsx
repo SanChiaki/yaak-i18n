@@ -1,10 +1,10 @@
 import type { HttpResponse } from "@yaakapp-internal/models";
 import { deleteModel } from "@yaakapp-internal/models";
 import { HStack, Icon } from "@yaakapp-internal/ui";
+import { useTranslation } from "react-i18next";
 import { useCopyHttpResponse } from "../hooks/useCopyHttpResponse";
 import { useDeleteHttpResponses } from "../hooks/useDeleteHttpResponses";
 import { useSaveResponse } from "../hooks/useSaveResponse";
-import { pluralize } from "../lib/pluralize";
 import { Dropdown } from "./core/Dropdown";
 import { HttpStatusTag } from "./core/HttpStatusTag";
 import { IconButton } from "./core/IconButton";
@@ -21,6 +21,7 @@ export const RecentHttpResponsesDropdown = function ResponsePane({
   responses,
   onPinnedResponseId,
 }: Props) {
+  const { t } = useTranslation();
   const deleteAllResponses = useDeleteHttpResponses(activeResponse?.requestId);
   const latestResponseId = responses[0]?.id ?? "n/a";
   const saveResponse = useSaveResponse(activeResponse);
@@ -30,34 +31,34 @@ export const RecentHttpResponsesDropdown = function ResponsePane({
     <Dropdown
       items={[
         {
-          label: "Save to File",
+          label: t("request:response.saveToFile"),
           onSelect: saveResponse.mutate,
           leftSlot: <Icon icon="save" />,
           hidden: responses.length === 0 || !!activeResponse.error,
           disabled: activeResponse.state !== "closed" && activeResponse.status >= 100,
         },
         {
-          label: "Copy Body",
+          label: t("request:response.copyBody"),
           onSelect: copyResponse.mutate,
           leftSlot: <Icon icon="copy" />,
           hidden: responses.length === 0 || !!activeResponse.error,
           disabled: activeResponse.state !== "closed" && activeResponse.status >= 100,
         },
         {
-          label: "Delete",
+          label: t("common:delete"),
           leftSlot: <Icon icon="trash" />,
           onSelect: () => deleteModel(activeResponse),
         },
         {
-          label: "Unpin Response",
+          label: t("request:response.unpin"),
           onSelect: () => onPinnedResponseId(activeResponse.id),
           leftSlot: <Icon icon="unpin" />,
           hidden: latestResponseId === activeResponse.id,
           disabled: responses.length === 0,
         },
-        { type: "separator", label: "History" },
+        { type: "separator", label: t("common:history") },
         {
-          label: `Delete ${responses.length} ${pluralize("Response", responses.length)}`,
+          label: t("request:response.deleteHistory", { count: responses.length }),
           onSelect: deleteAllResponses.mutate,
           hidden: responses.length === 0,
           disabled: responses.length === 0,
@@ -77,7 +78,7 @@ export const RecentHttpResponsesDropdown = function ResponsePane({
       ]}
     >
       <IconButton
-        title="Show response history"
+        title={t("request:response.showHistory")}
         icon={activeResponse?.id === latestResponseId ? "history" : "pin"}
         className="m-0.5 text-text-subtle"
         size="sm"

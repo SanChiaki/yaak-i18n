@@ -3,6 +3,7 @@ import type { BannerProps } from "@yaakapp-internal/ui";
 import { Banner, HStack } from "@yaakapp-internal/ui";
 import classNames from "classnames";
 import { useKeyValue } from "../../hooks/useKeyValue";
+import { useTranslation } from "react-i18next";
 import { Button } from "./Button";
 
 export function DismissibleBanner({
@@ -15,6 +16,7 @@ export function DismissibleBanner({
   id: string;
   actions?: { label: string; onClick: () => void; color?: Color }[];
 }) {
+  const { t } = useTranslation();
   const { set: setDismissed, value: dismissed } = useKeyValue<boolean>({
     namespace: "global",
     key: ["dismiss-banner", id],
@@ -47,9 +49,9 @@ export function DismissibleBanner({
           color={props.color}
           size="xs"
           onClick={() => setDismissed((d) => !d)}
-          title="Dismiss message"
+          title={t("common:ui.dismissMessage")}
         >
-          Dismiss
+          {t("common:ui.dismiss")}
         </Button>
       </HStack>
     </Banner>

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { resolveResource } from "@tauri-apps/api/path";
 import classNames from "classnames";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   src: string;
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function LocalImage({ src: srcPath, className }: Props) {
+  const { t } = useTranslation();
   const src = useQuery({
     queryKey: ["local-image", srcPath],
     queryFn: async () => {
@@ -20,7 +22,7 @@ export function LocalImage({ src: srcPath, className }: Props) {
   return (
     <img
       src={src.data}
-      alt="Response preview"
+      alt={t("common:responsePreview")}
       className={classNames(
         className,
         "transition-opacity",

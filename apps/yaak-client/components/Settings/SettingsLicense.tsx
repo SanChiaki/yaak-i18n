@@ -2,10 +2,9 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { useLicense } from "@yaakapp-internal/license";
 import { Banner, HStack, Icon, VStack } from "@yaakapp-internal/ui";
 import { differenceInDays } from "date-fns";
-import { formatDate } from "date-fns/format";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useToggle } from "../../hooks/useToggle";
-import { pluralizeCount } from "../../lib/pluralize";
 import { CargoFeature } from "../CargoFeature";
 import { Button } from "../core/Button";
 import { Link } from "../core/Link";
@@ -21,6 +20,7 @@ export function SettingsLicense() {
 }
 
 function SettingsLicenseCmp() {
+  const { t, i18n } = useTranslation();
   const { check, activate, deactivate } = useLicense();
   const [key, setKey] = useState<string>("");
   const [activateFormVisible, toggleActivateFormVisible] = useToggle(false);
@@ -34,22 +34,24 @@ function SettingsLicenseCmp() {
 
     switch (check.data.status) {
       case "active":
-        return <Banner color="success">Your license is active 🥳</Banner>;
+        return <Banner color="success">{t("settings:license.active")} 🥳</Banner>;
 
       case "trialing":
         return (
           <Banner color="info" className="max-w-lg">
             <p className="w-full">
               <strong>
-                {pluralizeCount("day", differenceInDays(check.data.data.end, new Date()))}
+                {t("settings:license.trialDays", {
+                  count: differenceInDays(check.data.data.end, new Date()),
+                })}
               </strong>{" "}
-              left to evaluate Yaak for commercial use.
+              {t("settings:license.trialRemaining")}
               <br />
-              <span className="opacity-50">Personal use is always free, forever.</span>
+              <span className="opacity-50">{t("settings:license.personalAlwaysFree")}</span>
               <Separator className="my-2" />
               <div className="flex flex-wrap items-center gap-x-2 text-sm text-notice">
                 <Link noUnderline href={`https://yaak.app/pricing?s=learn&t=${check.data.status}`}>
-                  Learn More
+                  {t("settings:license.learnMore")}
                 </Link>
               </div>
             </p>
@@ -60,16 +62,17 @@ function SettingsLicenseCmp() {
         return (
           <Banner color="notice" className="max-w-lg">
             <p className="w-full">
-              Your commercial-use trial has ended.
+              {t("settings:license.personalTrialEnded")}
               <br />
               <span className="opacity-50">
-                You may continue using Yaak for personal use only.
-                <br />A license is required for commercial use.
+                {t("settings:license.personalOnly")}
+                <br />
+                {t("settings:license.commercialRequired")}
               </span>
               <Separator className="my-2" />
               <div className="flex flex-wrap items-center gap-x-2 text-sm text-notice">
                 <Link noUnderline href={`https://yaak.app/pricing?s=learn&t=${check.data.status}`}>
-                  Learn More
+                  {t("settings:license.learnMore")}
                 </Link>
               </div>
             </p>
@@ -79,22 +82,28 @@ function SettingsLicenseCmp() {
       case "inactive":
         return (
           <Banner color="danger">
-            Your license is invalid. Please <Link href="https://yaak.app/dashboard">Sign In</Link>{" "}
-            for more details
+            {t("settings:license.invalidBeforeSignIn")}{" "}
+            <Link href="https://yaak.app/dashboard">{t("settings:license.signIn")}</Link>{" "}
+            {t("settings:license.invalidAfterSignIn")}
           </Banner>
         );
 
       case "expired":
         return (
           <Banner color="notice">
-            Your license expired{" "}
-            <strong>{formatDate(check.data.data.periodEnd, "MMMM dd, yyyy")}</strong>. Please{" "}
-            <Link href="https://yaak.app/dashboard">Resubscribe</Link> to continue receiving
-            updates.
+            {t("settings:license.expiredBeforeDate")}{" "}
+            <strong>
+              {new Intl.DateTimeFormat(i18n.resolvedLanguage ?? i18n.language, {
+                dateStyle: "long",
+              }).format(new Date(check.data.data.periodEnd))}
+            </strong>{" "}
+            {t("settings:license.expiredBeforeResubscribe")}{" "}
+            <Link href="https://yaak.app/dashboard">{t("settings:license.resubscribe")}</Link>{" "}
+            {t("settings:license.expiredAfterResubscribe")}
             {check.data.data.changesUrl && (
               <>
                 <br />
-                <Link href={check.data.data.changesUrl}>What's new in latest builds</Link>
+                <Link href={check.data.data.changesUrl}>{t("settings:license.whatsNew")}</Link>
               </>
             )}
           </Banner>
@@ -103,17 +112,21 @@ function SettingsLicenseCmp() {
       case "past_due":
         return (
           <Banner color="danger">
-            <strong>Your payment method needs attention.</strong>
+            <strong>{t("settings:license.paymentAttention")}</strong>
             <br />
-            To re-activate your license, please{" "}
-            <Link href={check.data.data.billingUrl}>update your billing info</Link>.
+            {t("settings:license.reactivateBeforeBilling")}{" "}
+            <Link href={check.data.data.billingUrl}>{t("settings:license.updateBilling")}</Link>
+            {t("settings:license.reactivateAfterBilling")}
           </Banner>
         );
 
       case "error":
         return (
           <Banner color="danger">
-            License check failed: {check.data.data.message} (Code: {check.data.data.code})
+            {t("settings:license.checkFailed", {
+              message: check.data.data.message,
+              code: check.data.data.code,
+            })}
           </Banner>
         );
     }
@@ -129,7 +142,7 @@ function SettingsLicenseCmp() {
       {check.data?.status === "active" ? (
         <HStack space={2}>
           <Button variant="border" color="secondary" size="sm" onClick={() => deactivate.mutate()}>
-            Deactivate License
+            {t("settings:license.deactivate")}
           </Button>
           <Button
             color="secondary"
@@ -137,13 +150,13 @@ function SettingsLicenseCmp() {
             onClick={() => openUrl("https://yaak.app/dashboard?s=support&ref=app.yaak.desktop")}
             rightSlot={<Icon icon="external_link" />}
           >
-            Direct Support
+            {t("settings:license.support")}
           </Button>
         </HStack>
       ) : (
         <HStack space={2}>
           <Button variant="border" color="secondary" size="sm" onClick={toggleActivateFormVisible}>
-            Activate License
+            {t("settings:license.activate")}
           </Button>
           <Button
             size="sm"
@@ -155,7 +168,7 @@ function SettingsLicenseCmp() {
               )
             }
           >
-            Purchase License
+            {t("settings:license.purchase")}
           </Button>
         </HStack>
       )}
@@ -173,13 +186,13 @@ function SettingsLicenseCmp() {
         >
           <PlainInput
             autoFocus
-            label="License Key"
+            label={t("settings:license.key")}
             name="key"
             onChange={setKey}
             placeholder="YK1-XXXXX-XXXXX-XXXXX-XXXXX"
           />
           <Button type="submit" color="primary" size="sm" isLoading={activate.isPending}>
-            Submit
+            {t("settings:license.submit")}
           </Button>
         </VStack>
       )}

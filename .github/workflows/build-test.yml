@@ -4,16 +4,11 @@ on:
   push:
     tags: ["v*-test"]
   workflow_dispatch:
-    inputs:
-      tag:
-        description: "Tag to build"
-        required: false
-        default: "manual-build"
 
 jobs:
   build-unsigned:
     permissions:
-      contents: write
+      contents: read
 
     strategy:
       fail-fast: false
@@ -78,33 +73,24 @@ jobs:
       - name: Install dependencies
         run: vp install
 
-      - name: Bootstrap project
-        run: npm run bootstrap
-        env:
-          YAAK_TARGET_ARCH: ${{ matrix.arch }}
-
       - name: Build application
         uses: tauri-apps/tauri-action@v0
         env:
           YAAK_TARGET_ARCH: ${{ matrix.arch }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: "${{ github.event.inputs.tag || github.ref_name }}"
-          releaseName: "Test Build ${{ github.event.inputs.tag || github.ref_name }}"
-          releaseBody: "Unsigned test build for i18n feature verification"
-          releaseDraft: true
-          prerelease: true
           projectPath: ./crates-tauri/yaak-app-client
-          args: "${{ matrix.args }}"
+          args: "${{ matrix.args }} --config ./tauri.test.conf.json"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: yaak-${{ matrix.os }}-${{ matrix.arch }}
           path: |
-            src-tauri/target/release/bundle/**/*.dmg
-            src-tauri/target/release/bundle/**/*.exe
-            src-tauri/target/release/bundle/**/*.msi
-            src-tauri/target/release/bundle/**/*.deb
-            src-tauri/target/release/bundle/**/*.AppImage
-          if-no-files-found: warn
+            target/**/release/bundle/**/*.dmg
+            target/**/release/bundle/**/*.app.tar.gz
+            target/**/release/bundle/**/*.exe
+            target/**/release/bundle/**/*.msi
+            target/**/release/bundle/**/*.deb
+            target/**/release/bundle/**/*.rpm
+            target/**/release/bundle/**/*.AppImage
+          if-no-files-found: error

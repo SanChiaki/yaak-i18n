@@ -25,6 +25,7 @@ import {
   useState,
 } from "react";
 import { useKey, useWindowSize } from "react-use";
+import { useTranslation } from "react-i18next";
 import { useClickOutside } from "../../hooks/useClickOutside";
 import type { HotkeyAction } from "../../hooks/useHotKey";
 import { useHotKey } from "../../hooks/useHotKey";
@@ -298,6 +299,7 @@ const Menu = forwardRef<Omit<DropdownRef, "open" | "isOpen" | "toggle" | "items"
     }: MenuProps,
     ref,
   ) => {
+    const { t } = useTranslation();
     const [selectedIndex, setSelectedIndex] = useStateWithDeps<number | null>(
       defaultSelectedIndex ?? -1,
       [defaultSelectedIndex],
@@ -741,7 +743,9 @@ const Menu = forwardRef<Omit<DropdownRef, "open" | "isOpen" | "toggle" | "items"
             </HStack>
           )}
           {filteredItems.length === 0 && (
-            <span className="text-text-subtlest text-center px-2 py-1">No matches</span>
+            <span className="text-text-subtlest text-center px-2 py-1">
+              {t("common:ui.noMatches")}
+            </span>
           )}
           {filteredItems.map((item, i) => {
             if (item.hidden) {

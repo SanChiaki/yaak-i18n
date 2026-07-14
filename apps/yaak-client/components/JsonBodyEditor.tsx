@@ -3,6 +3,7 @@ import type { HttpRequest } from "@yaakapp-internal/models";
 import { patchModel } from "@yaakapp-internal/models";
 import { Banner, Icon } from "@yaakapp-internal/ui";
 import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useKeyValue } from "../hooks/useKeyValue";
 import { fireAndForget } from "../lib/fireAndForget";
 import { textLikelyContainsJsonComments } from "../lib/jsonComments";
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function JsonBodyEditor({ forceUpdateKey, heightMode, request }: Props) {
+  const { t } = useTranslation();
   const handleChange = useCallback(
     (text: string) => patchModel(request, { body: { ...request.body, text } }),
     [request],
@@ -69,13 +71,13 @@ export function JsonBodyEditor({ forceUpdateKey, heightMode, request }: Props) {
 
   const showBanner = hasComments && autoFix && !bannerDismissed;
 
-  const stripMessage = "Automatically strip comments and trailing commas before sending";
+  const stripMessage = t("request:json.stripMessage");
   const actions = useMemo<EditorProps["actions"]>(
     () => [
       showBanner && (
         <Banner color="notice" className="!opacity-100 h-sm !py-0 !px-2 flex items-center text-xs">
           <p className="inline-flex items-center gap-1 min-w-0">
-            <span className="truncate">Auto-fix enabled</span>
+            <span className="truncate">{t("request:json.autoFixEnabled")}</span>
             <Icon icon="arrow_right" size="sm" className="opacity-disabled" />
           </p>
         </Banner>
@@ -86,7 +88,7 @@ export function JsonBodyEditor({ forceUpdateKey, heightMode, request }: Props) {
           items={
             [
               {
-                label: "Automatically Fix JSON",
+                label: t("request:json.automaticallyFix"),
                 keepOpenOnSelect: true,
                 onSelect: handleToggleAutoFix,
                 rightSlot: <IconTooltip content={stripMessage} />,
@@ -97,11 +99,16 @@ export function JsonBodyEditor({ forceUpdateKey, heightMode, request }: Props) {
             ] satisfies DropdownItem[]
           }
         >
-          <IconButton size="sm" variant="border" icon="settings" title="JSON Settings" />
+          <IconButton
+            size="sm"
+            variant="border"
+            icon="settings"
+            title={t("request:json.settings")}
+          />
         </Dropdown>
       </div>,
     ],
-    [handleDropdownOpen, handleToggleAutoFix, autoFix, showBanner],
+    [handleDropdownOpen, handleToggleAutoFix, autoFix, showBanner, stripMessage, t],
   );
 
   return (

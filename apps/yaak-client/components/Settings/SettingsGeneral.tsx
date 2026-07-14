@@ -2,6 +2,7 @@ import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { patchModel, settingsAtom } from "@yaakapp-internal/models";
 import { Heading, VStack } from "@yaakapp-internal/ui";
 import { useAtomValue } from "jotai";
+import { useTranslation } from "react-i18next";
 import { activeWorkspaceAtom } from "../../hooks/useActiveWorkspace";
 import { useCheckForUpdates } from "../../hooks/useCheckForUpdates";
 import { appInfo } from "../../lib/appInfo";
@@ -31,6 +32,7 @@ export function SettingsGeneral() {
   const workspace = useAtomValue(activeWorkspaceAtom);
   const settings = useAtomValue(settingsAtom);
   const checkForUpdates = useCheckForUpdates();
+  const { t } = useTranslation();
 
   if (settings == null || workspace == null) {
     return null;
@@ -39,31 +41,31 @@ export function SettingsGeneral() {
   return (
     <VStack space={1.5} className="mb-4">
       <div className="mb-4">
-        <Heading>General</Heading>
-        <p className="text-text-subtle">Configure general settings for update behavior and more.</p>
+        <Heading>{t("settings:general.title")}</Heading>
+        <p className="text-text-subtle">{t("settings:general.description")}</p>
       </div>
       <SettingsList className="space-y-8">
         <CargoFeature feature="updater">
-          <SettingsSection title="Updates">
+          <SettingsSection title={t("settings:updates.title")}>
             <SettingRow
-              title="Update Channel"
-              description="Choose whether Yaak should use stable releases or beta releases."
+              title={t("settings:updates.channel.title")}
+              description={t("settings:updates.channel.description")}
             >
               <div className="grid grid-cols-[12rem_auto] gap-1">
                 <ModelSettingSelectControl
                   model={settings}
                   modelKey="updateChannel"
-                  label="Update Channel"
+                  label={t("settings:updates.channel.title")}
                   selectClassName="!w-full"
                   options={[
-                    { label: "Stable", value: "stable" },
-                    { label: "Beta", value: "beta" },
+                    { label: t("settings:updates.channel.stable"), value: "stable" },
+                    { label: t("settings:updates.channel.beta"), value: "beta" },
                   ]}
                 />
                 <IconButton
                   variant="border"
                   size="sm"
-                  title="Check for updates"
+                  title={t("settings:updates.checkForUpdates")}
                   icon="refresh"
                   spin={checkForUpdates.isPending}
                   onClick={() => checkForUpdates.mutateAsync()}
@@ -72,35 +74,35 @@ export function SettingsGeneral() {
             </SettingRow>
 
             <SettingRowSelect
-              title="Update Behavior"
-              description="Choose whether updates are installed automatically or manually."
+              title={t("settings:updates.behavior.title")}
+              description={t("settings:updates.behavior.description")}
               name="autoupdate"
               value={settings.autoupdate ? "auto" : "manual"}
               onChange={(v) => patchModel(settings, { autoupdate: v === "auto" })}
               options={[
-                { label: "Automatic", value: "auto" },
-                { label: "Manual", value: "manual" },
+                { label: t("settings:updates.behavior.auto"), value: "auto" },
+                { label: t("settings:updates.behavior.manual"), value: "manual" },
               ]}
             />
 
             <ModelSettingRowBoolean
               model={settings}
               modelKey="autoDownloadUpdates"
-              title="Automatically download updates"
-              description="Download Yaak updates in the background so they are ready to install."
+              title={t("settings:updates.autoDownload.title")}
+              description={t("settings:updates.autoDownload.description")}
               disabled={!settings.autoupdate}
             />
 
             <ModelSettingRowBoolean
               model={settings}
               modelKey="checkNotifications"
-              title="Check for notifications"
-              description="Periodically ping Yaak servers to check for relevant notifications."
+              title={t("settings:updates.notifications.title")}
+              description={t("settings:updates.notifications.description")}
             />
 
             <SettingRowBoolean
-              title="Send anonymous usage statistics"
-              description="Yaak is local-first and does not collect analytics or usage data."
+              title={t("settings:updates.analytics.title")}
+              description={t("settings:updates.analytics.description")}
               disabled
               checked={false}
               onChange={() => {}}
@@ -111,7 +113,7 @@ export function SettingsGeneral() {
         <SettingsSection
           title={
             <>
-              Workspace{" "}
+              {t("settings:general.workspace")}{" "}
               <span className="inline-block bg-surface-highlight px-2 py-0.5 rounded text">
                 {workspace.name}
               </span>
@@ -121,8 +123,8 @@ export function SettingsGeneral() {
           <ModelSettingRowNumber
             model={workspace}
             modelKey={SETTING_REQUEST_TIMEOUT.modelKey}
-            title={SETTING_REQUEST_TIMEOUT.title}
-            description={SETTING_REQUEST_TIMEOUT.description}
+            title={t("settings:general.requestTimeout.title")}
+            description={t("settings:general.requestTimeout.description")}
             placeholder={`${SETTING_REQUEST_TIMEOUT.defaultValue}`}
             required
             validate={(value) => Number.parseInt(value, 10) >= 0}
@@ -131,46 +133,49 @@ export function SettingsGeneral() {
           <ModelSettingRowBoolean
             model={workspace}
             modelKey={SETTING_VALIDATE_CERTIFICATES.modelKey}
-            title={SETTING_VALIDATE_CERTIFICATES.title}
-            description={SETTING_VALIDATE_CERTIFICATES.description}
+            title={t("settings:general.validateCertificates.title")}
+            description={t("settings:general.validateCertificates.description")}
           />
 
           <ModelSettingRowBoolean
             model={workspace}
             modelKey={SETTING_FOLLOW_REDIRECTS.modelKey}
-            title={SETTING_FOLLOW_REDIRECTS.title}
-            description={SETTING_FOLLOW_REDIRECTS.description}
+            title={t("settings:general.followRedirects.title")}
+            description={t("settings:general.followRedirects.description")}
           />
 
           <ModelSettingRowBoolean
             model={workspace}
             modelKey={SETTING_SEND_COOKIES.modelKey}
-            title={SETTING_SEND_COOKIES.title}
-            description={SETTING_SEND_COOKIES.description}
+            title={t("settings:general.sendCookies.title")}
+            description={t("settings:general.sendCookies.description")}
           />
 
           <ModelSettingRowBoolean
             model={workspace}
             modelKey={SETTING_STORE_COOKIES.modelKey}
-            title={SETTING_STORE_COOKIES.title}
-            description={SETTING_STORE_COOKIES.description}
+            title={t("settings:general.storeCookies.title")}
+            description={t("settings:general.storeCookies.description")}
           />
         </SettingsSection>
 
-        <SettingsSection title="App Info">
-          <SettingRow title="Version" description="Current Yaak version.">
+        <SettingsSection title={t("settings:general.appInfo.title")}>
+          <SettingRow
+            title={t("settings:general.appInfo.version")}
+            description={t("settings:general.appInfo.versionDescription")}
+          >
             <SettingValue value={appInfo.version} />
           </SettingRow>
           <SettingRow
-            title="Data Directory"
-            description="Where Yaak stores application data."
+            title={t("settings:general.appInfo.dataDirectory")}
+            description={t("settings:general.appInfo.dataDirectoryDescription")}
             controlClassName="min-w-0 max-w-[min(42rem,55vw)] gap-2"
           >
             <SettingValue
               value={appInfo.appDataDir}
               actions={[
                 {
-                  title: revealInFinderText,
+                  title: revealInFinderText(),
                   icon: "folder_open",
                   onClick: () => revealItemInDir(appInfo.appDataDir),
                 },
@@ -178,15 +183,15 @@ export function SettingsGeneral() {
             />
           </SettingRow>
           <SettingRow
-            title="Logs Directory"
-            description="Where Yaak writes application logs."
+            title={t("settings:general.appInfo.logsDirectory")}
+            description={t("settings:general.appInfo.logsDirectoryDescription")}
             controlClassName="min-w-0 max-w-[min(42rem,55vw)] gap-2"
           >
             <SettingValue
               value={appInfo.appLogDir}
               actions={[
                 {
-                  title: revealInFinderText,
+                  title: revealInFinderText(),
                   icon: "folder_open",
                   onClick: () => revealItemInDir(appInfo.appLogDir),
                 },

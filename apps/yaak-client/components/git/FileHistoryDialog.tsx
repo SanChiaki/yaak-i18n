@@ -3,7 +3,9 @@ import type { GitCommit } from "@yaakapp-internal/git";
 import { InlineCode, SplitLayout } from "@yaakapp-internal/ui";
 import classNames from "classnames";
 import { formatDistanceToNowStrict } from "date-fns";
+import { enUS, zhCN } from "date-fns/locale";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { sync } from "../../init/sync";
 import { showConfirm } from "../../lib/confirm";
 import { EmptyStateText } from "../EmptyStateText";
@@ -12,6 +14,7 @@ import { DiffViewer } from "../core/Editor/DiffViewer";
 import { useGitCallbacks } from "./callbacks";
 
 export function FileHistoryDialog({ dir, relaPath }: { dir: string; relaPath: string }) {
+  const { t } = useTranslation();
   const callbacks = useGitCallbacks(dir);
   const { restoreFileFromCommit } = useGitMutations(dir, callbacks);
   const log = useGitLog(dir, undefined, relaPath);
@@ -35,9 +38,9 @@ export function FileHistoryDialog({ dir, relaPath }: { dir: string; relaPath: st
     async (commit: GitCommit) => {
       const confirmed = await showConfirm({
         id: "git-restore-file-history-entry",
-        title: "Restore File",
-        description: "This will restore the file to the selected commit.",
-        confirmText: "Restore",
+        title: t("workspace:git.restoreFile"),
+        description: t("workspace:git.restoreFileDescription"),
+        confirmText: t("workspace:git.restore"),
         color: "warning",
       });
       if (!confirmed) return;
@@ -45,11 +48,11 @@ export function FileHistoryDialog({ dir, relaPath }: { dir: string; relaPath: st
       await restoreFileFromCommit.mutateAsync({ commitOid: commit.oid, relaPath });
       await sync({ force: true });
     },
-    [relaPath, restoreFileFromCommit],
+    [relaPath, restoreFileFromCommit, t],
   );
 
   if (commits.length === 0 && !log.isLoading) {
-    return <EmptyStateText>No history for this file</EmptyStateText>;
+    return <EmptyStateText>{t("workspace:git.noFileHistory")}</EmptyStateText>;
   }
 
   return (
@@ -75,11 +78,13 @@ export function FileHistoryDialog({ dir, relaPath }: { dir: string; relaPath: st
         secondSlot={({ style }) => (
           <div style={style} className="h-full min-w-0 border-l border-l-border-subtle px-4">
             {selectedCommit == null ? (
-              <EmptyStateText>Select a commit to view diff</EmptyStateText>
+              <EmptyStateText>{t("workspace:git.selectCommitDiff")}</EmptyStateText>
             ) : (
               <div className="h-full flex flex-col">
                 <div className="mb-2 min-w-0 text-text-subtle grid items-center gap-2 grid-cols-[minmax(0,1fr)_auto]">
-                  <div className="min-w-0 truncate">{selectedCommit.message || "No message"}</div>
+                  <div className="min-w-0 truncate">
+                    {selectedCommit.message || t("workspace:git.noMessage")}
+                  </div>
                   <Button
                     className="ml-auto"
                     color="warning"
@@ -87,7 +92,7 @@ export function FileHistoryDialog({ dir, relaPath }: { dir: string; relaPath: st
                     variant="border"
                     onClick={() => handleRestoreCommit(selectedCommit)}
                   >
-                    Restore File
+                    {t("workspace:git.restoreFile")}
                   </Button>
                 </div>
                 <DiffViewer
@@ -113,6 +118,7 @@ function CommitListItem({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const { t, i18n } = useTranslation();
   return (
     <button
       type="button"
@@ -122,9 +128,17 @@ function CommitListItem({
       )}
       onClick={onSelect}
     >
-      <div className="truncate flex-1">{commit.message || "No message"}</div>
+      <div className="truncate flex-1">{commit.message || t("workspace:git.noMessage")}</div>
       <div className="text-text-subtle text-sm truncate">
-        {commit.author.name || "Unknown"} - {formatDistanceToNowStrict(commit.when)} ago - <span className="shrink-0 text-2xs text-text-subtle font-mono">{commit.oid.slice(0, 7)}</span>
+        {commit.author.name || t("common:unknown")} -{" "}
+        {formatDistanceToNowStrict(commit.when, {
+          addSuffix: true,
+          locale: i18n.resolvedLanguage === "zh-CN" ? zhCN : enUS,
+        })}{" "}
+        -{" "}
+        <span className="shrink-0 text-2xs text-text-subtle font-mono">
+          {commit.oid.slice(0, 7)}
+        </span>
       </div>
     </button>
   );

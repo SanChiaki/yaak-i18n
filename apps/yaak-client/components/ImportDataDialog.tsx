@@ -1,5 +1,6 @@
 import { VStack } from "@yaakapp-internal/ui";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "react-use";
 import { Button } from "./core/Button";
 import { SelectFile } from "./SelectFile";
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function ImportDataDialog({ importData }: Props) {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [filePath, setFilePath] = useLocalStorage<string | null>("importFilePath", null);
 
@@ -21,7 +23,8 @@ export function ImportDataDialog({ importData }: Props) {
           <li>Insomnia v4+</li>
           <li>Swagger 2.0</li>
           <li>
-            Curl commands <em className="text-text-subtle">(or paste into URL)</em>
+            {t("common:importDialog.curlCommands")}{" "}
+            <em className="text-text-subtle">{t("common:importDialog.pasteHint")}</em>
           </li>
         </ul>
       </VStack>
@@ -45,7 +48,7 @@ export function ImportDataDialog({ importData }: Props) {
               }
             }}
           >
-            {isLoading ? "Importing" : "Import"}
+            {isLoading ? t("common:importDialog.importing") : t("common:import")}
           </Button>
         )}
       </VStack>

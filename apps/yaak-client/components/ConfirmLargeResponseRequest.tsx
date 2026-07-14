@@ -1,6 +1,7 @@
 import type { HttpResponse } from "@yaakapp-internal/models";
 import { Banner, HStack, InlineCode } from "@yaakapp-internal/ui";
 import { type ReactNode, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { getRequestBodyText as getHttpResponseRequestBodyText } from "../hooks/useHttpRequestBody";
 import { useToggle } from "../hooks/useToggle";
 import { isProbablyTextContentType } from "../lib/contentType";
@@ -17,6 +18,7 @@ interface Props {
 const LARGE_BYTES = 2 * 1000 * 1000;
 
 export function ConfirmLargeResponseRequest({ children, response }: Props) {
+  const { t } = useTranslation();
   const [showLargeResponse, toggleShowLargeResponse] = useToggle();
   const isProbablyText = useMemo(() => {
     const contentType = getContentTypeFromHeaders(response.headers);
@@ -29,15 +31,15 @@ export function ConfirmLargeResponseRequest({ children, response }: Props) {
     return (
       <Banner color="primary" className="flex flex-col gap-3">
         <p>
-          Showing content over{" "}
+          {t("request:large.showingContentOver")}{" "}
           <InlineCode>
             <SizeTag contentLength={LARGE_BYTES} />
           </InlineCode>{" "}
-          may impact performance
+          {t("request:large.performanceImpact")}
         </p>
         <HStack wrap space={2}>
           <Button color="primary" size="xs" onClick={toggleShowLargeResponse}>
-            Reveal Request Body
+            {t("request:large.revealRequestBody")}
           </Button>
           {isProbablyText && (
             <CopyButton

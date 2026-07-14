@@ -1,15 +1,16 @@
 import "./main.css";
-import "./i18n";
 import { RouterProvider } from "@tanstack/react-router";
 import { type } from "@tauri-apps/plugin-os";
-import { changeModelStoreWorkspace, initModelStore } from "@yaakapp-internal/models";
+import { changeModelStoreWorkspace, initModelStore, settingsAtom } from "@yaakapp-internal/models";
 import { setPlatformOnDocument } from "@yaakapp-internal/theme";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import i18n from "./i18n";
 import { initGit } from "./init/git";
 import { initSync } from "./init/sync";
 import { initGlobalListeners } from "./lib/initGlobalListeners";
 import { jotaiStore } from "./lib/jotai";
+import { resolveLanguagePreference } from "./lib/language";
 import { router } from "./lib/router";
 
 const osType = type();
@@ -38,6 +39,8 @@ initSync();
 initModelStore(jotaiStore);
 initGlobalListeners();
 await changeModelStoreWorkspace(null); // Load global models
+const settings = jotaiStore.get(settingsAtom);
+await i18n.changeLanguage(await resolveLanguagePreference(settings.language));
 
 console.log("Creating React root");
 createRoot(document.getElementById("root") as HTMLElement).render(

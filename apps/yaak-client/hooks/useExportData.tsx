@@ -6,12 +6,14 @@ import { jotaiStore } from "../lib/jotai";
 import { showToast } from "../lib/toast";
 import { activeWorkspaceAtom } from "./useActiveWorkspace";
 import { useFastMutation } from "./useFastMutation";
+import { useTranslation } from "react-i18next";
 
 export function useExportData() {
+  const { t } = useTranslation();
   return useFastMutation({
     mutationKey: ["export_data"],
     onError: (err: string) => {
-      showAlert({ id: "export-failed", title: "Export Failed", body: err });
+      showAlert({ id: "export-failed", title: t("workspace:export.failed"), body: err });
     },
     mutationFn: async () => {
       const activeWorkspace = jotaiStore.get(activeWorkspaceAtom);
@@ -21,7 +23,7 @@ export function useExportData() {
 
       showDialog({
         id: "export-data",
-        title: "Export Data",
+        title: t("common:menu.exportData"),
         size: "md",
         noPadding: true,
         render: ({ hide }) => (
@@ -30,7 +32,7 @@ export function useExportData() {
             onSuccess={() => {
               showToast({
                 color: "success",
-                message: "Data export successful",
+                message: t("workspace:export.success"),
               });
             }}
           />

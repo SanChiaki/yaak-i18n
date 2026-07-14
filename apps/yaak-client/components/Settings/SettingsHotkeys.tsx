@@ -15,22 +15,39 @@ import classNames from "classnames";
 import { fuzzyMatch } from "fuzzbunny";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   defaultHotkeys,
   formatHotkeyString,
+  getHotkeyLabelKey,
   getHotkeyScope,
   type HotkeyAction,
   hotkeyActions,
   hotkeysAtom,
   useHotkeyLabel,
 } from "../../hooks/useHotKey";
-import { capitalize } from "../../lib/capitalize";
 import { showDialog } from "../../lib/dialog";
 import { Button } from "../core/Button";
 import { Dropdown, type DropdownItem } from "../core/Dropdown";
 import { HotkeyRaw } from "../core/Hotkey";
 import { IconButton } from "../core/IconButton";
 import { PlainInput } from "../core/PlainInput";
+
+const HOTKEY_SCOPE_KEYS = {
+  app: "settings:hotkeys.scopes.app",
+  command_palette: "settings:hotkeys.scopes.command_palette",
+  cookies_editor: "settings:hotkeys.scopes.cookies_editor",
+  editor: "settings:hotkeys.scopes.editor",
+  environment_editor: "settings:hotkeys.scopes.environment_editor",
+  hotkeys: "settings:hotkeys.scopes.hotkeys",
+  model: "settings:hotkeys.scopes.model",
+  request: "settings:hotkeys.scopes.request",
+  switcher: "settings:hotkeys.scopes.switcher",
+  settings: "settings:hotkeys.scopes.settings",
+  sidebar: "settings:hotkeys.scopes.sidebar",
+  url_bar: "settings:hotkeys.scopes.url_bar",
+  workspace_settings: "settings:hotkeys.scopes.workspace_settings",
+} as const;
 
 const HOLD_KEYS = ["Shift", "Control", "Alt", "Meta"];
 const LAYOUT_INSENSITIVE_KEYS = [
@@ -73,6 +90,7 @@ function eventToHotkeyString(e: KeyboardEvent): string | null {
 }
 
 export function SettingsHotkeys() {
+  const { t } = useTranslation();
   const settings = useAtomValue(settingsAtom);
   const hotkeys = useAtomValue(hotkeysAtom);
   const [filter, setFilter] = useState("");
@@ -82,12 +100,12 @@ export function SettingsHotkeys() {
       return hotkeyActions;
     }
     return hotkeyActions.filter((action) => {
-      const scope = getHotkeyScope(action).replace(/_/g, " ");
-      const label = action.replace(/[_.]/g, " ");
+      const scope = getTranslatedHotkeyScope(action, t);
+      const label = t(getHotkeyLabelKey(action));
       const searchText = `${scope} ${label}`;
       return fuzzyMatch(searchText, filter) != null;
     });
-  }, [filter]);
+  }, [filter, t]);
 
   if (settings == null) {
     return null;
@@ -96,14 +114,12 @@ export function SettingsHotkeys() {
   return (
     <VStack space={3} className="mb-4">
       <div className="mb-3">
-        <Heading>Keyboard Shortcuts</Heading>
-        <p className="text-text-subtle">
-          Click the menu button to add, remove, or reset keyboard shortcuts.
-        </p>
+        <Heading>{t("settings:hotkeys.heading")}</Heading>
+        <p className="text-text-subtle">{t("settings:hotkeys.instructions")}</p>
       </div>
       <PlainInput
-        label="Filter"
-        placeholder="Filter shortcuts..."
+        label={t("settings:hotkeys.filter")}
+        placeholder={t("settings:hotkeys.filterPlaceholder")}
         defaultValue={filter}
         onChange={setFilter}
         hideLabel
@@ -112,9 +128,9 @@ export function SettingsHotkeys() {
       <Table>
         <TableHead>
           <TableRow>
-            <TableHeaderCell>Scope</TableHeaderCell>
-            <TableHeaderCell>Action</TableHeaderCell>
-            <TableHeaderCell>Shortcut</TableHeaderCell>
+            <TableHeaderCell>{t("settings:hotkeys.scope")}</TableHeaderCell>
+            <TableHeaderCell>{t("settings:hotkeys.action")}</TableHeaderCell>
+            <TableHeaderCell>{t("settings:hotkeys.shortcut")}</TableHeaderCell>
             <TableHeaderCell></TableHeaderCell>
           </TableRow>
         </TableHead>
@@ -159,8 +175,9 @@ interface HotkeyRowProps {
 }
 
 function HotkeyRow({ action, currentKeys, defaultKeys, onSave, onReset }: HotkeyRowProps) {
+  const { t } = useTranslation();
   const label = useHotkeyLabel(action);
-  const scope = capitalize(getHotkeyScope(action).replace(/_/g, " "));
+  const scope = getTranslatedHotkeyScope(action, t);
   const isCustomized = !arraysEqual(currentKeys, defaultKeys);
   const isDisabled = currentKeys.length === 0;
 
@@ -197,7 +214,7 @@ function HotkeyRow({ action, currentKeys, defaultKeys, onSave, onReset }: Hotkey
   // Build dropdown items dynamically
   const dropdownItems: DropdownItem[] = [
     {
-      label: "Add Keyboard Shortcut",
+      label: t("settings:hotkeys.add"),
       leftSlot: <Icon icon="plus" />,
       onSelect: handleStartRecording,
     },
@@ -209,7 +226,7 @@ function HotkeyRow({ action, currentKeys, defaultKeys, onSave, onReset }: Hotkey
       dropdownItems.push({
         label: (
           <HStack space={1.5}>
-            <span>Remove</span>
+            <span>{t("settings:hotkeys.remove")}</span>
             <HotkeyRaw labelParts={formatHotkeyString(key)} variant="with-bg" className="text-xs" />
           </HStack>
         ),
@@ -224,7 +241,7 @@ function HotkeyRow({ action, currentKeys, defaultKeys, onSave, onReset }: Hotkey
           type: "separator",
         },
         {
-          label: "Remove All Shortcuts",
+          label: t("settings:hotkeys.removeAll"),
           leftSlot: <Icon icon="trash" />,
           onSelect: handleClearAll,
         },
@@ -237,7 +254,7 @@ function HotkeyRow({ action, currentKeys, defaultKeys, onSave, onReset }: Hotkey
       type: "separator",
     });
     dropdownItems.push({
-      label: "Reset to Default",
+      label: t("settings:hotkeys.reset"),
       leftSlot: <Icon icon="refresh" />,
       onSelect: onReset,
     });
@@ -254,7 +271,7 @@ function HotkeyRow({ action, currentKeys, defaultKeys, onSave, onReset }: Hotkey
       <TableCell>
         <HStack space={1.5} className="py-1">
           {isDisabled ? (
-            <span className="text-text-subtlest">Disabled</span>
+            <span className="text-text-subtlest">{t("settings:hotkeys.disabled")}</span>
           ) : (
             currentKeys.map((k) => (
               <HotkeyRaw key={k} labelParts={formatHotkeyString(k)} variant="with-bg" />
@@ -267,7 +284,7 @@ function HotkeyRow({ action, currentKeys, defaultKeys, onSave, onReset }: Hotkey
           <IconButton
             icon="ellipsis_vertical"
             size="sm"
-            title="Hotkey actions"
+            title={t("settings:hotkeys.actionsMenu")}
             className="ml-auto text-text-subtlest"
           />
         </Dropdown>
@@ -290,6 +307,7 @@ interface RecordHotkeyDialogProps {
 }
 
 function RecordHotkeyDialog({ label, onSave, onCancel }: RecordHotkeyDialogProps) {
+  const { t } = useTranslation();
   const [recordedKey, setRecordedKey] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -326,13 +344,11 @@ function RecordHotkeyDialog({ label, onSave, onCancel }: RecordHotkeyDialogProps
   return (
     <VStack space={4}>
       <div>
-        <p className="text-text-subtle mb-2">
-          Record a key combination for <span className="font-semibold">{label}</span>
-        </p>
+        <p className="text-text-subtle mb-2">{t("settings:hotkeys.recordFor", { label })}</p>
         <button
           type="button"
           data-disable-hotkey
-          aria-label="Keyboard shortcut input"
+          aria-label={t("settings:hotkeys.inputLabel")}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           onClick={(e) => {
@@ -348,18 +364,23 @@ function RecordHotkeyDialog({ label, onSave, onCancel }: RecordHotkeyDialogProps
           {recordedKey ? (
             <HotkeyRaw labelParts={formatHotkeyString(recordedKey)} />
           ) : (
-            <span className="text-text-subtlest">Press keys...</span>
+            <span className="text-text-subtlest">{t("settings:hotkeys.pressKeys")}</span>
           )}
         </button>
       </div>
       <HStack space={2} justifyContent="end">
         <Button color="secondary" onClick={onCancel}>
-          Cancel
+          {t("settings:hotkeys.cancel")}
         </Button>
         <Button color="primary" onClick={handleSave} disabled={!recordedKey}>
-          Save
+          {t("settings:hotkeys.save")}
         </Button>
       </HStack>
     </VStack>
   );
+}
+
+function getTranslatedHotkeyScope(action: HotkeyAction, t: ReturnType<typeof useTranslation>["t"]) {
+  const scope = getHotkeyScope(action) as keyof typeof HOTKEY_SCOPE_KEYS;
+  return t(HOTKEY_SCOPE_KEYS[scope]);
 }

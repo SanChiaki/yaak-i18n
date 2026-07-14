@@ -6,6 +6,7 @@ import type { SyntaxNodeRef } from "@lezer/common";
 import { applyFormInputDefaults, validateTemplateFunctionArgs } from "@yaakapp-internal/lib";
 import type { FormInput, JsonPrimitive, TemplateFunction } from "@yaakapp-internal/plugins";
 import { parseTemplate } from "@yaakapp-internal/templates";
+import i18n from "../../../../i18n";
 import type { TwigCompletionOption } from "./completion";
 import { collectArgumentValues } from "./util";
 
@@ -42,7 +43,7 @@ class TemplateTagWidget extends WidgetType {
           ? "x-theme-templateTag--primary"
           : "x-theme-templateTag--info"
     }`;
-    elt.title = this.option.invalid ? "Not Found" : (this.option.value ?? "");
+    elt.title = this.option.invalid ? i18n.t("common:notFound") : (this.option.value ?? "");
     elt.setAttribute("data-tag-type", this.option.type);
     if (typeof this.option.label === "string") elt.textContent = this.option.label;
     else elt.appendChild(this.option.label);

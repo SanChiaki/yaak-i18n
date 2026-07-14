@@ -15,10 +15,12 @@ import { Banner, VStack } from "@yaakapp-internal/ui";
 import classNames from "classnames";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useActiveRequest } from "../hooks/useActiveRequest";
 import { useRandomKey } from "../hooks/useRandomKey";
 import { capitalize } from "../lib/capitalize";
 import { showDialog } from "../lib/dialog";
+import { localizePluginText } from "../lib/localizePluginText";
 import { resolvedModelName } from "../lib/resolvedModelName";
 import { Checkbox } from "./core/Checkbox";
 import { DetailsBanner } from "./core/DetailsBanner";
@@ -114,9 +116,11 @@ function FormInputs<T extends Record<string, JsonPrimitive>>({
   data,
   disabled,
 }: FormInputsProps<T>) {
+  useTranslation();
   return (
     <>
-      {inputs?.map((input, i) => {
+      {inputs?.map((sourceInput, i) => {
+        const input = localizePluginFormInput(sourceInput);
         if ("hidden" in input && input.hidden) {
           return null;
         }
@@ -281,6 +285,43 @@ function FormInputs<T extends Record<string, JsonPrimitive>>({
   );
 }
 
+function localizePluginFormInput(input: FormInput): FormInput {
+  let localized = input;
+
+  if ("label" in localized && typeof localized.label === "string") {
+    localized = { ...localized, label: localizePluginText(localized.label) } as FormInput;
+  }
+  if ("description" in localized && typeof localized.description === "string") {
+    localized = {
+      ...localized,
+      description: localizePluginText(localized.description),
+    } as FormInput;
+  }
+  if ("title" in localized && typeof localized.title === "string") {
+    localized = { ...localized, title: localizePluginText(localized.title) } as FormInput;
+  }
+  if (localized.type === "select") {
+    localized = {
+      ...localized,
+      options: localized.options.map((option) => ({
+        ...option,
+        label: localizePluginText(option.label),
+      })),
+    };
+  }
+  if ("inputs" in localized && localized.inputs != null) {
+    localized = {
+      ...localized,
+      inputs: localized.inputs.map(localizePluginFormInput),
+    } as FormInput;
+  }
+  if (localized.type === "markdown") {
+    localized = { ...localized, content: localizePluginText(localized.content) };
+  }
+
+  return localized;
+}
+
 function TextArg({
   arg,
   onChange,
@@ -337,6 +378,7 @@ function EditorArg({
   autocompleteVariables: boolean;
   stateKey: string;
 }) {
+  const { t } = useTranslation();
   const id = `input-${arg.name}`;
 
   // Read-only editor force refresh for every defaultValue change
@@ -386,12 +428,12 @@ function EditorArg({
                 size="sm"
                 className="my-0.5 opacity-60 group-hover:opacity-100"
                 icon="expand"
-                title="Pop out to large editor"
+                title={t("common:ui.popOutEditor")}
                 onClick={() => {
                   showDialog({
                     id: "id",
                     size: "full",
-                    title: arg.readOnly ? "View Value" : "Edit Value",
+                    title: arg.readOnly ? t("common:ui.viewValue") : t("common:ui.editValue"),
                     className: "!max-w-[50rem] !max-h-[60rem]",
                     description: arg.label && (
                       <Label
@@ -493,6 +535,7 @@ function HttpRequestArg({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const { t } = useTranslation();
   const folders = useAtomValue(foldersAtom);
   const httpRequests = useAtomValue(httpRequestsAtom);
   const activeHttpRequest = useActiveRequest("http_request");
@@ -515,7 +558,7 @@ function HttpRequestArg({
         return {
           label:
             buildRequestBreadcrumbs(r, folders).join(" / ") +
-            (r.id === activeHttpRequest?.id ? " (current)" : ""),
+            (r.id === activeHttpRequest?.id ? ` ${t("common:current")}` : ""),
           value: r.id,
         };
       })}

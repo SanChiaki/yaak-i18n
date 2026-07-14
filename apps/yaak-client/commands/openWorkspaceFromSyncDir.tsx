@@ -1,5 +1,6 @@
 import { applySync, calculateSyncFsOnly } from "@yaakapp-internal/sync";
 import { createFastMutation } from "../hooks/useFastMutation";
+import i18n from "../i18n";
 import { showSimpleAlert } from "../lib/alert";
 import { router } from "../lib/router";
 
@@ -13,7 +14,10 @@ export const openWorkspaceFromSyncDir = createFastMutation<void, void, string>({
       .filter((m) => m)[0];
 
     if (workspace == null) {
-      showSimpleAlert("Failed to Open", "No workspace found in directory");
+      showSimpleAlert(
+        i18n.t("workspace:sync.openFailed"),
+        i18n.t("workspace:sync.workspaceNotFound"),
+      );
       return;
     }
 

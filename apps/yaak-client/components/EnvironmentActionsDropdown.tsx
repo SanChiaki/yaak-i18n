@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { memo, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useActiveEnvironment } from "../hooks/useActiveEnvironment";
 import { useEnvironmentsBreakdown } from "../hooks/useEnvironmentsBreakdown";
 import { editEnvironment } from "../lib/editEnvironment";
@@ -19,6 +20,7 @@ export const EnvironmentActionsDropdown = memo(function EnvironmentActionsDropdo
   className,
   ...buttonProps
 }: Props) {
+  const { t } = useTranslation();
   const { subEnvironments, baseEnvironment } = useEnvironmentsBreakdown();
   const activeEnvironment = useActiveEnvironment();
 
@@ -41,16 +43,16 @@ export const EnvironmentActionsDropdown = memo(function EnvironmentActionsDropdo
         [activeEnvironment?.id],
       ),
       ...((subEnvironments.length > 0
-        ? [{ type: "separator", label: "Environments" }]
+        ? [{ type: "separator", label: t("workspace:environment.section") }]
         : []) as DropdownItem[]),
       {
-        label: "Manage Environments",
+        label: t("workspace:environment.manage"),
         hotKeyAction: "environment_editor.toggle",
         leftSlot: <Icon icon="box" />,
         onSelect: () => editEnvironment(activeEnvironment),
       },
     ],
-    [subEnvironments, activeEnvironment],
+    [subEnvironments, activeEnvironment, t],
   );
 
   const hasBaseVars =
@@ -71,7 +73,8 @@ export const EnvironmentActionsDropdown = memo(function EnvironmentActionsDropdo
         {...buttonProps}
       >
         <EnvironmentColorIndicator environment={activeEnvironment ?? null} />
-        {activeEnvironment?.name ?? (hasBaseVars ? "Environment" : "No Environment")}
+        {activeEnvironment?.name ??
+          (hasBaseVars ? t("workspace:environment.title") : t("workspace:environment.none"))}
       </Button>
     </Dropdown>
   );

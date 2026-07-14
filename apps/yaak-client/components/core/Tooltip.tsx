@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { generateId } from "../../lib/generateId";
 import { Portal } from "@yaakapp-internal/ui";
 
@@ -131,6 +132,7 @@ export function Tooltip({ children, className, content, tabIndex, size = "md" }:
 }
 
 function Triangle({ className, position }: { className?: string; position: "top" | "bottom" }) {
+  const { t } = useTranslation();
   const isBottom = position === "bottom";
 
   return (
@@ -147,7 +149,7 @@ function Triangle({ className, position }: { className?: string; position: "top"
           : "border-b-[2px] border-surface-highlight -top-[calc(0.5rem-3px)] mt-2",
       )}
     >
-      <title>Triangle</title>
+      <title>{t("common:ui.tooltipArrow")}</title>
       <polygon
         className="fill-surface-highlight"
         points={isBottom ? "0,0 30,0 15,10" : "0,10 30,10 15,0"}

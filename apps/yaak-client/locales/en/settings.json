@@ -2,35 +2,298 @@
   "title": "Settings",
   "general": {
     "title": "General",
-    "description": "Configure general settings for update behavior and more."
+    "description": "Configure general settings for update behavior and more.",
+    "workspace": "Workspace",
+    "requestTimeout": {
+      "title": "Request Timeout",
+      "description": "Maximum request duration in milliseconds. Set to 0 to disable."
+    },
+    "validateCertificates": {
+      "title": "Validate TLS certificates",
+      "description": "When disabled, skip validation of server certificates."
+    },
+    "followRedirects": {
+      "title": "Follow redirects",
+      "description": "Follow HTTP redirects automatically."
+    },
+    "sendCookies": {
+      "title": "Automatically send cookies",
+      "description": "Attach matching cookies from the active cookie jar to outgoing requests."
+    },
+    "storeCookies": {
+      "title": "Automatically store cookies",
+      "description": "Save cookies from Set-Cookie response headers to the active cookie jar."
+    },
+    "appInfo": {
+      "title": "App Info",
+      "version": "Version",
+      "versionDescription": "Current Yaak version.",
+      "dataDirectory": "Data Directory",
+      "dataDirectoryDescription": "Where Yaak stores application data.",
+      "logsDirectory": "Logs Directory",
+      "logsDirectoryDescription": "Where Yaak writes application logs."
+    }
+  },
+  "modelSettings": {
+    "requests": "Requests",
+    "cookies": "Cookies"
   },
   "interface": {
     "title": "Interface",
-    "description": "Customize how Yaak looks and feels."
+    "description": "Customize how Yaak looks and feels.",
+    "workspaces": {
+      "title": "Workspaces",
+      "behavior": "Open workspace behavior",
+      "description": "Choose what happens when opening another workspace.",
+      "ask": "Always ask",
+      "current": "Open in current window",
+      "new": "Open in new window"
+    },
+    "fonts": {
+      "title": "Fonts",
+      "interface": "Interface font",
+      "interfaceDescription": "Font used for Yaak interface controls.",
+      "interfaceSize": "Interface font size",
+      "editor": "Editor font",
+      "editorDescription": "Font used in request and response editors.",
+      "editorSize": "Editor font size",
+      "systemDefault": "System default"
+    },
+    "editor": {
+      "title": "Editor",
+      "keymap": "Editor keymap",
+      "keymapDescription": "Keyboard shortcut preset used by text editors.",
+      "defaultKeymap": "Default",
+      "softWrap": "Wrap editor lines",
+      "softWrapDescription": "Wrap long lines in request and response editors.",
+      "coloredMethods": "Colorize request methods",
+      "coloredMethodsDescription": "Use method-specific colors for HTTP request methods."
+    },
+    "window": {
+      "title": "Window",
+      "nativeTitlebar": "Native title bar",
+      "nativeTitlebarDescription": "Use the operating system's standard title bar and window controls.",
+      "applyRestart": "Apply and Restart",
+      "hideControls": "Hide window controls",
+      "hideControlsDescription": "Hide the close, maximize, and minimize controls on Windows or Linux."
+    },
+    "personalUse": {
+      "section": "License",
+      "hideBadge": "Hide personal use badge",
+      "hideBadgeDescription": "Hide the personal-use badge from the interface.",
+      "confirmTitle": "Confirm Personal Use",
+      "confirm": "Confirm",
+      "greeting": "Hey there",
+      "freeForPersonal": "Yaak is free for personal projects and learning.",
+      "workRequiresLicense": "If you're using Yaak at work, a license is required.",
+      "supportMessage": "Licenses help keep Yaak independent and sustainable.",
+      "purchase": "Purchase a License",
+      "requiredText": "Personal Use"
+    }
   },
   "theme": {
     "title": "Theme",
-    "description": "Select a theme to customize Yaak's appearance."
+    "description": "Make Yaak your own by selecting a theme, or",
+    "createYourOwn": "Create Your Own",
+    "section": "Theme",
+    "appearance": "Appearance",
+    "appearanceDescription": "Choose whether Yaak follows your system appearance or uses a fixed mode.",
+    "automatic": "Automatic",
+    "light": "Light",
+    "dark": "Dark",
+    "lightTheme": "Light theme",
+    "lightThemeDescription": "Theme used when Yaak is in light mode.",
+    "darkTheme": "Dark theme",
+    "darkThemeDescription": "Theme used when Yaak is in dark mode.",
+    "preview": "Preview",
+    "previewLabel": "preview"
   },
   "hotkeys": {
     "title": "Hotkeys",
-    "description": "View and customize keyboard shortcuts."
+    "description": "View and customize keyboard shortcuts.",
+    "heading": "Keyboard Shortcuts",
+    "instructions": "Click the menu button to add, remove, or reset keyboard shortcuts.",
+    "filter": "Filter",
+    "filterPlaceholder": "Filter shortcuts...",
+    "scope": "Scope",
+    "action": "Action",
+    "shortcut": "Shortcut",
+    "add": "Add Keyboard Shortcut",
+    "remove": "Remove",
+    "removeAll": "Remove All Shortcuts",
+    "reset": "Reset to Default",
+    "disabled": "Disabled",
+    "actionsMenu": "Hotkey actions",
+    "recordFor": "Record a key combination for {{label}}",
+    "inputLabel": "Keyboard shortcut input",
+    "pressKeys": "Press keys...",
+    "cancel": "Cancel",
+    "save": "Save",
+    "scopes": {
+      "app": "App",
+      "command_palette": "Command Palette",
+      "cookies_editor": "Cookies Editor",
+      "editor": "Editor",
+      "environment_editor": "Environment Editor",
+      "hotkeys": "Hotkeys",
+      "model": "Request",
+      "request": "Request",
+      "switcher": "Request Switcher",
+      "settings": "Settings",
+      "sidebar": "Sidebar",
+      "url_bar": "URL Bar",
+      "workspace_settings": "Workspace Settings"
+    },
+    "actions": {
+      "app": {
+        "zoom_in": "Zoom In",
+        "zoom_out": "Zoom Out",
+        "zoom_reset": "Zoom to Actual Size"
+      },
+      "command_palette": { "toggle": "Toggle Command Palette" },
+      "cookies_editor": { "show": "Show Cookies" },
+      "editor": { "autocomplete": "Trigger Autocomplete" },
+      "environment_editor": { "toggle": "Edit Environments" },
+      "hotkeys": { "showHelp": "Show Keyboard Shortcuts" },
+      "model": {
+        "create": "New Request",
+        "duplicate": "Duplicate Request"
+      },
+      "request": {
+        "rename": "Rename Active Request",
+        "send": "Send Active Request"
+      },
+      "switcher": {
+        "next": "Go To Previous Request",
+        "prev": "Go To Next Request",
+        "toggle": "Toggle Request Switcher"
+      },
+      "settings": { "show": "Open Settings" },
+      "sidebar": {
+        "filter": "Filter Sidebar",
+        "expand_all": "Expand All Folders",
+        "collapse_all": "Collapse All Folders",
+        "selected": {
+          "delete": "Delete Selected Sidebar Item",
+          "duplicate": "Duplicate Selected Sidebar Item",
+          "move": "Move Selected to Workspace",
+          "rename": "Rename Selected Sidebar Item"
+        },
+        "focus": "Focus or Toggle Sidebar",
+        "context_menu": "Show Context Menu"
+      },
+      "url_bar": { "focus": "Focus URL" },
+      "workspace_settings": { "show": "Open Workspace Settings" }
+    }
   },
   "plugins": {
     "title": "Plugins",
-    "description": "Manage installed plugins."
+    "description": "Manage installed plugins.",
+    "discover": "Discover",
+    "installed": "Installed",
+    "bundled": "Bundled",
+    "noun": "Plugin",
+    "add": "Add Plugin",
+    "reload": "Reload plugins",
+    "documentation": "View documentation",
+    "disable": "Disable plugin",
+    "enable": "Enable plugin",
+    "updateTo": "Update to {{version}}",
+    "update": "Update",
+    "installVersion": "Install {{version}}",
+    "install": "Install",
+    "uninstall": "Uninstall",
+    "uninstallAction": "Uninstall plugin",
+    "search": "Search",
+    "searchPlaceholder": "Search plugins...",
+    "noneFound": "No plugins found",
+    "displayName": "Display Name",
+    "name": "Name",
+    "version": "Version",
+    "installedEmpty": "Plugins extend the functionality of Yaak.",
+    "installedEmptyAction": "Add your first plugin to get started.",
+    "bundledEmpty": "No bundled plugins found.",
+    "uninstallTitle": "Uninstall Plugin",
+    "uninstallConfirm": "Permanently uninstall {{name}}?"
   },
   "proxy": {
     "title": "Proxy",
-    "description": "Configure HTTP proxy settings."
+    "description": "Configure a proxy server for HTTP requests. Useful for corporate firewalls, debugging traffic, or routing through specific infrastructure.",
+    "section": "Proxy",
+    "mode": "Proxy",
+    "modeDescription": "Choose how Yaak should discover or use proxy settings.",
+    "automatic": "Automatic proxy detection",
+    "custom": "Custom proxy configuration",
+    "none": "No proxy",
+    "customSection": "Custom Proxy",
+    "enable": "Enable proxy",
+    "enableDescription": "Temporarily disable the proxy without losing the configuration.",
+    "httpTraffic": "Proxy for HTTP traffic",
+    "httpDescription": "Proxy host used for unencrypted HTTP traffic.",
+    "httpsTraffic": "Proxy for HTTPS traffic",
+    "httpsDescription": "Proxy host used for HTTPS traffic.",
+    "bypass": "Proxy Bypass",
+    "bypassDescription": "Comma-separated list of hosts that should bypass the proxy.",
+    "authentication": "Authentication",
+    "enableAuthentication": "Enable authentication",
+    "enableAuthenticationDescription": "Send proxy credentials with proxied requests.",
+    "user": "User",
+    "userDescription": "Username for proxy authentication.",
+    "password": "Password",
+    "passwordDescription": "Password for proxy authentication."
   },
   "certificates": {
     "title": "Certificates",
-    "description": "Manage client certificates."
+    "description": "Add and manage TLS certificates on a per-domain basis.",
+    "clientTitle": "Client Certificates",
+    "add": "Add Certificate",
+    "configure": "Configure Certificate",
+    "disable": "Disable certificate",
+    "enable": "Enable certificate",
+    "remove": "Remove certificate",
+    "host": "Host",
+    "port": "Port",
+    "crtFile": "CRT File",
+    "keyFile": "KEY File",
+    "pfxFile": "PFX File",
+    "certificateNoun": "Certificate",
+    "keyNoun": "Key",
+    "passphrase": "Passphrase",
+    "deleteTitle": "Delete Certificate",
+    "deleteDescription": "Permanently delete the certificate for {{host}}?",
+    "unnamed": "this certificate"
   },
   "license": {
     "title": "License",
-    "description": "Manage your Yaak license."
+    "description": "Manage your Yaak license.",
+    "active": "Your license is active",
+    "trialDays_one": "{{count}} day",
+    "trialDays_other": "{{count}} days",
+    "trialRemaining": "left to evaluate Yaak for commercial use.",
+    "personalAlwaysFree": "Personal use is always free, forever.",
+    "learnMore": "Learn More",
+    "personalTrialEnded": "Your commercial-use trial has ended.",
+    "personalOnly": "You may continue using Yaak for personal use only.",
+    "commercialRequired": "A license is required for commercial use.",
+    "invalidBeforeSignIn": "Your license is invalid. Please",
+    "signIn": "Sign In",
+    "invalidAfterSignIn": "for more details",
+    "expiredBeforeDate": "Your license expired",
+    "expiredBeforeResubscribe": "Please",
+    "resubscribe": "Resubscribe",
+    "expiredAfterResubscribe": "to continue receiving updates.",
+    "whatsNew": "What's new in latest builds",
+    "paymentAttention": "Your payment method needs attention.",
+    "reactivateBeforeBilling": "To re-activate your license, please",
+    "updateBilling": "update your billing info",
+    "reactivateAfterBilling": ".",
+    "checkFailed": "License check failed: {{message}} (Code: {{code}})",
+    "deactivate": "Deactivate License",
+    "support": "Direct Support",
+    "activate": "Activate License",
+    "purchase": "Purchase License",
+    "key": "License Key",
+    "submit": "Submit"
   },
   "language": {
     "title": "Language",
@@ -53,6 +316,18 @@
       "description": "Choose whether updates are installed automatically or manually.",
       "auto": "Auto",
       "manual": "Manual"
+    },
+    "autoDownload": {
+      "title": "Automatically download updates",
+      "description": "Download Yaak updates in the background so they are ready to install."
+    },
+    "notifications": {
+      "title": "Check for notifications",
+      "description": "Periodically ping Yaak servers to check for relevant notifications."
+    },
+    "analytics": {
+      "title": "Send anonymous usage statistics",
+      "description": "Yaak is local-first and does not collect analytics or usage data."
     },
     "checkForUpdates": "Check for updates",
     "checking": "Checking for updates..."

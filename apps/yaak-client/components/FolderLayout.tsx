@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { useAtomValue } from "jotai";
 import type { CSSProperties, ReactNode } from "react";
 import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { allRequestsAtom } from "../hooks/useAllRequests";
 import { useFolderActions } from "../hooks/useFolderActions";
 import { useLatestHttpResponse } from "../hooks/useLatestHttpResponse";
@@ -26,11 +27,12 @@ interface Props {
 }
 
 export function FolderLayout({ folder, style }: Props) {
+  const { t } = useTranslation();
   const folders = useAtomValue(foldersAtom);
   const requests = useAtomValue(allRequestsAtom);
   const folderActions = useFolderActions();
   const sendAllAction = useMemo(
-    () => folderActions.find((a) => a.label === "Send All"),
+    () => folderActions.find((action) => action.sourceLabel === "Send All"),
     [folderActions],
   );
 
@@ -59,7 +61,7 @@ export function FolderLayout({ folder, style }: Props) {
             onClick={handleSendAll}
             disabled={sendAllAction == null}
           >
-            Send All
+            {t("request:request.sendAll")}
           </Button>
         </HStack>
       </HStack>
@@ -74,6 +76,7 @@ export function FolderLayout({ folder, style }: Props) {
 }
 
 function ChildCard({ child }: { child: Folder | HttpRequest | GrpcRequest | WebsocketRequest }) {
+  const { t } = useTranslation();
   let card: ReactNode;
   if (child.model === "folder") {
     card = <FolderCard folder={child} />;
@@ -84,7 +87,7 @@ function ChildCard({ child }: { child: Folder | HttpRequest | GrpcRequest | Webs
   } else if (child.model === "websocket_request") {
     card = <RequestCard request={child} />;
   } else {
-    card = <div>Unknown model</div>;
+    card = <div>{t("common:unknown")}</div>;
   }
 
   const navigate = useCallback(async () => {
@@ -110,7 +113,7 @@ function ChildCard({ child }: { child: Folder | HttpRequest | GrpcRequest | Webs
         <HStack space={0.5} className="ml-auto -mr-1.5">
           <IconButton
             color="custom"
-            title="Send Request"
+            title={t("common:open")}
             size="sm"
             icon="external_link"
             className="opacity-70 hover:opacity-100"
@@ -118,7 +121,7 @@ function ChildCard({ child }: { child: Folder | HttpRequest | GrpcRequest | Webs
           />
           <IconButton
             color="custom"
-            title="Send Request"
+            title={t("request:request.send")}
             size="sm"
             icon="send_horizontal"
             className="opacity-70 hover:opacity-100"
@@ -134,6 +137,7 @@ function ChildCard({ child }: { child: Folder | HttpRequest | GrpcRequest | Webs
 }
 
 function FolderCard({ folder }: { folder: Folder }) {
+  const { t } = useTranslation();
   return (
     <div>
       <Button
@@ -148,17 +152,19 @@ function FolderCard({ folder }: { folder: Folder }) {
           });
         }}
       >
-        Open
+        {t("common:open")}
       </Button>
     </div>
   );
 }
 
 function RequestCard({ request }: { request: HttpRequest | GrpcRequest | WebsocketRequest }) {
-  return <div>TODO {request.id}</div>;
+  const { t } = useTranslation();
+  return <div>{t("request:request.previewUnavailable", { id: request.id })}</div>;
 }
 
 function HttpRequestCard({ request }: { request: HttpRequest }) {
+  const { t } = useTranslation();
   const latestResponse = useLatestHttpResponse(request.id);
 
   return (
@@ -175,7 +181,7 @@ function HttpRequestCard({ request }: { request: HttpRequest }) {
             e.stopPropagation();
             showDialog({
               id: "response-preview",
-              title: "Response Preview",
+              title: t("request:response.previewTitle"),
               size: "md",
               className: "h-full",
               render: () => {
@@ -205,7 +211,7 @@ function HttpRequestCard({ request }: { request: HttpRequest }) {
           </HStack>
         </button>
       ) : (
-        <div>No Responses</div>
+        <div>{t("request:response.noResponses")}</div>
       )}
     </div>
   );

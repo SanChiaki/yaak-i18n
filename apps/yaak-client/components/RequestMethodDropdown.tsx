@@ -2,6 +2,7 @@ import type { HttpRequest } from "@yaakapp-internal/models";
 import { patchModel } from "@yaakapp-internal/models";
 import classNames from "classnames";
 import { memo, useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { showPrompt } from "../lib/prompt";
 import { Button } from "./core/Button";
 import type { DropdownItem } from "./core/Dropdown";
@@ -33,6 +34,7 @@ export const RequestMethodDropdown = memo(function RequestMethodDropdown({
   request,
   className,
 }: Props) {
+  const { t } = useTranslation();
   const handleChange = useCallback(
     async (method: string) => {
       await patchModel(request, { method });
@@ -49,10 +51,10 @@ export const RequestMethodDropdown = memo(function RequestMethodDropdown({
         onSelect: async () => {
           const newMethod = await showPrompt({
             id: "custom-method",
-            label: "Http Method",
-            title: "Custom Method",
-            confirmText: "Save",
-            description: "Enter a custom method name",
+            label: t("request:method.httpMethod"),
+            title: t("request:method.customMethod"),
+            confirmText: t("common:save"),
+            description: t("request:method.customDescription"),
             placeholder: "CUSTOM",
           });
           if (newMethod == null) return;
@@ -60,7 +62,7 @@ export const RequestMethodDropdown = memo(function RequestMethodDropdown({
         },
       },
     ],
-    [handleChange],
+    [handleChange, t],
   );
 
   return (

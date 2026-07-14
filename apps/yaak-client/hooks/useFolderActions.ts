@@ -6,14 +6,18 @@ import type {
   GetFolderActionsResponse,
 } from "@yaakapp-internal/plugins";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { localizePluginText } from "../lib/localizePluginText";
 import { invokeCmd } from "../lib/tauri";
 import { usePluginsKey } from "./usePlugins";
 
 export type CallableFolderAction = Pick<FolderAction, "label" | "icon"> & {
+  sourceLabel: string;
   call: (folder: Folder) => Promise<void>;
 };
 
 export function useFolderActions() {
+  const { i18n } = useTranslation();
   const pluginsKey = usePluginsKey();
 
   const actionsResult = useQuery<CallableFolderAction[]>({
@@ -23,8 +27,11 @@ export function useFolderActions() {
 
   // oxlint-disable-next-line react-hooks/exhaustive-deps
   const actions = useMemo(() => {
-    return actionsResult.data ?? [];
-  }, [JSON.stringify(actionsResult.data)]);
+    return (actionsResult.data ?? []).map((action) => ({
+      ...action,
+      label: localizePluginText(action.sourceLabel),
+    }));
+  }, [actionsResult.data, i18n.resolvedLanguage]);
 
   return actions;
 }
@@ -34,6 +41,7 @@ export async function getFolderActions() {
   const actions = responses.flatMap((r) =>
     r.actions.map((a, i) => ({
       label: a.label,
+      sourceLabel: a.label,
       icon: a.icon,
       call: async (folder: Folder) => {
         const payload: CallFolderActionRequest = {

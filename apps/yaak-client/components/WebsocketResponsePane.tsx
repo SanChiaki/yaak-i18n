@@ -3,6 +3,7 @@ import { HStack, Icon, LoadingIcon, VStack } from "@yaakapp-internal/ui";
 import { hexy } from "hexy";
 import { useAtomValue } from "jotai";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useFormatText } from "../hooks/useFormatText";
 import {
   activeWebsocketConnectionAtom,
@@ -27,6 +28,7 @@ interface Props {
 }
 
 export function WebsocketResponsePane({ activeRequest }: Props) {
+  const { t } = useTranslation();
   const [showLarge, setShowLarge] = useStateWithDeps<boolean>(false, [activeRequest.id]);
   const [showingLarge, setShowingLarge] = useState<boolean>(false);
   const [hexDumps, setHexDumps] = useState<Record<number, boolean>>({});
@@ -49,7 +51,7 @@ export function WebsocketResponsePane({ activeRequest }: Props) {
         )}
         <WebsocketStatusTag connection={activeConnection} />
         <span>&bull;</span>
-        <span>{events.length} Messages</span>
+        <span>{t("request:protocol.messages", { count: events.length })}</span>
       </HStack>
       <HStack space={0.5} className="ml-auto">
         <RecentWebsocketConnectionsDropdown
@@ -99,6 +101,7 @@ function WebsocketEventRow({
   isActive: boolean;
   onClick: () => void;
 }) {
+  const { t } = useTranslation();
   const { message: messageBytes, isServer, messageType } = event;
   const message = messageBytes
     ? new TextDecoder("utf-8").decode(Uint8Array.from(messageBytes))
@@ -116,11 +119,11 @@ function WebsocketEventRow({
 
   const content =
     messageType === "close" ? (
-      "Disconnected from server"
+      t("request:websocket.disconnected")
     ) : messageType === "open" ? (
-      "Connected to server"
+      t("request:websocket.connected")
     ) : message === "" ? (
-      <em className="italic text-text-subtlest">No content</em>
+      <em className="italic text-text-subtlest">{t("request:protocol.noContent")}</em>
     ) : (
       <span className="text-xs">{message.slice(0, 1000)}</span>
     );
@@ -155,6 +158,7 @@ function WebsocketEventDetail({
   setShowingLarge: (v: boolean) => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const message = useMemo(() => {
     if (hexDump) {
       return event.message ? hexy(event.message) : "";
@@ -167,17 +171,21 @@ function WebsocketEventDetail({
 
   const title =
     event.messageType === "close"
-      ? "Connection Closed"
+      ? t("request:websocket.connectionClosed")
       : event.messageType === "open"
-        ? "Connection Open"
-        : `Message ${event.isServer ? "Received" : "Sent"}`;
+        ? t("request:websocket.connectionOpen")
+        : event.isServer
+          ? t("request:protocol.messageReceived")
+          : t("request:protocol.messageSent");
 
   const actions: EventDetailAction[] =
     message !== ""
       ? [
           {
             key: "toggle-hexdump",
-            label: hexDump ? "Show Message" : "Show Hexdump",
+            label: hexDump
+              ? t("request:websocket.showMessage")
+              : t("request:websocket.showHexdump"),
             onClick: () => setHexDump(!hexDump),
           },
         ]
@@ -194,7 +202,7 @@ function WebsocketEventDetail({
       />
       {!showLarge && event.message.length > 1000 * 1000 ? (
         <VStack space={2} className="italic text-text-subtlest">
-          Message previews larger than 1MB are hidden
+          {t("request:protocol.largePreviewHidden")}
           <div>
             <Button
               onClick={() => {
@@ -209,12 +217,12 @@ function WebsocketEventDetail({
               variant="border"
               size="xs"
             >
-              Try Showing
+              {t("request:protocol.tryShowing")}
             </Button>
           </div>
         </VStack>
       ) : event.message.length === 0 ? (
-        <EmptyStateText>No Content</EmptyStateText>
+        <EmptyStateText>{t("request:protocol.noContent")}</EmptyStateText>
       ) : (
         <Editor
           language={language}

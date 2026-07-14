@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   text: string;
@@ -6,6 +7,7 @@ interface Props {
 }
 
 export function SvgViewer({ text, className }: Props) {
+  const { t } = useTranslation();
   const [src, setSrc] = useState<string | null>(null);
 
   useEffect(() => {
@@ -25,6 +27,10 @@ export function SvgViewer({ text, className }: Props) {
   }
 
   return (
-    <img src={src} alt="Response preview" className={className ?? "max-w-full max-h-full pb-2"} />
+    <img
+      src={src}
+      alt={t("common:responsePreview")}
+      className={className ?? "max-w-full max-h-full pb-2"}
+    />
   );
 }

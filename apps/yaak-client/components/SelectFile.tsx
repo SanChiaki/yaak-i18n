@@ -5,6 +5,7 @@ import classNames from "classnames";
 import mime from "mime";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ButtonProps } from "./core/Button";
 import { Button } from "./core/Button";
 import { IconButton } from "./core/IconButton";
@@ -40,9 +41,10 @@ export function SelectFile({
   hideLabel,
   ...props
 }: Props) {
+  const { t } = useTranslation();
   const handleClick = async () => {
     const filePath = await open({
-      title: directory ? "Select Folder" : "Select File",
+      title: directory ? t("common:filePicker.selectFolder") : t("common:filePicker.selectFile"),
       multiple: false,
       directory,
     });
@@ -55,8 +57,11 @@ export function SelectFile({
     onChange({ filePath: null, contentType: null });
   };
 
-  const itemLabel = noun ?? (directory ? "Folder" : "File");
-  const selectOrChange = (filePath ? "Change " : "Select ") + itemLabel;
+  const itemLabel = noun ?? t(directory ? "common:filePicker.folder" : "common:filePicker.file");
+  const selectOrChange = t(
+    filePath ? "common:filePicker.changeItem" : "common:filePicker.selectItem",
+    { item: itemLabel },
+  );
   const [isHovering, setIsHovering] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -126,7 +131,7 @@ export function SelectFile({
                 size={size === "auto" ? "md" : size}
                 variant="border"
                 icon="x"
-                title={`Unset ${itemLabel}`}
+                title={t("common:filePicker.unsetItem", { item: itemLabel })}
                 onClick={handleClear}
               />
             )}
@@ -139,7 +144,7 @@ export function SelectFile({
               )}
             >
               {rtlEscapeChar}
-              {filePath ?? `No ${itemLabel.toLowerCase()} selected`}
+              {filePath ?? t("common:filePicker.noneSelected", { item: itemLabel.toLowerCase() })}
             </div>
             {filePath == null && help && !label && <IconTooltip content={help} />}
           </>

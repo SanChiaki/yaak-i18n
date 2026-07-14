@@ -24,6 +24,7 @@ import {
 import { useKeyValue } from "../../../hooks/useKeyValue";
 import { computeSideForDragMove, DropMarker } from "@yaakapp-internal/ui";
 import { fireAndForget } from "../../../lib/fireAndForget";
+import i18n from "../../../i18n";
 import { ErrorBoundary } from "../../ErrorBoundary";
 import type { ButtonProps } from "../Button";
 import { Button } from "../Button";
@@ -505,7 +506,7 @@ function TabButton({
           >
             {option && "shortLabel" in option && option.shortLabel
               ? option.shortLabel
-              : (option?.label ?? "Unknown")}
+              : (option?.label ?? i18n.t("common:unknown"))}
           </Button>
         </RadioDropdown>
       );

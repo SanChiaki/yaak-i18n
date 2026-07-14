@@ -2,6 +2,8 @@ import type { Folder } from "@yaakapp-internal/models";
 import { modelTypeLabel, patchModel } from "@yaakapp-internal/models";
 import { HStack, Icon, InlineCode } from "@yaakapp-internal/ui";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { localizePluginText } from "../lib/localizePluginText";
 import { openFolderSettings } from "../commands/openFolderSettings";
 import { openWorkspaceSettings } from "../commands/openWorkspaceSettings";
 import { IconTooltip } from "../components/core/IconTooltip";
@@ -15,6 +17,7 @@ import { useInheritedAuthentication } from "./useInheritedAuthentication";
 import { useModelAncestors } from "./useModelAncestors";
 
 export function useAuthTab<T extends string>(tabValue: T, model: AuthenticatedModel | null) {
+  const { t } = useTranslation();
   const authentication = useHttpAuthenticationSummaries();
   const inheritedAuth = useInheritedAuthentication(model);
   const ancestors = useModelAncestors(model);
@@ -25,35 +28,40 @@ export function useAuthTab<T extends string>(tabValue: T, model: AuthenticatedMo
 
     const tab: TabItem = {
       value: tabValue,
-      label: "Auth",
+      label: t("request:request.auth"),
       options: {
         value: model.authenticationType,
         items: [
           ...authentication.map((a) => ({
-            label: a.label || "UNKNOWN",
-            shortLabel: a.shortLabel,
+            label: a.label ? localizePluginText(a.label) : t("common:unknown"),
+            shortLabel:
+              typeof a.shortLabel === "string" ? localizePluginText(a.shortLabel) : a.shortLabel,
             value: a.name,
           })),
           { type: "separator" },
           {
-            label: "Inherit from Parent",
+            label: t("request:request.authSettings.inherit"),
             shortLabel:
               inheritedAuth != null && inheritedAuth.authenticationType !== "none" ? (
                 <HStack space={1.5}>
                   {authentication.find((a) => a.name === inheritedAuth.authenticationType)
-                    ?.shortLabel ?? "UNKNOWN"}
+                    ?.shortLabel ?? t("common:unknown")}
                   <IconTooltip
                     icon="zap_off"
                     iconSize="xs"
-                    content="Authentication was inherited from an ancestor"
+                    content={t("request:request.authSettings.inherited")}
                   />
                 </HStack>
               ) : (
-                "Auth"
+                t("request:request.auth")
               ),
             value: null,
           },
-          { label: "No Auth", shortLabel: "No Auth", value: "none" },
+          {
+            label: t("request:request.authSettings.none"),
+            shortLabel: t("request:request.authSettings.none"),
+            value: "none",
+          },
         ],
         itemsAfter: (() => {
           const actions: (
@@ -69,9 +77,11 @@ export function useAuthTab<T extends string>(tabValue: T, model: AuthenticatedMo
             (parentModel.authenticationType == null || parentModel.authenticationType === "none")
           ) {
             actions.push(
-              { type: "separator", label: "Actions" },
+              { type: "separator", label: t("request:request.authSettings.actions") },
               {
-                label: `Promote to ${capitalize(parentModel.model)}`,
+                label: t("request:request.authSettings.promoteTo", {
+                  model: capitalize(parentModel.model),
+                }),
                 leftSlot: (
                   <Icon
                     icon={parentModel.model === "workspace" ? "corner_right_up" : "folder_up"}
@@ -80,14 +90,11 @@ export function useAuthTab<T extends string>(tabValue: T, model: AuthenticatedMo
                 onSelect: async () => {
                   const confirmed = await showConfirm({
                     id: "promote-auth-confirm",
-                    title: "Promote Authentication",
-                    confirmText: "Promote",
-                    description: (
-                      <>
-                        Move authentication config to{" "}
-                        <InlineCode>{resolvedModelName(parentModel)}</InlineCode>?
-                      </>
-                    ),
+                    title: t("request:request.authSettings.promoteTitle"),
+                    confirmText: t("request:request.authSettings.promote"),
+                    description: t("request:request.authSettings.promoteDescription", {
+                      name: resolvedModelName(parentModel),
+                    }),
                   });
                   if (confirmed) {
                     await patchModel(model, { authentication: {}, authenticationType: null });
@@ -113,10 +120,15 @@ export function useAuthTab<T extends string>(tabValue: T, model: AuthenticatedMo
           );
           if (ancestorWithAuth) {
             if (actions.length === 0) {
-              actions.push({ type: "separator", label: "Actions" });
+              actions.push({
+                type: "separator",
+                label: t("request:request.authSettings.actions"),
+              });
             }
             actions.push({
-              label: `Copy from ${modelTypeLabel(ancestorWithAuth)}`,
+              label: t("request:request.authSettings.copyFrom", {
+                model: modelTypeLabel(ancestorWithAuth),
+              }),
               leftSlot: (
                 <Icon
                   icon={
@@ -127,18 +139,14 @@ export function useAuthTab<T extends string>(tabValue: T, model: AuthenticatedMo
               onSelect: async () => {
                 const confirmed = await showConfirm({
                   id: "copy-auth-confirm",
-                  title: "Copy Authentication",
-                  confirmText: "Copy",
-                  description: (
-                    <>
-                      Copy{" "}
-                      {authentication.find((a) => a.name === ancestorWithAuth.authenticationType)
-                        ?.label ?? "authentication"}{" "}
-                      config from <InlineCode>{resolvedModelName(ancestorWithAuth)}</InlineCode>?
-                      This will override the current authentication but will not affect the{" "}
-                      {modelTypeLabel(ancestorWithAuth).toLowerCase()}.
-                    </>
-                  ),
+                  title: t("request:request.authSettings.copyTitle"),
+                  confirmText: t("common:copy"),
+                  description: t("request:request.authSettings.copyDescription", {
+                    authentication:
+                      authentication.find((a) => a.name === ancestorWithAuth.authenticationType)
+                        ?.label ?? t("request:request.auth"),
+                    name: resolvedModelName(ancestorWithAuth),
+                  }),
                 });
                 if (confirmed) {
                   await patchModel(model, {
@@ -165,5 +173,5 @@ export function useAuthTab<T extends string>(tabValue: T, model: AuthenticatedMo
     };
 
     return [tab];
-  }, [authentication, inheritedAuth, model, parentModel, tabValue, ancestors]);
+  }, [authentication, inheritedAuth, model, parentModel, tabValue, ancestors, t]);
 }

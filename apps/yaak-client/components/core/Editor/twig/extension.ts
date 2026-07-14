@@ -3,6 +3,7 @@ import { LRLanguage } from "@codemirror/language";
 import type { Extension } from "@codemirror/state";
 import { parseMixed } from "@lezer/common";
 import type { WrappedEnvironmentVariable } from "../../../../hooks/useEnvironmentVariables";
+import i18n from "../../../../i18n";
 import type { GenericCompletionConfig } from "../genericCompletion";
 import { genericCompletion } from "../genericCompletion";
 import { textLanguage } from "../text/extension";
@@ -37,7 +38,7 @@ export function twig({
       value: v.variable.value,
       type: "variable",
       label: v.variable.name,
-      description: `Inherited from ${v.source}`,
+      description: i18n.t("request:authEditor.inheritedFromSource", { source: v.source }),
       onClick: (rawTag: string, startPos: number) => onClickVariable(v, rawTag, startPos),
     })) ?? [];
 

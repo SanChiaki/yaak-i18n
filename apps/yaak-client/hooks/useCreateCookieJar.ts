@@ -4,8 +4,10 @@ import { showPrompt } from "../lib/prompt";
 import { setWorkspaceSearchParams } from "../lib/setWorkspaceSearchParams";
 import { activeWorkspaceIdAtom } from "./useActiveWorkspace";
 import { useFastMutation } from "./useFastMutation";
+import { useTranslation } from "react-i18next";
 
 export function useCreateCookieJar() {
+  const { t } = useTranslation();
   return useFastMutation({
     mutationKey: ["create_cookie_jar"],
     mutationFn: async () => {
@@ -16,11 +18,11 @@ export function useCreateCookieJar() {
 
       const name = await showPrompt({
         id: "new-cookie-jar",
-        title: "New CookieJar",
-        placeholder: "My Jar",
-        confirmText: "Create",
-        label: "Name",
-        defaultValue: "My Jar",
+        title: t("workspace:cookieJar.new"),
+        placeholder: t("workspace:cookieJar.defaultName"),
+        confirmText: t("common:create"),
+        label: t("common:name"),
+        defaultValue: t("workspace:cookieJar.defaultName"),
       });
       if (name == null) return null;
 

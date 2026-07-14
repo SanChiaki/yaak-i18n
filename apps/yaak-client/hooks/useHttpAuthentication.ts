@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { GetHttpAuthenticationSummaryResponse } from "@yaakapp-internal/plugins";
 import { atom, useAtomValue } from "jotai";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { jotaiStore } from "../lib/jotai";
 import { invokeCmd } from "../lib/tauri";
 import { showErrorToast } from "../lib/toast";
@@ -17,6 +18,7 @@ export function useHttpAuthenticationSummaries() {
 }
 
 export function useSubscribeHttpAuthentication() {
+  const { t } = useTranslation();
   const [numResults, setNumResults] = useState<number>(0);
   const pluginsKey = usePluginsKey();
 
@@ -40,7 +42,7 @@ export function useSubscribeHttpAuthentication() {
       } catch (err) {
         showErrorToast({
           id: "http-authentication-error",
-          title: "HTTP Authentication Error",
+          title: t("request:authEditor.loadError"),
           message: err,
         });
       }

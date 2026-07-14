@@ -1,9 +1,9 @@
 import type { GrpcRequest, HttpRequest, WebsocketRequest } from "@yaakapp-internal/models";
 
 import { MoveToWorkspaceDialog } from "../components/MoveToWorkspaceDialog";
+import i18n from "../i18n";
 import { activeWorkspaceIdAtom } from "../hooks/useActiveWorkspace";
 import { createFastMutation } from "../hooks/useFastMutation";
-import { pluralizeCount } from "../lib/pluralize";
 import { showDialog } from "../lib/dialog";
 import { jotaiStore } from "../lib/jotai";
 
@@ -14,8 +14,7 @@ export const moveToWorkspace = createFastMutation({
     if (activeWorkspaceId == null) return;
     if (requests.length === 0) return;
 
-    const title =
-      requests.length === 1 ? "Move Request" : `Move ${pluralizeCount("Request", requests.length)}`;
+    const title = i18n.t("workspace:move.moveRequests", { count: requests.length });
 
     showDialog({
       id: "change-workspace",

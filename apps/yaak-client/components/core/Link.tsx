@@ -1,6 +1,7 @@
 import { Link as RouterLink } from "@tanstack/react-router";
 import classNames from "classnames";
 import type { HTMLAttributes } from "react";
+import { useTranslation } from "react-i18next";
 import { appInfo } from "../../lib/appInfo";
 import { Icon } from "@yaakapp-internal/ui";
 
@@ -55,5 +56,6 @@ export function Link({ href, children, noUnderline, className, ...other }: Props
 }
 
 export function FeedbackLink() {
-  return <Link href="https://yaak.app/roadmap">Feedback</Link>;
+  const { t } = useTranslation();
+  return <Link href="https://yaak.app/roadmap">{t("common:menu.feedback")}</Link>;
 }

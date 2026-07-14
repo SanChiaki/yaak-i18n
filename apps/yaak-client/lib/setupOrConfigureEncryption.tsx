@@ -1,5 +1,6 @@
 import { VStack } from "@yaakapp-internal/ui";
 import { WorkspaceEncryptionSetting } from "../components/WorkspaceEncryptionSetting";
+import i18n from "../i18n";
 import { activeWorkspaceMetaAtom } from "../hooks/useActiveWorkspace";
 import { showDialog } from "./dialog";
 import { jotaiStore } from "./jotai";
@@ -21,7 +22,7 @@ export function withEncryptionEnabled(callback?: () => void) {
 function setupOrConfigure(onEnable?: () => void) {
   showDialog({
     id: "workspace-encryption",
-    title: "Workspace Encryption",
+    title: i18n.t("workspace:workspace.encryption"),
     size: "md",
     render: ({ hide }) => (
       <VStack space={3} className="pb-2" alignItems="end">

@@ -1,5 +1,6 @@
 import { createWorkspaceModel } from "@yaakapp-internal/models";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useToggle } from "../hooks/useToggle";
 import { ColorIndicator } from "./ColorIndicator";
 import { Button } from "./core/Button";
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function CreateEnvironmentDialog({ workspaceId, hide, onCreate }: Props) {
+  const { t } = useTranslation();
   const [name, setName] = useState<string>("");
   const [color, setColor] = useState<string | null>(null);
   const [sharable, toggleSharable] = useToggle(false);
@@ -37,31 +39,31 @@ export function CreateEnvironmentDialog({ workspaceId, hide, onCreate }: Props) 
       }}
     >
       <PlainInput
-        label="Name"
+        label={t("workspace:environment.name")}
         required
         defaultValue={name}
         onChange={setName}
-        placeholder="Production"
+        placeholder={t("workspace:environment.namePlaceholder")}
       />
       <Checkbox
         checked={sharable}
-        title="Share this environment"
-        help="Sharable environments are included in data export and directory sync."
+        title={t("workspace:environment.share")}
+        help={t("workspace:environment.shareDescription")}
         onChange={toggleSharable}
       />
       <div>
         <Label
           htmlFor="color"
           className="mb-1.5"
-          help="Select a color to be displayed when this environment is active, to help identify it."
+          help={t("workspace:environment.colorDescription")}
         >
-          Color
+          {t("workspace:environment.color")}
         </Label>
         <ColorPickerWithThemeColors onChange={setColor} color={color} />
       </div>
       <Button type="submit" color="secondary" className="mt-3">
         {color != null && <ColorIndicator color={color} />}
-        Create Environment
+        {t("workspace:environment.create")}
       </Button>
     </form>
   );

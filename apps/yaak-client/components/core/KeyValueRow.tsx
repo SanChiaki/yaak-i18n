@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import type { HTMLAttributes, ReactElement, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { CopyIconButton } from "../CopyIconButton";
 
 interface Props {
@@ -52,6 +53,7 @@ export function KeyValueRow({
   enableCopy,
   copyText,
 }: KeyValueRowProps) {
+  const { t } = useTranslation();
   const textToCopy =
     copyText ??
     (typeof children === "string" || typeof children === "number" ? `${children}` : null);
@@ -62,7 +64,9 @@ export function KeyValueRow({
         text={textToCopy}
         className="text-text-subtle"
         size="2xs"
-        title={`Copy ${label}`}
+        title={t("common:ui.copyLabel", {
+          label: typeof label === "string" ? label : t("common:value"),
+        })}
         iconSize="sm"
       />
     ) : null);

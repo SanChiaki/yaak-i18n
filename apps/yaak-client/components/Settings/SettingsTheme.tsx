@@ -2,6 +2,7 @@ import { patchModel, settingsAtom } from "@yaakapp-internal/models";
 import { Heading, HStack, Icon, type IconProps, VStack } from "@yaakapp-internal/ui";
 import { useAtomValue } from "jotai";
 import { lazy, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import { activeWorkspaceAtom } from "../../hooks/useActiveWorkspace";
 import { useResolvedAppearance } from "../../hooks/useResolvedAppearance";
 import { useResolvedTheme } from "../../hooks/useResolvedTheme";
@@ -52,6 +53,7 @@ export function SettingsTheme() {
   const settings = useAtomValue(settingsAtom);
   const appearance = useResolvedAppearance();
   const activeTheme = useResolvedTheme();
+  const { t } = useTranslation();
 
   if (settings == null || workspace == null || activeTheme.data == null) {
     return null;
@@ -74,32 +76,32 @@ export function SettingsTheme() {
   return (
     <VStack space={1.5} className="mb-4">
       <div className="mb-3">
-        <Heading>Theme</Heading>
+        <Heading>{t("settings:theme.title")}</Heading>
         <p className="text-text-subtle">
-          Make Yaak your own by selecting a theme, or{" "}
+          {t("settings:theme.description")}{" "}
           <Link href="https://yaak.app/docs/plugin-development/plugins-quick-start">
-            Create Your Own
+            {t("settings:theme.createYourOwn")}
           </Link>
         </p>
       </div>
       <SettingsList className="space-y-8">
-        <SettingsSection title="Theme">
+        <SettingsSection title={t("settings:theme.section")}>
           <ModelSettingRowSelect
             model={settings}
             modelKey="appearance"
-            title="Appearance"
-            description="Choose whether Yaak follows your system appearance or uses a fixed mode."
+            title={t("settings:theme.appearance")}
+            description={t("settings:theme.appearanceDescription")}
             options={[
-              { label: "Automatic", value: "system" },
-              { label: "Light", value: "light" },
-              { label: "Dark", value: "dark" },
+              { label: t("settings:theme.automatic"), value: "system" },
+              { label: t("settings:theme.light"), value: "light" },
+              { label: t("settings:theme.dark"), value: "dark" },
             ]}
           />
           {(settings.appearance === "system" || settings.appearance === "light") && (
             <SettingRowSelect
               name="lightTheme"
-              title="Light theme"
-              description="Theme used when Yaak is in light mode."
+              title={t("settings:theme.lightTheme")}
+              description={t("settings:theme.lightThemeDescription")}
               value={activeTheme.data.light.id}
               options={lightThemes}
               onChange={(themeLight) => patchModel(settings, { themeLight })}
@@ -108,8 +110,8 @@ export function SettingsTheme() {
           {(settings.appearance === "system" || settings.appearance === "dark") && (
             <SettingRowSelect
               name="darkTheme"
-              title="Dark theme"
-              description="Theme used when Yaak is in dark mode."
+              title={t("settings:theme.darkTheme")}
+              description={t("settings:theme.darkThemeDescription")}
               value={activeTheme.data.dark.id}
               options={darkThemes}
               onChange={(themeDark) => patchModel(settings, { themeDark })}
@@ -117,7 +119,7 @@ export function SettingsTheme() {
           )}
         </SettingsSection>
 
-        <SettingsSection title="Preview">
+        <SettingsSection title={t("settings:theme.preview")}>
           <VStack
             space={3}
             className="mt-4 w-full bg-surface p-3 border border-dashed border-border-subtle rounded overflow-x-auto"
@@ -125,7 +127,7 @@ export function SettingsTheme() {
             <HStack className="text" space={1.5}>
               <Icon icon={appearance === "dark" ? "moon" : "sun"} />
               <strong>{activeTheme.data.active.label}</strong>
-              <em>(preview)</em>
+              <em>({t("settings:theme.previewLabel")})</em>
             </HStack>
             <HStack space={1.5} className="w-full">
               {buttonColors.map((c, i) => (

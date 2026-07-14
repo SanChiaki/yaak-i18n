@@ -3,6 +3,7 @@ import { Banner, HStack, Icon, LoadingIcon, VStack } from "@yaakapp-internal/ui"
 import classNames from "classnames";
 import type { ComponentType, CSSProperties } from "react";
 import { lazy, Suspense, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useCancelHttpResponse } from "../hooks/useCancelHttpResponse";
 import { useHttpResponseEvents } from "../hooks/useHttpResponseEvents";
 import { usePinnedHttpResponse } from "../hooks/usePinnedHttpResponse";
@@ -63,6 +64,7 @@ interface RedirectDropWarning {
 }
 
 export function HttpResponsePane({ style, className, activeRequestId }: Props) {
+  const { t } = useTranslation();
   const { activeResponse, setPinnedResponseId, responses } = usePinnedHttpResponse(activeRequestId);
   const [viewMode, setViewMode] = useResponseViewMode(activeResponse?.requestId);
   const [timelineViewMode, setTimelineViewMode] = useTimelineViewMode();
@@ -83,27 +85,33 @@ export function HttpResponsePane({ style, className, activeRequestId }: Props) {
     () => [
       {
         value: TAB_BODY,
-        label: "Response",
+        label: t("request:response.title"),
         options: {
           value: viewMode,
           onChange: setViewMode,
           items: [
-            { label: "Response", value: "pretty" },
+            { label: t("request:response.title"), value: "pretty" },
             ...(mimeType?.startsWith("image")
               ? []
-              : [{ label: "Response (Raw)", shortLabel: "Raw", value: "raw" }]),
+              : [
+                  {
+                    label: t("request:response.rawLabel"),
+                    shortLabel: t("request:response.raw"),
+                    value: "raw",
+                  },
+                ]),
           ],
         },
       },
       {
         value: TAB_REQUEST,
-        label: "Request",
+        label: t("request:request.title"),
         rightSlot:
           (activeResponse?.requestContentLength ?? 0) > 0 ? <CountBadge count={true} /> : null,
       },
       {
         value: TAB_HEADERS,
-        label: "Headers",
+        label: t("request:response.headers"),
         rightSlot: (
           <CountBadge
             count={activeResponse?.requestHeaders.length ?? 0}
@@ -114,7 +122,7 @@ export function HttpResponsePane({ style, className, activeRequestId }: Props) {
       },
       {
         value: TAB_COOKIES,
-        label: "Cookies",
+        label: t("request:response.cookies"),
         rightSlot:
           cookieCounts.sent > 0 || cookieCounts.received > 0 ? (
             <CountBadge count={cookieCounts.sent} count2={cookieCounts.received} showZero />
@@ -127,8 +135,12 @@ export function HttpResponsePane({ style, className, activeRequestId }: Props) {
           value: timelineViewMode,
           onChange: (v) => setTimelineViewMode((v as TimelineViewMode) ?? "timeline"),
           items: [
-            { label: "Timeline", value: "timeline" },
-            { label: "Timeline (Text)", shortLabel: "Timeline", value: "text" },
+            { label: t("request:response.timeline"), value: "timeline" },
+            {
+              label: t("request:response.timelineText"),
+              shortLabel: t("request:response.timeline"),
+              value: "text",
+            },
           ],
         },
       },
@@ -145,6 +157,7 @@ export function HttpResponsePane({ style, className, activeRequestId }: Props) {
       viewMode,
       timelineViewMode,
       setTimelineViewMode,
+      t,
     ],
   );
 
@@ -198,25 +211,25 @@ export function HttpResponsePane({ style, className, activeRequestId }: Props) {
                     content={
                       <VStack alignItems="start" space={1} className="text-xs">
                         <span className="font-medium text-warning">
-                          Redirect changed this request
+                          {t("request:response.redirectChanged")}
                         </span>
                         {redirectDropWarning.droppedBodyCount > 0 && (
                           <span>
-                            Body dropped on {redirectDropWarning.droppedBodyCount}{" "}
-                            {redirectDropWarning.droppedBodyCount === 1
-                              ? "redirect hop"
-                              : "redirect hops"}
+                            {t("request:response.bodyDropped", {
+                              count: redirectDropWarning.droppedBodyCount,
+                            })}
                           </span>
                         )}
                         {redirectDropWarning.droppedHeaders.length > 0 && (
                           <span>
-                            Headers dropped:{" "}
-                            <span className="font-mono">
-                              {redirectDropWarning.droppedHeaders.join(", ")}
-                            </span>
+                            {t("request:response.headersDropped", {
+                              headers: redirectDropWarning.droppedHeaders.join(", "),
+                            })}
                           </span>
                         )}
-                        <span className="text-text-subtle">See Timeline for details.</span>
+                        <span className="text-text-subtle">
+                          {t("request:response.timelineDetails")}
+                        </span>
                       </VStack>
                     }
                   >
@@ -228,7 +241,7 @@ export function HttpResponsePane({ style, className, activeRequestId }: Props) {
                         leftSlot={<Icon icon="alert_triangle" size="xs" color="warning" />}
                       >
                         <span className="truncate">
-                          {getRedirectWarningLabel(redirectDropWarning)}
+                          {getRedirectWarningLabel(redirectDropWarning, t)}
                         </span>
                       </PillButton>
                     </span>
@@ -256,7 +269,7 @@ export function HttpResponsePane({ style, className, activeRequestId }: Props) {
             {/* Show tabs if we have any data (headers, body, etc.) even if there's an error */}
             <Tabs
               tabs={tabs}
-              label="Response"
+              label={t("request:response.title")}
               className="ml-3 mr-3 mb-3 min-h-0 flex-1"
               tabListClassName="mt-0.5 -mb-1.5"
               storageKey="http_response_tabs"
@@ -271,16 +284,16 @@ export function HttpResponsePane({ style, className, activeRequestId }: Props) {
                           <VStack space={3}>
                             <HStack space={3}>
                               <LoadingIcon className="text-text-subtlest" />
-                              Sending Request
+                              {t("request:response.sending")}
                             </HStack>
                             <Button size="sm" variant="border" onClick={() => cancel.mutate()}>
-                              Cancel
+                              {t("common:cancel")}
                             </Button>
                           </VStack>
                         </EmptyStateText>
                       ) : activeResponse.state === "closed" &&
                         (activeResponse.contentLength ?? 0) === 0 ? (
-                        <EmptyStateText>Empty</EmptyStateText>
+                        <EmptyStateText>{t("request:response.empty")}</EmptyStateText>
                       ) : mimeType?.match(/^text\/event-stream/i) && viewMode === "pretty" ? (
                         <EventStreamViewer response={activeResponse} />
                       ) : mimeType?.match(/^image\/svg/) ? (
@@ -368,14 +381,17 @@ function pushHeaderName(headers: Set<string>, headerName: string): void {
   }
 }
 
-function getRedirectWarningLabel(warning: RedirectDropWarning): string {
+function getRedirectWarningLabel(
+  warning: RedirectDropWarning,
+  t: ReturnType<typeof useTranslation>["t"],
+): string {
   if (warning.droppedBodyCount > 0 && warning.droppedHeaders.length > 0) {
-    return "Dropped body and headers";
+    return t("request:response.droppedBodyAndHeaders");
   }
   if (warning.droppedBodyCount > 0) {
-    return "Dropped body";
+    return t("request:response.droppedBody");
   }
-  return "Dropped headers";
+  return t("request:response.droppedHeaders");
 }
 
 function EnsureCompleteResponse({
@@ -385,8 +401,9 @@ function EnsureCompleteResponse({
   response: HttpResponse;
   Component: ComponentType<{ bodyPath: string }>;
 }) {
+  const { t } = useTranslation();
   if (response.bodyPath === null) {
-    return <div>Empty response body</div>;
+    return <div>{t("request:response.emptyBody")}</div>;
   }
 
   // Wait until the response has been fully-downloaded

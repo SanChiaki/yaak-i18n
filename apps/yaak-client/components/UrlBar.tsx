@@ -4,6 +4,7 @@ import { HStack } from "@yaakapp-internal/ui";
 import classNames from "classnames";
 import type { FormEvent, ReactNode } from "react";
 import { memo, useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useHotKey } from "../hooks/useHotKey";
 import { IconButton } from "./core/IconButton";
 import type { InputHandle, InputProps } from "./core/Input";
@@ -43,6 +44,7 @@ export const UrlBar = memo(function UrlBar({
   isLoading,
   stateKey,
 }: Props) {
+  const { t } = useTranslation();
   const inputRef = useRef<InputHandle>(null);
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
@@ -72,7 +74,7 @@ export const UrlBar = memo(function UrlBar({
         hideLabel
         language="url"
         className="px-1.5 py-0.5"
-        label="Enter URL"
+        label={t("request:request.enterUrl")}
         name="url"
         autocomplete={autocomplete}
         forceUpdateKey={forceUpdateKey}
@@ -92,7 +94,7 @@ export const UrlBar = memo(function UrlBar({
                 <IconButton
                   size="xs"
                   iconSize="md"
-                  title="Send Request"
+                  title={isLoading ? t("common:cancel") : t("request:request.send")}
                   type="submit"
                   className="w-8 mr-0.5 !h-full"
                   iconColor="secondary"

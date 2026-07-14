@@ -50,3 +50,22 @@ impl<'a> ClientDb<'a> {
         self.upsert(settings, source)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::init_in_memory;
+    use crate::util::UpdateSource;
+
+    #[test]
+    fn persists_language_when_updating_existing_settings() {
+        let (query_manager, _blob_manager, _rx) = init_in_memory().expect("Failed to init DB");
+        let db = query_manager.connect();
+
+        let mut settings = db.get_settings();
+        settings.language = Some("zh-CN".to_string());
+        db.upsert_settings(&settings, &UpdateSource::from_window_label("settings-test"))
+            .expect("Failed to update settings language");
+
+        assert_eq!(db.get_settings().language.as_deref(), Some("zh-CN"));
+    }
+}

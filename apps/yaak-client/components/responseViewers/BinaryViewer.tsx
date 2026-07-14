@@ -4,12 +4,14 @@ import { getContentTypeFromHeaders } from "../../lib/model_util";
 import { Button } from "../core/Button";
 import { Banner, InlineCode, LoadingIcon } from "@yaakapp-internal/ui";
 import { EmptyStateText } from "../EmptyStateText";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   response: HttpResponse;
 }
 
 export function BinaryViewer({ response }: Props) {
+  const { t } = useTranslation();
   const saveResponse = useSaveResponse(response);
   const contentType = getContentTypeFromHeaders(response.headers) ?? "unknown";
 
@@ -25,11 +27,12 @@ export function BinaryViewer({ response }: Props) {
   return (
     <Banner color="primary" className="h-full flex flex-col gap-3">
       <p>
-        Content type <InlineCode>{contentType}</InlineCode> cannot be previewed
+        {t("request:response.contentType")} <InlineCode>{contentType}</InlineCode>{" "}
+        {t("request:response.cannotPreview")}
       </p>
       <div>
         <Button variant="border" size="sm" onClick={() => saveResponse.mutate()}>
-          Save to File
+          {t("request:response.saveToFile")}
         </Button>
       </div>
     </Banner>

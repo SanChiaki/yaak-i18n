@@ -12,6 +12,7 @@ import {
 import { basename } from "@tauri-apps/api/path";
 import classNames from "classnames";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { WrappedEnvironmentVariable } from "../../hooks/useEnvironmentVariables";
 import { useRandomKey } from "../../hooks/useRandomKey";
 import { useToggle } from "../../hooks/useToggle";
@@ -105,6 +106,7 @@ export function PairEditor({
   valueValidate,
   setRef,
 }: PairEditorProps) {
+  const { t } = useTranslation();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState<PairWithId | null>(null);
   const [pairs, setPairs] = useState<PairWithId[]>([]);
@@ -329,7 +331,7 @@ export function PairEditor({
           })}
           {!showAll && pairs.length > MAX_INITIAL_PAIRS && (
             <Button onClick={toggleShowAll} variant="border" className="m-2" size="xs">
-              Show {pairs.length - MAX_INITIAL_PAIRS} More
+              {t("common:pairEditor.showMore", { count: pairs.length - MAX_INITIAL_PAIRS })}
             </Button>
           )}
           <DragOverlay dropAnimation={null}>
@@ -431,6 +433,7 @@ export function PairEditorRow({
   valueValidate,
   setRef,
 }: PairEditorRowProps) {
+  const { t } = useTranslation();
   const nameInputRef = useRef<InputHandle>(null);
   const valueInputRef = useRef<InputHandle>(null);
   const handle = useRef<RowHandle>({
@@ -503,7 +506,7 @@ export function PairEditorRow({
       showDialog({
         id: "pair-edit-multiline",
         size: "dynamic",
-        title: <>Edit {pair.name}</>,
+        title: t("common:pairEditor.edit", { name: pair.name }),
         render: ({ hide }) => (
           <MultilineEditDialog
             hide={hide}
@@ -513,23 +516,23 @@ export function PairEditorRow({
           />
         ),
       }),
-    [handleChangeValueText, pair.contentType, pair.name, pair.value],
+    [handleChangeValueText, pair.contentType, pair.name, pair.value, t],
   );
 
   const defaultItems = useMemo(
     (): DropdownItem[] => [
       {
-        label: "Edit Multi-line",
+        label: t("common:pairEditor.editMultiline"),
         onSelect: handleEditMultiLineValue,
         hidden: !allowMultilineValues,
       },
       {
-        label: "Delete",
+        label: t("common:delete"),
         onSelect: handleDelete,
         color: "danger",
       },
     ],
-    [allowMultilineValues, handleDelete, handleEditMultiLineValue],
+    [allowMultilineValues, handleDelete, handleEditMultiLineValue, t],
   );
 
   const { attributes, listeners, setNodeRef: setDraggableRef } = useDraggable({ id: pair.id });
@@ -563,7 +566,9 @@ export function PairEditorRow({
     >
       <Checkbox
         hideLabel
-        title={pair.enabled ? "Disable item" : "Enable item"}
+        title={
+          pair.enabled ? t("common:pairEditor.disableItem") : t("common:pairEditor.enableItem")
+        }
         disabled={isLast || disabled}
         checked={isLast ? false : !!pair.enabled}
         className={classNames(isLast && "!opacity-disabled")}
@@ -604,11 +609,11 @@ export function PairEditorRow({
           forceUpdateKey={forceUpdateKey}
           containerClassName={classNames("bg-surface", isLast && "border-dashed")}
           defaultValue={pair.name}
-          label="Name"
+          label={t("common:name")}
           name={`name[${index}]`}
           onChange={handleChangeName}
           onFocus={handleFocusName}
-          placeholder={namePlaceholder ?? "name"}
+          placeholder={namePlaceholder ?? t("common:name")}
           autocomplete={nameAutocomplete}
           autocompleteVariables={nameAutocompleteVariables}
           autocompleteFunctions={nameAutocompleteFunctions}
@@ -647,12 +652,12 @@ export function PairEditorRow({
               forcedEnvironmentId={forcedEnvironmentId}
               forceUpdateKey={forceUpdateKey}
               defaultValue={pair.value}
-              label="Value"
+              label={t("common:value")}
               name={`value[${index}]`}
               onChange={handleChangeValueText}
               onFocus={handleFocusValue}
               type={isLast ? "text" : typeof valueType === "function" ? valueType(pair) : valueType}
-              placeholder={valuePlaceholder ?? "value"}
+              placeholder={valuePlaceholder ?? t("common:value")}
               autocomplete={valueAutocomplete?.(pair.name)}
               autocompleteFunctions={valueAutocompleteFunctions}
               autocompleteVariables={valueAutocompleteVariablesFiltered}
@@ -676,7 +681,7 @@ export function PairEditorRow({
             iconSize="sm"
             size="xs"
             icon={isLast || disabled ? "empty" : "chevron_down"}
-            title="Select form data type"
+            title={t("common:pairEditor.selectType")}
             className="text-text-subtlest"
           />
         </Dropdown>
@@ -684,11 +689,6 @@ export function PairEditorRow({
     </div>
   );
 }
-
-const fileItems: RadioDropdownItem<string>[] = [
-  { label: "Text", value: "text" },
-  { label: "File", value: "file" },
-];
 
 function FileActionsDropdown({
   pair,
@@ -707,6 +707,14 @@ function FileActionsDropdown({
   onDelete: () => void;
   editMultiLine: () => void;
 }) {
+  const { t } = useTranslation();
+  const fileItems = useMemo<RadioDropdownItem<string>[]>(
+    () => [
+      { label: t("common:pairEditor.text"), value: "text" },
+      { label: t("common:pairEditor.file"), value: "file" },
+    ],
+    [t],
+  );
   const onChange = useCallback(
     (v: string) => {
       if (v === "file") onChangeFile({ filePath: "" });
@@ -718,51 +726,51 @@ function FileActionsDropdown({
   const itemsAfter = useMemo<DropdownItem[]>(
     () => [
       {
-        label: "Edit Multi-Line",
+        label: t("common:pairEditor.editMultiline"),
         leftSlot: <Icon icon="file_code" />,
         hidden: pair.isFile,
         onSelect: editMultiLine,
       },
       {
-        label: "Set Content-Type",
+        label: t("common:pairEditor.setContentType"),
         leftSlot: <Icon icon="pencil" />,
         onSelect: async () => {
           const contentType = await showPrompt({
             id: "content-type",
-            title: "Override Content-Type",
+            title: t("common:pairEditor.overrideContentType"),
             label: "Content-Type",
             required: false,
             placeholder: "text/plain",
             defaultValue: pair.contentType ?? "",
-            confirmText: "Set",
-            description: "Leave blank to auto-detect",
+            confirmText: t("common:pairEditor.set"),
+            description: t("common:pairEditor.autoDetect"),
           });
           if (contentType == null) return;
           onChangeContentType(contentType);
         },
       },
       {
-        label: "Set File Name",
+        label: t("common:pairEditor.setFileName"),
         leftSlot: <Icon icon="file_code" />,
         onSelect: async () => {
           console.log("PAIR", pair);
           const defaultFilename = await basename(pair.value ?? "");
           const filename = await showPrompt({
             id: "filename",
-            title: "Override Filename",
-            label: "Filename",
+            title: t("common:pairEditor.overrideFilename"),
+            label: t("common:pairEditor.filename"),
             required: false,
             placeholder: defaultFilename ?? "myfile.png",
             defaultValue: pair.filename,
-            confirmText: "Set",
-            description: "Leave blank to use the name of the selected file",
+            confirmText: t("common:pairEditor.set"),
+            description: t("common:pairEditor.useSelectedFilename"),
           });
           if (filename == null) return;
           onChangeFilename(filename);
         },
       },
       {
-        label: "Unset File",
+        label: t("common:pairEditor.unsetFile"),
         leftSlot: <Icon icon="x" />,
         hidden: pair.isFile,
         onSelect: async () => {
@@ -770,7 +778,7 @@ function FileActionsDropdown({
         },
       },
       {
-        label: "Delete",
+        label: t("common:delete"),
         onSelect: onDelete,
         variant: "danger",
         leftSlot: <Icon icon="trash" />,
@@ -787,6 +795,7 @@ function FileActionsDropdown({
       onChangeFilename,
       pair.filename,
       pair,
+      t,
     ],
   );
 
@@ -801,7 +810,7 @@ function FileActionsDropdown({
         iconSize="sm"
         size="xs"
         icon="chevron_down"
-        title="Select form data type"
+        title={t("common:pairEditor.selectType")}
         className="text-text-subtlest"
       />
     </RadioDropdown>
@@ -827,6 +836,7 @@ function MultilineEditDialog({
   onChange: (value: string) => void;
   hide: () => void;
 }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState<string>(defaultValue);
   const language = languageFromContentType(contentType, value);
   return (
@@ -849,7 +859,7 @@ function MultilineEditDialog({
             hide();
           }}
         >
-          Done
+          {t("common:pairEditor.done")}
         </Button>
       </div>
     </div>

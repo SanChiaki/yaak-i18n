@@ -5,6 +5,7 @@ on:
 
 jobs:
   build-artifacts:
+    if: ${{ !endsWith(github.ref_name, '-test') }}
     permissions:
       contents: write
 

@@ -23,11 +23,13 @@ import {
 import { useAtomValue } from "jotai";
 import type { CSSProperties, HTMLAttributes, KeyboardEvent, ReactNode } from "react";
 import { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useClickOutside } from "../../hooks/useClickOutside";
 import { Banner, useContainerSize } from "@yaakapp-internal/ui";
 import { Icon, useDebouncedValue } from "@yaakapp-internal/ui";
 import { useStateWithDeps } from "../../hooks/useStateWithDeps";
 import { jotaiStore } from "../../lib/jotai";
+import i18n from "../../i18n";
 import { CountBadge } from "../core/CountBadge";
 import { IconButton } from "../core/IconButton";
 import { PlainInput } from "../core/PlainInput";
@@ -54,6 +56,7 @@ export const GraphQLDocsExplorer = memo(function GraphQLDocsExplorer({
   requestId,
   className,
 }: Props) {
+  useTranslation();
   const [activeItem, setActiveItem] = useState<ExplorerItem>(null);
 
   const qryType = schema.getQueryType();
@@ -108,7 +111,7 @@ export const GraphQLDocsExplorer = memo(function GraphQLDocsExplorer({
         />
         {activeItem == null ? (
           <div className="flex flex-col gap-3 overflow-y-auto h-full w-full px-3 pb-6">
-            <Heading>Root Types</Heading>
+            <Heading>{i18n.t("request:graphql.rootTypes")}</Heading>
             <GqlTypeRow
               name={{ value: "query", color: "primary" }}
               item={qryItem}
@@ -127,7 +130,9 @@ export const GraphQLDocsExplorer = memo(function GraphQLDocsExplorer({
               setItem={setActiveItem}
               className="!my-0"
             />
-            <Subheading count={Object.keys(allTypes).length}>All Schema Types</Subheading>
+            <Subheading count={Object.keys(allTypes).length}>
+              {i18n.t("request:graphql.allSchemaTypes")}
+            </Subheading>
             <DocMarkdown>{schema.description ?? null}</DocMarkdown>
             <div className="flex flex-col gap-1">
               {Object.values(allTypes).map((t) => {
@@ -209,7 +214,12 @@ function GraphQLExplorerHeader({
         />
       </div>
       <div className="ml-auto flex gap-1 [&>*]:text-text-subtle">
-        <IconButton icon="x" size="sm" title="Close documentation explorer" onClick={onClose} />
+        <IconButton
+          icon="x"
+          size="sm"
+          title={i18n.t("request:graphql.closeExplorer")}
+          onClick={onClose}
+        />
       </div>
     </nav>
   );
@@ -234,7 +244,7 @@ function GqlTypeInfo({
       <Heading>
         <GqlTypeLabel item={item} />
       </Heading>
-      <DocMarkdown>{description || "No description"}</DocMarkdown>
+      <DocMarkdown>{description || i18n.t("common:markdown.noDescription")}</DocMarkdown>
       {"deprecationReason" in item.type && item.type.deprecationReason && (
         <Banner color="notice">
           <DocMarkdown>{item.type.deprecationReason}</DocMarkdown>
@@ -264,7 +274,9 @@ function GqlTypeInfo({
       <div>
         {heading}
 
-        <Subheading count={Object.keys(fields).length}>Fields</Subheading>
+        <Subheading count={Object.keys(fields).length}>
+          {i18n.t("request:graphql.fields")}
+        </Subheading>
         {Object.entries(fields).map(([fieldName, field]) => {
           const fieldItem: ExplorerItem = toExplorerItem(field, item);
           return (
@@ -280,7 +292,7 @@ function GqlTypeInfo({
 
         {possibleTypes.length > 0 && (
           <>
-            <Subheading>Implemented By</Subheading>
+            <Subheading>{i18n.t("request:graphql.implementedBy")}</Subheading>
             {possibleTypes.map((t) => (
               <GqlTypeRow key={t.name} item={toExplorerItem(t, item)} setItem={setItem} />
             ))}
@@ -296,7 +308,7 @@ function GqlTypeInfo({
       <div>
         {heading}
 
-        <Subheading>Possible Types</Subheading>
+        <Subheading>{i18n.t("request:graphql.possibleTypes")}</Subheading>
         {types.map((t) => (
           <GqlTypeRow key={t.name} item={{ kind: "type", type: t, from: item }} setItem={setItem} />
         ))}
@@ -309,7 +321,7 @@ function GqlTypeInfo({
     return (
       <div>
         {heading}
-        <Subheading>Values</Subheading>
+        <Subheading>{i18n.t("request:graphql.values")}</Subheading>
         {values.map((v) => (
           <div key={v.name} className="my-4 font-mono text-editor truncate">
             <span className="text-primary">{v.value}</span>
@@ -326,13 +338,13 @@ function GqlTypeInfo({
 
         {item.type.defaultValue !== undefined && (
           <div>
-            <Subheading>Default Value</Subheading>
+            <Subheading>{i18n.t("request:graphql.defaultValue")}</Subheading>
             <div className="font-mono text-editor">{JSON.stringify(item.type.defaultValue)}</div>
           </div>
         )}
 
         <div>
-          <Subheading>Type</Subheading>
+          <Subheading>{i18n.t("request:graphql.type")}</Subheading>
           <GqlTypeRow
             className="mt-4"
             item={{ kind: "type", type: item.type.type, from: item }}
@@ -348,7 +360,7 @@ function GqlTypeInfo({
         {heading}
 
         <div>
-          <Subheading>Type</Subheading>
+          <Subheading>{i18n.t("request:graphql.type")}</Subheading>
           <GqlTypeRow
             className="mt-4"
             item={{ kind: "type", type: item.type.type, from: item }}
@@ -358,7 +370,7 @@ function GqlTypeInfo({
 
         {item.type.args.length > 0 && (
           <div>
-            <Subheading>Arguments</Subheading>
+            <Subheading>{i18n.t("request:graphql.arguments")}</Subheading>
             {item.type.args.map((a) => {
               return (
                 <div key={`${String(a.type)}::${a.name}`} className="my-4">
@@ -381,7 +393,9 @@ function GqlTypeInfo({
       <div>
         {heading}
 
-        <Subheading count={Object.keys(fields).length}>Fields</Subheading>
+        <Subheading count={Object.keys(fields).length}>
+          {i18n.t("request:graphql.fields")}
+        </Subheading>
         {Object.keys(fields).map((fieldName) => {
           const field = fields[fieldName];
           if (field == null) return null;
@@ -412,7 +426,7 @@ function GqlTypeInfo({
         {heading}
         {interfaces.length > 0 && (
           <>
-            <Subheading>Implements</Subheading>
+            <Subheading>{i18n.t("request:graphql.implements")}</Subheading>
             {interfaces.map((i) => (
               <GqlTypeRow
                 key={i.name}
@@ -423,7 +437,9 @@ function GqlTypeInfo({
           </>
         )}
 
-        <Subheading count={Object.keys(fields).length}>Fields</Subheading>
+        <Subheading count={Object.keys(fields).length}>
+          {i18n.t("request:graphql.fields")}
+        </Subheading>
         {Object.keys(fields).map((fieldName) => {
           const field = fields[fieldName];
           if (field == null) return null;
@@ -443,7 +459,7 @@ function GqlTypeInfo({
   }
 
   console.log("Unknown GraphQL Type", item);
-  return <div>Unknown GraphQL type</div>;
+  return <div>{i18n.t("request:graphql.unknownType")}</div>;
 }
 
 function GqlTypeRow({
@@ -463,7 +479,7 @@ function GqlTypeRow({
 }) {
   if (item == null) return null;
 
-  let child: ReactNode = <>Unknown Type</>;
+  let child: ReactNode = <>{i18n.t("request:graphql.unknownType")}</>;
 
   if (item.kind === "type") {
     child = (
@@ -793,13 +809,18 @@ function GqlSchemaSearch({
       <PlainInput
         ref={inputRef}
         size="sm"
-        label="search"
+        label={i18n.t("common:search")}
         hideLabel
         defaultValue={value}
         placeholder={
           focused
-            ? `Search ${currentItem != null && "name" in currentItem.type ? currentItem.type.name : "Schema"}`
-            : "Search"
+            ? i18n.t("request:graphql.searchIn", {
+                target:
+                  currentItem != null && "name" in currentItem.type
+                    ? currentItem.type.name
+                    : i18n.t("request:graphql.schema"),
+              })
+            : i18n.t("common:search")
         }
         leftSlot={
           <div className="w-10 flex justify-center items-center">
@@ -823,7 +844,7 @@ function GqlSchemaSearch({
       >
         {results.length === 0 && (
           <SearchResult isActive={false} className="text-text-subtle">
-            No results found
+            {i18n.t("request:graphql.noResults")}
           </SearchResult>
         )}
         {results.map((r, i) => {

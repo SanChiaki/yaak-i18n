@@ -3,6 +3,7 @@ import type { WorkspaceMeta } from "@yaakapp-internal/models";
 import { createGlobalModel, updateModel } from "@yaakapp-internal/models";
 import { VStack } from "@yaakapp-internal/ui";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { router } from "../lib/router";
 import { setupOrConfigureEncryption } from "../lib/setupOrConfigureEncryption";
 import { invokeCmd } from "../lib/tauri";
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function CreateWorkspaceDialog({ hide }: Props) {
+  const { t } = useTranslation();
   const [name, setName] = useState<string>("");
   const [syncConfig, setSyncConfig] = useState<{
     filePath: string | null;
@@ -53,7 +55,7 @@ export function CreateWorkspaceDialog({ hide }: Props) {
             .catch((err) => {
               showErrorToast({
                 id: "git-init-error",
-                title: "Error initializing Git",
+                title: t("workspace:workspace.gitInitError"),
                 message: String(err),
               });
             });
@@ -72,7 +74,7 @@ export function CreateWorkspaceDialog({ hide }: Props) {
         }
       }}
     >
-      <PlainInput required label="Name" defaultValue={name} onChange={setName} />
+      <PlainInput required label={t("common:name")} defaultValue={name} onChange={setName} />
 
       <SyncToFilesystemSetting
         onChange={setSyncConfig}
@@ -81,16 +83,16 @@ export function CreateWorkspaceDialog({ hide }: Props) {
       />
       <div>
         <Label htmlFor={null} help={<EncryptionHelp />}>
-          Workspace encryption
+          {t("workspace:workspace.encryption")}
         </Label>
         <Checkbox
           checked={setupEncryption}
           onChange={setSetupEncryption}
-          title="Enable Encryption"
+          title={t("workspace:workspace.enableEncryption")}
         />
       </div>
       <Button type="submit" color="primary" className="w-full mt-3">
-        Create Workspace
+        {t("workspace:workspace.create")}
       </Button>
     </VStack>
   );

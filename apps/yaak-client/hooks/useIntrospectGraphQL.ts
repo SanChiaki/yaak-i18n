@@ -4,6 +4,7 @@ import type { GraphQlIntrospection, HttpRequest } from "@yaakapp-internal/models
 import type { GraphQLSchema, IntrospectionQuery } from "graphql";
 import { buildClientSchema, getIntrospectionQuery } from "graphql";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { minPromiseMillis } from "../lib/minPromiseMillis";
 import { getResponseBodyText } from "../lib/responseBody";
 import { sendEphemeralRequest } from "../lib/sendEphemeralRequest";
@@ -19,6 +20,7 @@ export function useIntrospectGraphQL(
   baseRequest: HttpRequest,
   options: { disabled?: boolean } = {},
 ) {
+  const { t } = useTranslation();
   // Debounce the request because it can change rapidly, and we don't
   // want to send so too many requests.
   const debouncedRequest = useDebouncedValue(baseRequest);
@@ -66,12 +68,12 @@ export function useIntrospectGraphQL(
       const bodyText = await getResponseBodyText({ response, filter: null });
       if (response.status < 200 || response.status >= 300) {
         return setError(
-          `Request failed with status ${response.status}.\nThe response text is:\n\n${bodyText}`,
+          t("request:graphql.requestFailed", { status: response.status, body: bodyText }),
         );
       }
 
       if (bodyText === null) {
-        return setError("Empty body returned in response");
+        return setError(t("request:graphql.emptyResponseBody"));
       }
 
       console.log(`Got introspection response for ${baseRequest.url}`, bodyText);
@@ -81,7 +83,7 @@ export function useIntrospectGraphQL(
     } finally {
       setIsLoading(false);
     }
-  }, [activeEnvironment?.id, baseRequest, upsertIntrospection]);
+  }, [activeEnvironment?.id, baseRequest, t, upsertIntrospection]);
 
   // oxlint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {

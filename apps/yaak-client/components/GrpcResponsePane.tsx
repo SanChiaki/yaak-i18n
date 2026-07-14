@@ -3,6 +3,8 @@ import { HStack, Icon, type IconProps, LoadingIcon, VStack } from "@yaakapp-inte
 import { useAtomValue, useSetAtom } from "jotai";
 import type { CSSProperties } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import {
   activeGrpcConnectionAtom,
   activeGrpcConnections,
@@ -34,6 +36,7 @@ interface Props {
 }
 
 export function GrpcResponsePane({ style, methodType, activeRequest }: Props) {
+  const { t } = useTranslation();
   const [activeEventIndex, setActiveEventIndex] = useState<number | null>(null);
   const [showLarge, setShowLarge] = useStateWithDeps<boolean>(false, [activeRequest.id]);
   const [showingLarge, setShowingLarge] = useState<boolean>(false);
@@ -68,7 +71,9 @@ export function GrpcResponsePane({ style, methodType, activeRequest }: Props) {
   const header = (
     <HStack className="pl-3 mb-1 font-mono text-sm text-text-subtle overflow-x-auto hide-scrollbars">
       <HStack space={2}>
-        <span className="whitespace-nowrap">{events.length} Messages</span>
+        <span className="whitespace-nowrap">
+          {t("request:protocol.messages", { count: events.length })}
+        </span>
         {activeConnection.state !== "closed" && (
           <LoadingIcon size="sm" className="text-text-subtlest" />
         )}
@@ -121,8 +126,9 @@ function GrpcEventRow({
   isActive: boolean;
   onClick: () => void;
 }) {
+  const { t } = useTranslation();
   const { eventType, status, content, error } = event;
-  const display = getEventDisplay(eventType, status);
+  const display = getEventDisplay(eventType, status, t);
 
   return (
     <EventViewerRow
@@ -155,8 +161,12 @@ function GrpcEventDetail({
   setShowingLarge: (v: boolean) => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   if (event.eventType === "client_message" || event.eventType === "server_message") {
-    const title = `Message ${event.eventType === "client_message" ? "Sent" : "Received"}`;
+    const title =
+      event.eventType === "client_message"
+        ? t("request:protocol.messageSent")
+        : t("request:protocol.messageReceived");
 
     return (
       <div className="h-full grid grid-rows-[auto_minmax(0,1fr)]">
@@ -168,7 +178,7 @@ function GrpcEventDetail({
         />
         {!showLarge && event.content.length > 1000 * 1000 ? (
           <VStack space={2} className="italic text-text-subtlest">
-            Message previews larger than 1MB are hidden
+            {t("request:protocol.largePreviewHidden")}
             <div>
               <Button
                 onClick={() => {
@@ -183,7 +193,7 @@ function GrpcEventDetail({
                 variant="border"
                 size="xs"
               >
-                Try Showing
+                {t("request:protocol.tryShowing")}
               </Button>
             </div>
           </VStack>
@@ -212,7 +222,9 @@ function GrpcEventDetail({
       <div className="py-2 h-full">
         {Object.keys(event.metadata).length === 0 ? (
           <EmptyStateText>
-            No {event.eventType === "connection_end" ? "trailers" : "metadata"}
+            {event.eventType === "connection_end"
+              ? t("request:grpc.noTrailers")
+              : t("request:grpc.noMetadata")}
           </EmptyStateText>
         ) : (
           <KeyValueRows>
@@ -231,18 +243,31 @@ function GrpcEventDetail({
 function getEventDisplay(
   eventType: GrpcEvent["eventType"],
   status: GrpcEvent["status"],
+  t: TFunction,
 ): { icon: IconProps["icon"]; color: IconProps["color"]; title: string } {
   if (eventType === "server_message") {
-    return { icon: "arrow_big_down_dash", color: "info", title: "Server message" };
+    return {
+      icon: "arrow_big_down_dash",
+      color: "info",
+      title: t("request:grpc.serverMessage"),
+    };
   }
   if (eventType === "client_message") {
-    return { icon: "arrow_big_up_dash", color: "primary", title: "Client message" };
+    return {
+      icon: "arrow_big_up_dash",
+      color: "primary",
+      title: t("request:grpc.clientMessage"),
+    };
   }
   if (eventType === "error" || (status != null && status > 0)) {
-    return { icon: "alert_triangle", color: "danger", title: "Error" };
+    return { icon: "alert_triangle", color: "danger", title: t("common:error") };
   }
   if (eventType === "connection_end") {
-    return { icon: "check", color: "success", title: "Connection response" };
+    return {
+      icon: "check",
+      color: "success",
+      title: t("request:grpc.connectionResponse"),
+    };
   }
-  return { icon: "info", color: undefined, title: "Event" };
+  return { icon: "info", color: undefined, title: t("request:protocol.event") };
 }

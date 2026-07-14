@@ -1,10 +1,12 @@
 import type { HttpRequestHeader } from "@yaakapp-internal/models";
 import type { GenericCompletionOption } from "@yaakapp-internal/plugins";
 import { HStack } from "@yaakapp-internal/ui";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { charsets } from "../lib/data/charsets";
 import { connections } from "../lib/data/connections";
 import { encodings } from "../lib/data/encodings";
-import { headerNames } from "../lib/data/headerNames";
+import { getHeaderNames } from "../lib/data/headerNames";
 import { mimeTypes } from "../lib/data/mimetypes";
 import { CountBadge } from "./core/CountBadge";
 import { DetailsBanner } from "./core/DetailsBanner";
@@ -29,10 +31,30 @@ export function HeadersEditor({
   stateKey,
   headers,
   inheritedHeaders,
-  inheritedHeadersLabel = "Inherited",
+  inheritedHeadersLabel,
   onChange,
   forceUpdateKey,
 }: Props) {
+  const { t, i18n } = useTranslation();
+  const resolvedInheritedHeadersLabel = inheritedHeadersLabel ?? t("request:headers.inherited");
+  const nameAutocomplete = useMemo<PairEditorProps["nameAutocomplete"]>(
+    () => ({
+      minMatch: MIN_MATCH,
+      options: getHeaderNames(t).map((option) =>
+        typeof option === "string"
+          ? {
+              label: option,
+              type: "constant",
+              boost: 1,
+            }
+          : {
+              ...option,
+              boost: 1,
+            },
+      ),
+    }),
+    [i18n.resolvedLanguage, t],
+  );
   // Get header names defined at current level (case-insensitive)
   const currentHeaderNames = new Set(
     headers.filter((h) => h.name).map((h) => h.name.toLowerCase()),
@@ -60,7 +82,7 @@ export function HeadersEditor({
           className="text-sm"
           summary={
             <HStack>
-              {inheritedHeadersLabel} <CountBadge count={validInheritedHeaders.length} />
+              {resolvedInheritedHeadersLabel} <CountBadge count={validInheritedHeaders.length} />
             </HStack>
           }
         >
@@ -139,22 +161,6 @@ const valueAutocomplete = (headerName: string): GenericCompletionConfig | undefi
       boost: 1, // Put above other completions
     })) ?? [];
   return { minMatch: MIN_MATCH, options };
-};
-
-const nameAutocomplete: PairEditorProps["nameAutocomplete"] = {
-  minMatch: MIN_MATCH,
-  options: headerNames.map((t) =>
-    typeof t === "string"
-      ? {
-          label: t,
-          type: "constant",
-          boost: 1, // Put above other completions
-        }
-      : {
-          ...t,
-          boost: 1, // Put above other completions
-        },
-  ),
 };
 
 const validateHttpHeader = (v: string) => {

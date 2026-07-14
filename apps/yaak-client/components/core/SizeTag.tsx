@@ -1,4 +1,5 @@
 import { formatSize } from "@yaakapp-internal/lib/formatSize";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   contentLength: number;
@@ -6,12 +7,15 @@ interface Props {
 }
 
 export function SizeTag({ contentLength, contentLengthCompressed }: Props) {
+  const { t } = useTranslation();
   return (
     <span
       className="font-mono"
       title={
-        `${contentLength} bytes` +
-        (contentLengthCompressed ? `\n${contentLengthCompressed} bytes compressed` : "")
+        t("common:size.bytes", { count: contentLength }) +
+        (contentLengthCompressed
+          ? `\n${t("common:size.bytesCompressed", { count: contentLengthCompressed })}`
+          : "")
       }
     >
       {formatSize(contentLength)}

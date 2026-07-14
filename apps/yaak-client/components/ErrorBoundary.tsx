@@ -2,6 +2,7 @@ import { Banner, Button, InlineCode } from "@yaakapp-internal/ui";
 import type { ErrorInfo, ReactNode } from "react";
 import { Component, useEffect } from "react";
 import { showDialog } from "../lib/dialog";
+import i18n from "../i18n";
 import RouteError from "./RouteError";
 
 interface ErrorBoundaryProps {
@@ -33,7 +34,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         <Banner color="danger" className="flex items-center gap-2 overflow-auto">
           <div>
-            Error rendering <InlineCode>{this.props.name}</InlineCode> component
+            {i18n.t("common:errors.rendering")} <InlineCode>{this.props.name}</InlineCode>{" "}
+            {i18n.t("common:errors.component")}
           </div>
           <Button
             className="inline-flex"
@@ -47,7 +49,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               });
             }}
           >
-            Show
+            {i18n.t("common:show")}
           </Button>
         </Banner>
       );
@@ -62,5 +64,5 @@ export function ErrorBoundaryTestThrow() {
     throw new Error("test error");
   });
 
-  return <div>Hello</div>;
+  return <div>{i18n.t("common:hello")}</div>;
 }

@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { useAtomValue } from "jotai";
 import * as m from "motion/react-m";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   getActiveCookieJar,
   useEnsureActiveCookieJar,
@@ -149,6 +150,7 @@ export function Workspace() {
 }
 
 function WorkspaceBody() {
+  const { t } = useTranslation();
   const activeRequest = useAtomValue(activeRequestAtom);
   const activeFolder = useAtomValue(activeFolderAtom);
   const activeWorkspace = useAtomValue(activeWorkspaceAtom);
@@ -163,8 +165,7 @@ function WorkspaceBody() {
         transition={{ delay: 0.5 }}
       >
         <Banner color="warning" className="max-w-[30rem]">
-          The active workspace was not found. Select a workspace from the header menu or report this
-          bug to <FeedbackLink />
+          {t("workspace:workspace.activeNotFound")} <FeedbackLink />
         </Banner>
       </m.div>
     );
@@ -189,11 +190,11 @@ function WorkspaceBody() {
       bottomSlot={
         <HStack space={1} justifyContent="center" className="mt-3">
           <Button variant="border" size="sm" onClick={() => importData.mutate()}>
-            Import
+            {t("common:import")}
           </Button>
           <CreateDropdown hideFolder>
             <Button variant="border" forDropdown size="sm">
-              New Request
+              {t("request:request.new")}
             </Button>
           </CreateDropdown>
         </HStack>

@@ -1,5 +1,6 @@
 import type { HttpResponse } from "@yaakapp-internal/models";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useResponseBodyText } from "../../hooks/useResponseBodyText";
 import { languageFromContentType } from "../../lib/contentType";
 import { getContentTypeFromHeaders } from "../../lib/model_util";
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function HTMLOrTextViewer({ response, pretty, textViewerClassName }: Props) {
+  const { t } = useTranslation();
   const rawTextBody = useResponseBodyText({ response, filter: null });
   const contentType = getContentTypeFromHeaders(response.headers);
   const language = languageFromContentType(contentType, rawTextBody.data ?? "");
@@ -27,7 +29,7 @@ export function HTMLOrTextViewer({ response, pretty, textViewerClassName }: Prop
     return <WebPageViewer html={rawTextBody.data ?? ""} baseUrl={response.url} />;
   }
   if (rawTextBody.data == null) {
-    return <EmptyStateText>Empty response</EmptyStateText>;
+    return <EmptyStateText>{t("request:response.emptyBody")}</EmptyStateText>;
   }
   return (
     <HttpTextViewer

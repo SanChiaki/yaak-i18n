@@ -4,6 +4,7 @@ import classNames from "classnames";
 import * as m from "motion/react-m";
 import type { ReactNode } from "react";
 import { useKey } from "react-use";
+import { useTranslation } from "react-i18next";
 import { IconButton } from "./IconButton";
 
 export interface ToastProps {
@@ -29,6 +30,7 @@ const ICONS: Record<NonNullable<ToastProps["color"] | "custom">, IconProps["icon
 };
 
 export function Toast({ children, open, onClose, timeout, action, icon, color }: ToastProps) {
+  const { t } = useTranslation();
   useKey(
     "Escape",
     () => {
@@ -69,7 +71,7 @@ export function Toast({ children, open, onClose, timeout, action, icon, color }:
           color={color}
           variant="border"
           className="opacity-60 border-0 !absolute top-2 right-2"
-          title="Dismiss"
+          title={t("common:ui.dismiss")}
           icon="x"
           onClick={onClose}
         />

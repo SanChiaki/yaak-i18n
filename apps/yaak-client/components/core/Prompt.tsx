@@ -2,6 +2,7 @@ import type { FormInput, JsonPrimitive } from "@yaakapp-internal/plugins";
 import { HStack } from "@yaakapp-internal/ui";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { generateId } from "../../lib/generateId";
 import { DynamicForm } from "../DynamicForm";
 import { Button } from "./Button";
@@ -20,11 +21,12 @@ export function Prompt({
   onCancel,
   inputs: initialInputs,
   onResult,
-  confirmText = "Confirm",
-  cancelText = "Cancel",
+  confirmText,
+  cancelText,
   onValuesChange,
   onInputsUpdated,
 }: PromptProps) {
+  const { t } = useTranslation();
   const [value, setValue] = useState<Record<string, JsonPrimitive>>({});
   const [inputs, setInputs] = useState<FormInput[]>(initialInputs);
   const handleSubmit = useCallback(
@@ -55,10 +57,10 @@ export function Prompt({
       <DynamicForm inputs={inputs} onChange={setValue} data={value} stateKey={id} />
       <HStack space={2} justifyContent="end">
         <Button onClick={onCancel} variant="border" color="secondary">
-          {cancelText || "Cancel"}
+          {cancelText || t("common:cancel")}
         </Button>
         <Button type="submit" color="primary">
-          {confirmText || "Done"}
+          {confirmText || t("common:confirm")}
         </Button>
       </HStack>
     </form>

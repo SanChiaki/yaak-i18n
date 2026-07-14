@@ -8,6 +8,7 @@ import type {
   Workspace,
 } from "@yaakapp-internal/models";
 import { patchModel } from "@yaakapp-internal/models";
+import { useTranslation } from "react-i18next";
 import { useModelAncestors } from "../hooks/useModelAncestors";
 import {
   modelSupportsSetting,
@@ -52,6 +53,7 @@ type TlsSettingsPatch = {
 };
 
 export function ModelSettingsEditor({ model, showSectionTitles = false }: Props) {
+  const { t } = useTranslation();
   const ancestors = useModelAncestors(model);
   const supportsHttpSettings = modelSupportsHttpSettings(model);
   const supportsCookieSettings = modelSupportsCookieSettings(model);
@@ -60,7 +62,7 @@ export function ModelSettingsEditor({ model, showSectionTitles = false }: Props)
   return (
     <SettingsList className="space-y-8">
       {supportsTlsSettings && (
-        <SettingsSection title={showSectionTitles ? "Requests" : null}>
+        <SettingsSection title={showSectionTitles ? t("settings:modelSettings.requests") : null}>
           {supportsHttpSettings && (
             <IntegerSettingRow
               settingDefinition={SETTING_REQUEST_TIMEOUT}
@@ -110,7 +112,11 @@ export function ModelSettingsEditor({ model, showSectionTitles = false }: Props)
         </SettingsSection>
       )}
       {supportsCookieSettings && (
-        <SettingsSection title={supportsTlsSettings || showSectionTitles ? "Cookies" : null}>
+        <SettingsSection
+          title={
+            supportsTlsSettings || showSectionTitles ? t("settings:modelSettings.cookies") : null
+          }
+        >
           <BooleanSettingRow
             settingDefinition={SETTING_SEND_COOKIES}
             setting={model.settingSendCookies}
@@ -209,6 +215,7 @@ function BooleanSettingRow({
   settingDefinition: RequestSettingDefinition;
   onChange: (setting: BooleanSetting) => void;
 }) {
+  const { t } = useTranslation();
   const inherited = isInheritedSetting(setting);
   const overridden = inherited ? setting.enabled === true : false;
   const value = inherited ? (overridden ? setting.value : inheritedValue) : setting;
@@ -217,8 +224,8 @@ function BooleanSettingRow({
     return (
       <SettingRowBoolean
         checked={value}
-        title={settingDefinition.title}
-        description={settingDefinition.description}
+        title={t(settingDefinition.titleKey)}
+        description={t(settingDefinition.descriptionKey)}
         onChange={(value) => onChange(value)}
       />
     );
@@ -226,15 +233,15 @@ function BooleanSettingRow({
 
   return (
     <SettingOverrideRow
-      title={settingDefinition.title}
-      description={settingDefinition.description}
+      title={t(settingDefinition.titleKey)}
+      description={t(settingDefinition.descriptionKey)}
       overridden={overridden}
       onResetOverride={() => onChange({ ...setting, enabled: false })}
     >
       <Checkbox
         hideLabel
         size="md"
-        title={settingDefinition.title}
+        title={t(settingDefinition.titleKey)}
         checked={value}
         onChange={(value) => onChange({ ...setting, enabled: true, value })}
       />
@@ -253,6 +260,7 @@ function IntegerSettingRow({
   settingDefinition: RequestSettingDefinition<"settingRequestTimeout">;
   onChange: (setting: IntegerSetting) => void;
 }) {
+  const { t } = useTranslation();
   const inherited = isInheritedSetting(setting);
   const overridden = inherited ? setting.enabled === true : false;
   const value = inherited ? (overridden ? setting.value : inheritedValue) : setting;
@@ -261,8 +269,8 @@ function IntegerSettingRow({
     return (
       <SettingRowNumber
         name={settingDefinition.modelKey}
-        title={settingDefinition.title}
-        description={settingDefinition.description}
+        title={t(settingDefinition.titleKey)}
+        description={t(settingDefinition.descriptionKey)}
         value={value}
         placeholder={`${settingDefinition.defaultValue}`}
         validate={(value) => value === "" || Number.parseInt(value, 10) >= 0}
@@ -273,15 +281,15 @@ function IntegerSettingRow({
 
   return (
     <SettingOverrideRow
-      title={settingDefinition.title}
-      description={settingDefinition.description}
+      title={t(settingDefinition.titleKey)}
+      description={t(settingDefinition.descriptionKey)}
       overridden={overridden}
       onResetOverride={() => onChange({ ...setting, enabled: false })}
     >
       <PlainInput
         hideLabel
         name={settingDefinition.modelKey}
-        label={settingDefinition.title}
+        label={t(settingDefinition.titleKey)}
         size="sm"
         type="number"
         placeholder={`${settingDefinition.defaultValue}`}

@@ -28,6 +28,8 @@ import { atom, useAtomValue } from "jotai";
 import { atomFamily } from "jotai-family";
 import { selectAtom } from "jotai/utils";
 import { memo, useCallback, useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { moveToWorkspace } from "../commands/moveToWorkspace";
 import { openFolderSettings } from "../commands/openFolderSettings";
 import { activeFolderIdAtom } from "../hooks/useActiveFolderId";
@@ -52,10 +54,7 @@ import { deepEqualAtom } from "../lib/atoms";
 import { showConfirm } from "../lib/confirm";
 import { deleteModelWithConfirm } from "../lib/deleteModelWithConfirm";
 import { showDialog } from "../lib/dialog";
-import {
-  gitWorktreeStatusByModelIdAtom,
-  gitWorktreeStatusFamily,
-} from "../lib/gitWorktreeStatus";
+import { gitWorktreeStatusByModelIdAtom, gitWorktreeStatusFamily } from "../lib/gitWorktreeStatus";
 import { jotaiStore } from "../lib/jotai";
 import { resolvedModelName } from "../lib/resolvedModelName";
 import { isSidebarFocused } from "../lib/scopes";
@@ -104,6 +103,7 @@ function isSidebarLeafModel(m: AnyModel): boolean {
 const OPACITY_SUBTLE = "opacity-80";
 
 function Sidebar({ className }: { className?: string }) {
+  const { t } = useTranslation();
   const [hidden, setHidden] = useSidebarHidden();
   const activeWorkspaceId = useAtomValue(activeWorkspaceAtom)?.id;
   const treeId = `tree.${activeWorkspaceId ?? "unknown"}`;
@@ -392,7 +392,7 @@ function Sidebar({ className }: { className?: string }) {
 
       const workspaces = jotaiStore.get(workspacesAtom);
       const syncDir = jotaiStore.get(activeWorkspaceMetaAtom)?.settingSyncDir;
-      const gitItems = getGitContextMenuItems({ items, syncDir });
+      const gitItems = getGitContextMenuItems({ items, syncDir, t });
       const onlyHttpRequests = items.every((i) => i.model === "http_request");
       const requestItems = items.filter(
         (i) =>
@@ -403,13 +403,13 @@ function Sidebar({ className }: { className?: string }) {
 
       const initialItems: ContextMenuProps["items"] = [
         {
-          label: "Folder Settings",
+          label: t("workspace:folder.settings"),
           hidden: !(items.length === 1 && child.model === "folder"),
           leftSlot: <Icon icon="folder_cog" />,
           onSelect: () => openFolderSettings(child.id),
         },
         {
-          label: "Send",
+          label: t("common:send"),
           hotKeyAction: "request.send",
           hotKeyLabelOnly: true,
           hidden: !onlyHttpRequests,
@@ -481,7 +481,7 @@ function Sidebar({ className }: { className?: string }) {
         ...gitItems,
         { type: "separator", hidden: gitItems.length === 0 },
         {
-          label: "Rename",
+          label: t("common:rename"),
           leftSlot: <Icon icon="pencil" />,
           hidden: items.length > 1,
           hotKeyAction: "sidebar.selected.rename",
@@ -489,14 +489,17 @@ function Sidebar({ className }: { className?: string }) {
           onSelect: () => handleRenameSelected(items),
         },
         {
-          label: "Duplicate",
+          label: t("common:duplicate"),
           hotKeyAction: "model.duplicate",
           hotKeyLabelOnly: true, // Would trigger for every request (bad)
           leftSlot: <Icon icon="copy" />,
           onSelect: () => handleDuplicateSelected(items),
         },
         {
-          label: items.length <= 1 ? "Move" : `Move ${requestItems.length} Requests`,
+          label:
+            items.length <= 1
+              ? t("common:move")
+              : t("workspace:sidebar.moveRequests", { count: requestItems.length }),
           hotKeyAction: "sidebar.selected.move",
           hotKeyLabelOnly: true,
           leftSlot: <Icon icon="arrow_right_circle" />,
@@ -508,7 +511,7 @@ function Sidebar({ className }: { className?: string }) {
         },
         {
           color: "danger",
-          label: "Delete",
+          label: t("common:delete"),
           hotKeyAction: "sidebar.selected.delete",
           hotKeyLabelOnly: true,
           leftSlot: <Icon icon="trash" />,
@@ -518,7 +521,7 @@ function Sidebar({ className }: { className?: string }) {
       ];
       return menuItems;
     },
-    [],
+    [t],
   );
 
   const renderContextMenuFn = useCallback<
@@ -565,9 +568,9 @@ function Sidebar({ className }: { className?: string }) {
               hideLabel
               setRef={setFilterRef}
               size="sm"
-              label="filter"
+              label={t("common:filter")}
               language={null} // Explicitly disable
-              placeholder="Search"
+              placeholder={t("common:search")}
               onChange={handleFilterChange}
               defaultValue={filterText.text}
               forceUpdateKey={filterText.key}
@@ -580,7 +583,7 @@ function Sidebar({ className }: { className?: string }) {
                   <IconButton
                     className="!bg-transparent !h-auto min-h-full opacity-50 hover:opacity-100 -mr-1"
                     icon="x"
-                    title="Clear filter"
+                    title={t("workspace:sidebar.clearFilter")}
                     onClick={clearFilterText}
                   />
                 )
@@ -589,7 +592,7 @@ function Sidebar({ className }: { className?: string }) {
             <Dropdown
               items={[
                 {
-                  label: "Focus Active Request",
+                  label: t("workspace:sidebar.focusActiveRequest"),
                   leftSlot: <Icon icon="crosshair" />,
                   onSelect: () => {
                     const activeId = jotaiStore.get(activeIdAtom);
@@ -613,14 +616,14 @@ function Sidebar({ className }: { className?: string }) {
                   },
                 },
                 {
-                  label: "Expand All Folders",
+                  label: t("workspace:sidebar.expandAllFolders"),
                   leftSlot: <Icon icon="chevrons_up_down" />,
                   onSelect: () => jotaiStore.set(collapsedFamily(treeId), {}),
                   hotKeyAction: "sidebar.expand_all",
                   hotKeyLabelOnly: true,
                 },
                 {
-                  label: "Collapse All Folders",
+                  label: t("workspace:sidebar.collapseAllFolders"),
                   leftSlot: <Icon icon="chevrons_down_up" />,
                   onSelect: () => {
                     if (tree == null) return;
@@ -647,7 +650,7 @@ function Sidebar({ className }: { className?: string }) {
                 size="xs"
                 className="ml-0.5 text-text-subtle hover:text-text"
                 icon="ellipsis_vertical"
-                title="Show sidebar actions menu"
+                title={t("workspace:sidebar.actionsMenu")}
               />
             </Dropdown>
           </>
@@ -655,7 +658,7 @@ function Sidebar({ className }: { className?: string }) {
       </div>
       {allHidden ? (
         <div className="italic text-text-subtle p-3 text-sm text-center">
-          No results for <InlineCode>{filterText.text}</InlineCode>
+          {t("workspace:sidebar.noResults", { query: filterText.text })}
         </div>
       ) : (
         <Tree
@@ -684,9 +687,11 @@ export default Sidebar;
 function getGitContextMenuItems({
   items,
   syncDir,
+  t,
 }: {
   items: SidebarModel[];
   syncDir: string | null | undefined;
+  t: TFunction;
 }): DropdownItem[] {
   if (syncDir == null) return [];
 
@@ -703,7 +708,7 @@ function getGitContextMenuItems({
 
   return [
     {
-      label: "View History",
+      label: t("workspace:sidebar.viewHistory"),
       leftSlot: <Icon icon="history" />,
       hidden: historyPath == null,
       onSelect: () => {
@@ -711,7 +716,7 @@ function getGitContextMenuItems({
         showDialog({
           id: "git-history",
           size: "lg",
-          title: "File History",
+          title: t("workspace:sidebar.fileHistory"),
           noPadding: true,
           noScroll: true,
           render: () => <FileHistoryDialog dir={syncDir} relaPath={historyPath} />,
@@ -719,18 +724,20 @@ function getGitContextMenuItems({
       },
     },
     {
-      label: "Restore Changes",
+      label: t("workspace:sidebar.restoreChanges"),
       leftSlot: <Icon icon="rotate_ccw" />,
       hidden: gitStatusEntries.length === 0,
       async onSelect() {
         const confirmed = await showConfirm({
           id: "git-restore-sidebar-items",
-          title: "Restore Changes",
+          title: t("workspace:sidebar.restoreChanges"),
           description:
             gitStatusEntries.length === 1
-              ? "This will discard uncommitted changes for the selected item."
-              : `This will discard uncommitted changes for ${gitStatusEntries.length} selected items.`,
-          confirmText: "Restore",
+              ? t("workspace:sidebar.restoreDescriptionOne")
+              : t("workspace:sidebar.restoreDescriptionMany", {
+                  count: gitStatusEntries.length,
+                }),
+          confirmText: t("workspace:sidebar.restore"),
           color: "danger",
         });
         if (!confirmed) return;
@@ -922,7 +929,10 @@ const sidebarGitStatusByModelIdAtom = atom<Record<string, GitStatus>>((get) => {
 
 const sidebarGitStatusFamily = atomFamily(
   (modelId: string) =>
-    selectAtom(sidebarGitStatusByModelIdAtom, (statusByModelId) => statusByModelId[modelId] ?? null),
+    selectAtom(
+      sidebarGitStatusByModelIdAtom,
+      (statusByModelId) => statusByModelId[modelId] ?? null,
+    ),
   Object.is,
 );
 

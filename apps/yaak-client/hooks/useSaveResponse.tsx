@@ -8,8 +8,10 @@ import { getContentTypeFromHeaders } from "../lib/model_util";
 import { invokeCmd } from "../lib/tauri";
 import { showToast } from "../lib/toast";
 import { useFastMutation } from "./useFastMutation";
+import { useTranslation } from "react-i18next";
 
 export function useSaveResponse(response: HttpResponse) {
+  const { t } = useTranslation();
   return useFastMutation({
     mutationKey: ["save_response", response.id],
     mutationFn: async () => {
@@ -21,13 +23,13 @@ export function useSaveResponse(response: HttpResponse) {
       const slug = slugify(request.name || "response", { lower: true });
       const filepath = await save({
         defaultPath: ext ? `${slug}.${ext}` : slug,
-        title: "Save Response",
+        title: t("request:response.saveResponse"),
       });
       await invokeCmd("cmd_save_response", { responseId: response.id, filepath });
       showToast({
         message: (
           <>
-            Response saved to <InlineCode>{filepath}</InlineCode>
+            {t("request:response.savedTo")} <InlineCode>{filepath}</InlineCode>
           </>
         ),
       });

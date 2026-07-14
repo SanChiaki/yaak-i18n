@@ -4,6 +4,7 @@ import { HStack, Icon, type IconProps } from "@yaakapp-internal/ui";
 import classNames from "classnames";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createFastMutation } from "../../hooks/useFastMutation";
 import { useIsEncryptionEnabled } from "../../hooks/useIsEncryptionEnabled";
 import { useStateWithDeps } from "../../hooks/useStateWithDeps";
@@ -124,6 +125,7 @@ function BaseInput({
   setRef,
   ...props
 }: InputProps) {
+  const { t } = useTranslation();
   const [focused, setFocused] = useState(false);
   const [obscured, setObscured] = useStateWithDeps(type === "password", [type]);
   const [hasChanged, setHasChanged] = useStateWithDeps<boolean>(false, [forceUpdateKey]);
@@ -329,8 +331,12 @@ function BaseInput({
           <IconButton
             title={
               obscured
-                ? `Show ${typeof label === "string" ? label : "field"}`
-                : `Obscure ${typeof label === "string" ? label : "field"}`
+                ? t("common:password.show", {
+                    label: typeof label === "string" ? label : t("common:password.field"),
+                  })
+                : t("common:password.obscure", {
+                    label: typeof label === "string" ? label : t("common:password.field"),
+                  })
             }
             size="xs"
             className={classNames("mr-0.5 !h-auto my-0.5", disabled && "opacity-disabled")}
@@ -370,6 +376,7 @@ function EncryptionInput({
   setRef,
   ...props
 }: InputProps) {
+  const { t } = useTranslation();
   const isEncryptionEnabled = useIsEncryptionEnabled();
   const [state, setState] = useStateWithDeps<{
     fieldType: PasswordFieldType;
@@ -493,20 +500,21 @@ function EncryptionInput({
   const dropdownItems = useMemo<DropdownItem[]>(
     () => [
       {
-        label: state.obscured ? "Show" : "Hide",
+        label: state.obscured ? t("common:show") : t("common:hide"),
         disabled: isEncryptionEnabled && state.fieldType === "text",
         leftSlot: <Icon icon={state.obscured ? "eye" : "eye_closed"} />,
         onSelect: () => setState((s) => ({ ...s, obscured: !s.obscured })),
       },
       {
-        label: "Copy",
+        label: t("common:copy"),
         leftSlot: <Icon icon="copy" />,
         hidden: !state.value,
         onSelect: () => copyToClipboard(state.value ?? ""),
       },
       { type: "separator" },
       {
-        label: state.fieldType === "text" ? "Encrypt Field" : "Decrypt Field",
+        label:
+          state.fieldType === "text" ? t("common:ui.encryptField") : t("common:ui.decryptField"),
         leftSlot: <Icon icon={state.fieldType === "text" ? "lock" : "lock_open"} />,
         onSelect: () => handleFieldTypeChange(state.fieldType === "text" ? "encrypted" : "text"),
       },
@@ -516,6 +524,7 @@ function EncryptionInput({
       isEncryptionEnabled,
       setState,
       state.fieldType,
+      t,
       state.obscured,
       state.value,
     ],
@@ -546,7 +555,7 @@ function EncryptionInput({
             size="sm"
             variant="border"
             color={tint}
-            aria-label="Configure encryption"
+            aria-label={t("common:ui.configureEncryption")}
             className={classNames(
               "flex items-center justify-center !h-full !px-1",
               "opacity-70", // Makes it a bit subtler
@@ -554,14 +563,14 @@ function EncryptionInput({
             )}
           >
             <HStack space={0.5}>
-              <Icon size="sm" title="Configure encryption" icon={icon} />
-              <Icon size="xs" title="Configure encryption" icon="chevron_down" />
+              <Icon size="sm" title={t("common:ui.configureEncryption")} icon={icon} />
+              <Icon size="xs" title={t("common:ui.configureEncryption")} icon="chevron_down" />
             </HStack>
           </Button>
         </Dropdown>
       </HStack>
     );
-  }, [dropdownItems, isEncryptionEnabled, props.disabled, state.obscured, state.security, tint]);
+  }, [dropdownItems, isEncryptionEnabled, props.disabled, state.obscured, state.security, tint, t]);
 
   const type = state.obscured ? "password" : "text";
 

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   html: string;
@@ -6,6 +7,7 @@ interface Props {
 }
 
 export function WebPageViewer({ html, baseUrl }: Props) {
+  const { t } = useTranslation();
   const contentForIframe: string | undefined = useMemo(() => {
     if (baseUrl && html.includes("<head>")) {
       return html.replace(/<head>/gi, `<head><base href="${baseUrl}"/>`);
@@ -17,7 +19,7 @@ export function WebPageViewer({ html, baseUrl }: Props) {
     <div className="h-full pb-3">
       <iframe
         key={html ? "has-body" : "no-body"}
-        title="Yaak response preview"
+        title={t("request:response.webPreview")}
         srcDoc={contentForIframe}
         sandbox="allow-scripts allow-forms"
         referrerPolicy="no-referrer"

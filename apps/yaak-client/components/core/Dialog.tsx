@@ -4,6 +4,7 @@ import classNames from "classnames";
 import * as m from "motion/react-m";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { IconButton } from "./IconButton";
 
 export interface DialogProps {
@@ -35,6 +36,7 @@ export function Dialog({
   noScroll,
   vAlign = "center",
 }: DialogProps) {
+  const { t } = useTranslation();
   const titleId = useMemo(() => Math.random().toString(36).slice(2), []);
   const descriptionId = useMemo(
     () => (description ? Math.random().toString(36).slice(2) : undefined),
@@ -115,8 +117,8 @@ export function Dialog({
               <IconButton
                 className="opacity-70 hover:opacity-100"
                 onClick={onClose}
-                title="Close dialog (Esc)"
-                aria-label="Close"
+                title={t("common:ui.closeDialog")}
+                aria-label={t("common:close")}
                 size="sm"
                 icon="x"
               />

@@ -2,6 +2,7 @@ import type { HttpRequest } from "@yaakapp-internal/models";
 
 import { useAtom } from "jotai";
 import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "react-use";
 import { useIntrospectGraphQL } from "../../hooks/useIntrospectGraphQL";
 import { useStateWithDeps } from "../../hooks/useStateWithDeps";
@@ -29,6 +30,7 @@ export function GraphQLEditor(props: Props) {
 }
 
 function GraphQLEditorInner({ request, onChange, baseRequest, ...extraEditorProps }: Props) {
+  const { t } = useTranslation();
   const [autoIntrospectDisabled, setAutoIntrospectDisabled] = useLocalStorage<
     Record<string, boolean>
   >("graphQLAutoIntrospectDisabled", {});
@@ -85,7 +87,7 @@ function GraphQLEditorInner({ request, onChange, baseRequest, ...extraEditorProp
                 ...((schema != null
                   ? [
                       {
-                        label: "Clear",
+                        label: t("common:clear"),
                         onSelect: clear,
                         color: "danger",
                         leftSlot: <Icon icon="trash" />,
@@ -97,19 +99,19 @@ function GraphQLEditorInner({ request, onChange, baseRequest, ...extraEditorProp
                   hidden: !error,
                   label: (
                     <Banner color="danger">
-                      <p className="mb-1">Schema introspection failed</p>
+                      <p className="mb-1">{t("request:graphql.introspectionFailedMessage")}</p>
                       <Button
                         size="xs"
                         color="danger"
                         variant="border"
                         onClick={() => {
                           showDialog({
-                            title: "Introspection Failed",
+                            title: t("request:graphql.introspectionFailed"),
                             size: "sm",
                             id: "introspection-failed",
                             render: ({ hide }) => (
                               <>
-                                <FormattedError>{error ?? "unknown"}</FormattedError>
+                                <FormattedError>{error ?? t("common:unknown")}</FormattedError>
                                 <div className="w-full my-4">
                                   <Button
                                     onClick={async () => {
@@ -120,7 +122,7 @@ function GraphQLEditorInner({ request, onChange, baseRequest, ...extraEditorProp
                                     color="primary"
                                     size="sm"
                                   >
-                                    Retry Request
+                                    {t("request:graphql.retryRequest")}
                                   </Button>
                                 </div>
                               </>
@@ -128,7 +130,7 @@ function GraphQLEditorInner({ request, onChange, baseRequest, ...extraEditorProp
                           });
                         }}
                       >
-                        View Error
+                        {t("request:graphql.viewError")}
                       </Button>
                     </Banner>
                   ),
@@ -136,7 +138,9 @@ function GraphQLEditorInner({ request, onChange, baseRequest, ...extraEditorProp
                 },
                 {
                   hidden: schema == null,
-                  label: `${isDocOpen ? "Hide" : "Show"} Documentation`,
+                  label: isDocOpen
+                    ? t("request:graphql.hideDocumentation")
+                    : t("request:graphql.showDocumentation"),
                   leftSlot: <Icon icon="book_open_text" />,
                   onSelect: () => {
                     setGraphqlDocStateAtomValue((v) => ({
@@ -146,14 +150,14 @@ function GraphQLEditorInner({ request, onChange, baseRequest, ...extraEditorProp
                   },
                 },
                 {
-                  label: "Introspect Schema",
+                  label: t("request:graphql.introspectSchema"),
                   leftSlot: <Icon icon="refresh" spin={isLoading} />,
                   keepOpenOnSelect: true,
                   onSelect: refetch,
                 },
-                { type: "separator", label: "Setting" },
+                { type: "separator", label: t("request:response.setting") },
                 {
-                  label: "Automatic Introspection",
+                  label: t("request:graphql.automaticIntrospection"),
                   keepOpenOnSelect: true,
                   onSelect: () => {
                     setAutoIntrospectDisabled({
@@ -176,12 +180,16 @@ function GraphQLEditorInner({ request, onChange, baseRequest, ...extraEditorProp
               <Button
                 size="sm"
                 variant="border"
-                title="Refetch Schema"
+                title={t("request:graphql.refetchSchema")}
                 isLoading={isLoading}
                 color={error ? "danger" : "default"}
                 forDropdown
               >
-                {error ? "Introspection Failed" : schema ? "Schema" : "No Schema"}
+                {error
+                  ? t("request:graphql.introspectionFailed")
+                  : schema
+                    ? t("request:graphql.schema")
+                    : t("request:grpc.noSchema")}
               </Button>
             </Dropdown>
           )}
@@ -200,6 +208,7 @@ function GraphQLEditorInner({ request, onChange, baseRequest, ...extraEditorProp
       setGraphqlDocStateAtomValue,
       request.id,
       setAutoIntrospectDisabled,
+      t,
     ],
   );
 
@@ -219,7 +228,7 @@ function GraphQLEditorInner({ request, onChange, baseRequest, ...extraEditorProp
       />
       <div className="grid grid-rows-[auto_minmax(0,1fr)] grid-cols-1 min-h-[5rem]">
         <Separator dashed className="pb-1">
-          Variables
+          {t("request:graphql.variables")}
         </Separator>
         <Editor
           language="json"

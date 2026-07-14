@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import type { ReactNode } from "react";
 import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { createGlobalState } from "react-use";
 import { useDebouncedValue } from "@yaakapp-internal/ui";
 import { useFormatText } from "../../hooks/useFormatText";
@@ -28,6 +29,7 @@ interface Props {
 const useFilterText = createGlobalState<Record<string, string | null>>({});
 
 export function TextViewer({ language, text, stateKey, pretty, className, onFilter }: Props) {
+  const { t } = useTranslation();
   const [filterTextMap, setFilterTextMap] = useFilterText();
   const filterText = stateKey ? (filterTextMap[stateKey] ?? null) : null;
   const debouncedFilterText = useDebouncedValue(filterText);
@@ -71,7 +73,7 @@ export function TextViewer({ language, text, stateKey, pretty, className, onFilt
             containerClassName="bg-surface"
             size="sm"
             placeholder={language === "json" ? "JSONPath expression" : "XPath expression"}
-            label="Filter expression"
+            label={t("request:response.filterExpression")}
             name="filter"
             defaultValue={filterText}
             onKeyDown={(e) => e.key === "Escape" && toggleSearch()}
@@ -88,7 +90,9 @@ export function TextViewer({ language, text, stateKey, pretty, className, onFilt
         size="sm"
         isLoading={filteredResponse.isPending}
         icon={isSearching ? "x" : "filter"}
-        title={isSearching ? "Close filter" : "Filter response"}
+        title={
+          isSearching ? t("request:response.closeFilter") : t("request:response.filterResponse")
+        }
         onClick={toggleSearch}
         className={classNames("border !border-border-subtle", isSearching && "!opacity-100")}
       />,
@@ -105,6 +109,7 @@ export function TextViewer({ language, text, stateKey, pretty, className, onFilt
     stateKey,
     setFilterText,
     toggleSearch,
+    t,
   ]);
 
   const formattedBody = useFormatText({ text, language, pretty: pretty ?? false });

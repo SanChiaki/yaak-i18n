@@ -12,10 +12,10 @@ import {
   updateSchema,
 } from "codemirror-json-schema";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ReflectResponseService } from "../hooks/useGrpc";
 import { showAlert } from "../lib/alert";
 import { showDialog } from "../lib/dialog";
-import { pluralizeCount } from "../lib/pluralize";
 import { Button } from "./core/Button";
 import type { EditorProps } from "./core/Editor/Editor";
 import { Editor } from "./core/Editor/LazyEditor";
@@ -37,6 +37,7 @@ export function GrpcEditor({
   protoFiles,
   ...extraEditorProps
 }: Props) {
+  const { t } = useTranslation();
   const [editorView, setEditorView] = useState<EditorView | null>(null);
   const handleInitEditorViewRef = useCallback((h: EditorView | null) => {
     setEditorView(h);
@@ -58,10 +59,11 @@ export function GrpcEditor({
       console.log("Failed to find service", { service: request.service, services });
       showAlert({
         id: "grpc-find-service-error",
-        title: "Couldn't Find Service",
+        title: t("request:grpc.serviceNotFoundTitle"),
         body: (
           <>
-            Failed to find service <InlineCode>{request.service}</InlineCode> in schema
+            {t("request:grpc.serviceNotFoundBefore")} <InlineCode>{request.service}</InlineCode>{" "}
+            {t("request:grpc.inSchema")}
           </>
         ),
       });
@@ -73,11 +75,12 @@ export function GrpcEditor({
       console.log("Failed to find method", { method: request.method, methods: s?.methods });
       showAlert({
         id: "grpc-find-schema-error",
-        title: "Couldn't Find Method",
+        title: t("request:grpc.methodNotFoundTitle"),
         body: (
           <>
-            Failed to find method <InlineCode>{request.method}</InlineCode> for{" "}
-            <InlineCode>{request.service}</InlineCode> in schema
+            {t("request:grpc.methodNotFoundBefore")} <InlineCode>{request.method}</InlineCode>{" "}
+            {t("request:grpc.forService")} <InlineCode>{request.service}</InlineCode>{" "}
+            {t("request:grpc.inSchema")}
           </>
         ),
       });
@@ -93,11 +96,12 @@ export function GrpcEditor({
     } catch (err) {
       showAlert({
         id: "grpc-parse-schema-error",
-        title: "Failed to Parse Schema",
+        title: t("request:grpc.parseSchemaFailed"),
         body: (
           <VStack space={4}>
             <p>
-              For service <InlineCode>{request.service}</InlineCode> and method{" "}
+              {t("request:grpc.forServiceLabel")} <InlineCode>{request.service}</InlineCode>{" "}
+              {t("common:and")} {t("request:request.method").toLowerCase()}{" "}
               <InlineCode>{request.method}</InlineCode>
             </p>
             <FormattedError>{String(err)}</FormattedError>
@@ -105,7 +109,7 @@ export function GrpcEditor({
         ),
       });
     }
-  }, [editorView, services, request.method, request.service]);
+  }, [editorView, services, request.method, request.service, t]);
 
   const extraExtensions = useMemo(
     () => [
@@ -141,7 +145,7 @@ export function GrpcEditor({
           isLoading={reflectionLoading}
           onClick={() => {
             showDialog({
-              title: "Configure Schema",
+              title: t("request:grpc.configureSchema"),
               size: "md",
               id: "reflection-failed",
               render: ({ hide }) => <GrpcProtoSelectionDialog onDone={hide} />,
@@ -149,20 +153,20 @@ export function GrpcEditor({
           }}
         >
           {reflectionLoading
-            ? "Inspecting Schema"
+            ? t("request:grpc.inspectingSchema")
             : reflectionUnavailable
-              ? "Select Proto Files"
+              ? t("request:grpc.selectProtoFiles")
               : reflectionError
-                ? "Server Error"
+                ? t("request:grpc.serverError")
                 : protoFiles.length > 0
-                  ? pluralizeCount("File", protoFiles.length)
+                  ? t("request:grpc.fileCount", { count: protoFiles.length })
                   : services != null && protoFiles.length === 0
-                    ? "Schema Detected"
-                    : "Select Schema"}
+                    ? t("request:grpc.schemaDetected")
+                    : t("request:grpc.selectSchema")}
         </Button>
       </div>,
     ],
-    [protoFiles.length, reflectionError, reflectionLoading, reflectionUnavailable, services],
+    [protoFiles.length, reflectionError, reflectionLoading, reflectionUnavailable, services, t],
   );
 
   return (

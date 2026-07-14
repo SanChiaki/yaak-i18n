@@ -1,6 +1,7 @@
 import { patchModel, workspaceMetasAtom, workspacesAtom } from "@yaakapp-internal/models";
 import { Banner, HStack, InlineCode, VStack } from "@yaakapp-internal/ui";
 import { useAtomValue } from "jotai";
+import { useTranslation } from "react-i18next";
 import { useAuthTab } from "../hooks/useAuthTab";
 import { useHeadersTab } from "../hooks/useHeadersTab";
 import { useInheritedHeaders } from "../hooks/useInheritedHeaders";
@@ -43,6 +44,7 @@ export type WorkspaceSettingsTab =
 const DEFAULT_TAB: WorkspaceSettingsTab = TAB_GENERAL;
 
 export function WorkspaceSettingsDialog({ workspaceId, hide, tab }: Props) {
+  const { t } = useTranslation();
   const workspace = useAtomValue(workspacesAtom).find((w) => w.id === workspaceId);
   const workspaceMeta = useAtomValue(workspaceMetasAtom).find((m) => m.workspaceId === workspaceId);
   const authTab = useAuthTab(TAB_AUTH, workspace ?? null);
@@ -50,38 +52,30 @@ export function WorkspaceSettingsDialog({ workspaceId, hide, tab }: Props) {
   const inheritedHeaders = useInheritedHeaders(workspace ?? null);
 
   if (workspace == null) {
-    return (
-      <Banner color="danger">
-        <InlineCode>Workspace</InlineCode> not found
-      </Banner>
-    );
+    return <Banner color="danger">{t("workspace:workspace.notFound")}</Banner>;
   }
 
   if (workspaceMeta == null)
-    return (
-      <Banner color="danger">
-        <InlineCode>WorkspaceMeta</InlineCode> not found for workspace
-      </Banner>
-    );
+    return <Banner color="danger">{t("workspace:workspace.metaNotFound")}</Banner>;
 
   return (
     <Tabs
       defaultValue={tab ?? DEFAULT_TAB}
-      label="Folder Settings"
+      label={t("workspace:workspace.settings")}
       className="pt-4 pb-2 px-3"
       tabListClassName="pl-4"
       addBorders
       tabs={[
-        { value: TAB_GENERAL, label: "Workspace" },
+        { value: TAB_GENERAL, label: t("workspace:settings.generalTab") },
         {
           value: TAB_SETTINGS,
-          label: "Settings",
+          label: t("workspace:settings.settingsTab"),
         },
         ...headersTab,
         ...authTab,
         {
           value: TAB_DNS,
-          label: "DNS",
+          label: t("workspace:settings.dnsTab"),
           rightSlot:
             workspace.settingDnsOverrides.length > 0 ? (
               <CountBadge count={workspace.settingDnsOverrides.length} />
@@ -96,7 +90,7 @@ export function WorkspaceSettingsDialog({ workspaceId, hide, tab }: Props) {
       <TabContent value={TAB_HEADERS} className="overflow-y-auto h-full px-4">
         <HeadersEditor
           inheritedHeaders={inheritedHeaders}
-          inheritedHeadersLabel="Defaults"
+          inheritedHeadersLabel={t("workspace:settings.defaults")}
           forceUpdateKey={workspace.id}
           headers={workspace.headers}
           onChange={(headers) => patchModel(workspace, { headers })}
@@ -122,8 +116,8 @@ export function WorkspaceSettingsDialog({ workspaceId, hide, tab }: Props) {
           <PlainInput
             required
             hideLabel
-            placeholder="Workspace Name"
-            label="Name"
+            placeholder={t("workspace:workspace.name")}
+            label={t("common:name")}
             defaultValue={workspace.name}
             className="!text-base font-sans"
             onChange={(name) => patchModel(workspace, { name })}
@@ -131,7 +125,7 @@ export function WorkspaceSettingsDialog({ workspaceId, hide, tab }: Props) {
 
           <MarkdownEditor
             name="workspace-description"
-            placeholder="Workspace description"
+            placeholder={t("workspace:workspace.descriptionPlaceholder")}
             className="border border-border px-2"
             defaultValue={workspace.description}
             stateKey={`description.${workspace.id}`}
@@ -154,7 +148,7 @@ export function WorkspaceSettingsDialog({ workspaceId, hide, tab }: Props) {
               variant="border"
               size="xs"
             >
-              Delete Workspace
+              {t("workspace:workspace.delete")}
             </Button>
             <InlineCode className="flex gap-1 items-center text-primary pl-2.5">
               {workspaceId}
@@ -162,7 +156,7 @@ export function WorkspaceSettingsDialog({ workspaceId, hide, tab }: Props) {
                 className="opacity-70 !text-primary"
                 size="2xs"
                 iconSize="sm"
-                title="Copy workspace ID"
+                title={t("workspace:workspace.copyId")}
                 text={workspaceId}
               />
             </InlineCode>

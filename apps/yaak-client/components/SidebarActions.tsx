@@ -1,5 +1,6 @@
 import { HStack } from "@yaakapp-internal/ui";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useFloatingSidebarHidden } from "../hooks/useFloatingSidebarHidden";
 import { useSidebarHidden } from "../hooks/useSidebarHidden";
 import { CreateDropdown } from "./CreateDropdown";
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function SidebarActions({ floating = false }: Props) {
+  const { t } = useTranslation();
   const [sidebarHidden, setSidebarHidden] = useSidebarHidden();
   const [floatingHidden, setFloatingHidden] = useFloatingSidebarHidden();
 
@@ -27,12 +29,17 @@ export function SidebarActions({ floating = false }: Props) {
         }}
         className="pointer-events-auto"
         size="sm"
-        title="Toggle sidebar"
+        title={t("common:toolbar.toggleSidebar")}
         icon={hidden ? "left_panel_hidden" : "left_panel_visible"}
         iconColor="secondary"
       />
       <CreateDropdown hotKeyAction="model.create">
-        <IconButton size="sm" icon="plus_circle" iconColor="secondary" title="Add Resource" />
+        <IconButton
+          size="sm"
+          icon="plus_circle"
+          iconColor="secondary"
+          title={t("common:toolbar.addResource")}
+        />
       </CreateDropdown>
     </HStack>
   );

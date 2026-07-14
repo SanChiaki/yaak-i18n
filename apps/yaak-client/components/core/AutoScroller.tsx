@@ -1,6 +1,7 @@
 import { useVirtualizer, type Virtualizer } from "@tanstack/react-virtual";
 import type { ReactElement, ReactNode, UIEvent } from "react";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { IconButton } from "./IconButton";
 
 interface Props<T> {
@@ -20,6 +21,7 @@ export function AutoScroller<T>({
   focusable = false,
   onVirtualizerReady,
 }: Props<T>) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState<boolean>(true);
 
@@ -67,7 +69,7 @@ export function AutoScroller<T>({
       {!autoScroll && (
         <div className="absolute bottom-0 right-0 m-2">
           <IconButton
-            title="Lock scroll to bottom"
+            title={t("common:ui.lockScrollBottom")}
             icon="arrow_down"
             size="sm"
             iconSize="md"

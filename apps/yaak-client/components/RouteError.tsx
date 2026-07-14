@@ -1,7 +1,9 @@
 import { Button, FormattedError, Heading, VStack } from "@yaakapp-internal/ui";
 import { DetailsBanner } from "./core/DetailsBanner";
+import { useTranslation } from "react-i18next";
 
 export default function RouteError({ error }: { error: unknown }) {
+  const { t } = useTranslation();
   console.log("Error", error);
   const stringified = JSON.stringify(error);
   // oxlint-disable-next-line no-explicit-any -- none
@@ -11,14 +13,14 @@ export default function RouteError({ error }: { error: unknown }) {
   return (
     <div className="flex items-center justify-center h-full">
       <VStack space={5} className="w-[50rem] !h-auto">
-        <Heading>Route Error 🔥</Heading>
+        <Heading>{t("common:errors.route")}</Heading>
         <FormattedError>
           {message}
           {stack && (
             <DetailsBanner
               color="secondary"
               className="mt-3 select-auto text-xs max-h-[40vh]"
-              summary="Stack Trace"
+              summary={t("common:errors.stackTrace")}
             >
               <div className="mt-2 text-xs">{stack}</div>
             </DetailsBanner>
@@ -31,10 +33,10 @@ export default function RouteError({ error }: { error: unknown }) {
               window.location.assign("/");
             }}
           >
-            Go Home
+            {t("common:errors.goHome")}
           </Button>
           <Button color="info" onClick={() => window.location.reload()}>
-            Refresh
+            {t("common:refresh")}
           </Button>
         </VStack>
       </VStack>

@@ -1,10 +1,10 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import type { GrpcRequest } from "@yaakapp-internal/models";
 import { Banner, HStack, Icon, InlineCode, VStack } from "@yaakapp-internal/ui";
+import { useTranslation } from "react-i18next";
 import { useActiveRequest } from "../hooks/useActiveRequest";
 import { useGrpc } from "../hooks/useGrpc";
 import { useGrpcProtoFiles } from "../hooks/useGrpcProtoFiles";
-import { pluralizeCount } from "../lib/pluralize";
 import { Button } from "./core/Button";
 import { IconButton } from "./core/IconButton";
 import { Link } from "./core/Link";
@@ -21,6 +21,7 @@ export function GrpcProtoSelectionDialog(props: Props) {
 }
 
 function GrpcProtoSelectionDialogWithRequest({ request }: Props & { request: GrpcRequest }) {
+  const { t } = useTranslation();
   const protoFilesKv = useGrpcProtoFiles(request.id);
   const protoFiles = protoFilesKv.value ?? [];
   const grpc = useGrpc(request, null, protoFiles);
@@ -46,9 +47,9 @@ function GrpcProtoSelectionDialogWithRequest({ request }: Props & { request: Grp
           variant="border"
           onClick={async () => {
             const selected = await open({
-              title: "Select Proto Files",
+              title: t("request:grpc.selectProtoFiles"),
               multiple: true,
-              filters: [{ name: "Proto Files", extensions: ["proto"] }],
+              filters: [{ name: t("request:grpc.protoFilesFilter"), extensions: ["proto"] }],
             });
             if (selected == null) return;
 
@@ -57,14 +58,14 @@ function GrpcProtoSelectionDialogWithRequest({ request }: Props & { request: Grp
             await grpc.reflect.refetch();
           }}
         >
-          Add Proto Files
+          {t("request:grpc.addProtoFiles")}
         </Button>
         <Button
           variant="border"
           color="primary"
           onClick={async () => {
             const selected = await open({
-              title: "Select Proto Directory",
+              title: t("request:grpc.selectProtoDirectory"),
               directory: true,
             });
             if (selected == null) return;
@@ -73,7 +74,7 @@ function GrpcProtoSelectionDialogWithRequest({ request }: Props & { request: Grp
             await grpc.reflect.refetch();
           }}
         >
-          Add Import Folders
+          {t("request:grpc.addImportFolders")}
         </Button>
         <Button
           isLoading={grpc.reflect.isFetching}
@@ -82,14 +83,14 @@ function GrpcProtoSelectionDialogWithRequest({ request }: Props & { request: Grp
           color="secondary"
           onClick={() => grpc.reflect.refetch()}
         >
-          Refresh Schema
+          {t("request:grpc.refreshSchema")}
         </Button>
       </HStack>
       <VStack space={5}>
         {reflectError && (
           <Banner color="warning">
             <h1 className="font-bold">
-              Reflection failed on URL <InlineCode>{request.url || "n/a"}</InlineCode>
+              {t("request:grpc.reflectionFailed")} <InlineCode>{request.url || "n/a"}</InlineCode>
             </h1>
             <p>{reflectError.trim()}</p>
           </Banner>
@@ -97,33 +98,42 @@ function GrpcProtoSelectionDialogWithRequest({ request }: Props & { request: Grp
         {!serverReflection && services != null && services.length > 0 && (
           <Banner className="flex flex-col gap-2">
             <p>
-              Found services{" "}
+              {t("request:grpc.foundServices")}{" "}
               {services?.slice(0, 5).map((s, i) => {
                 return (
                   <span key={s.name + s.methods.map((m) => m.name).join(",")}>
                     <InlineCode>{s.name}</InlineCode>
-                    {i === services.length - 1 ? "" : i === services.length - 2 ? " and " : ", "}
+                    {i === services.length - 1
+                      ? ""
+                      : i === services.length - 2
+                        ? ` ${t("common:and")} `
+                        : ", "}
                   </span>
                 );
               })}
-              {services?.length > 5 && pluralizeCount("other", services?.length - 5)}
+              {services?.length > 5 &&
+                t("request:grpc.otherServices", { count: services.length - 5 })}
             </p>
           </Banner>
         )}
         {serverReflection && services != null && services.length > 0 && (
           <Banner className="flex flex-col gap-2">
             <p>
-              Server reflection found services
+              {t("request:grpc.reflectionFoundServices")}{" "}
               {services?.map((s, i) => {
                 return (
                   <span key={s.name + s.methods.map((m) => m.name).join(",")}>
                     <InlineCode>{s.name}</InlineCode>
-                    {i === services.length - 1 ? "" : i === services.length - 2 ? " and " : ", "}
+                    {i === services.length - 1
+                      ? ""
+                      : i === services.length - 2
+                        ? ` ${t("common:and")} `
+                        : ", "}
                   </span>
                 );
               })}
-              . You can override this schema by manually selecting <InlineCode>*.proto</InlineCode>{" "}
-              files.
+              {t("request:grpc.overrideSchemaBefore")} <InlineCode>*.proto</InlineCode>{" "}
+              {t("request:grpc.overrideSchemaAfter")}
             </p>
           </Banner>
         )}
@@ -133,7 +143,7 @@ function GrpcProtoSelectionDialogWithRequest({ request }: Props & { request: Grp
             <thead>
               <tr>
                 <th className="text-text-subtlest" colSpan={3}>
-                  Added File Paths
+                  {t("request:grpc.addedFilePaths")}
                 </th>
               </tr>
             </thead>
@@ -152,7 +162,7 @@ function GrpcProtoSelectionDialogWithRequest({ request }: Props & { request: Grp
                     </td>
                     <td className="w-0 py-0.5">
                       <IconButton
-                        title="Remove file"
+                        title={t("request:grpc.removeFile")}
                         variant="border"
                         size="xs"
                         icon="trash"
@@ -170,11 +180,12 @@ function GrpcProtoSelectionDialogWithRequest({ request }: Props & { request: Grp
         )}
         {reflectionUnimplemented && protoFiles.length === 0 && (
           <Banner>
-            <InlineCode>{request.url}</InlineCode> doesn&apos;t implement{" "}
+            <InlineCode>{request.url}</InlineCode> {t("request:grpc.noReflectionBefore")}{" "}
             <Link href="https://github.com/grpc/grpc/blob/9aa3c5835a4ed6afae9455b63ed45c761d695bca/doc/server-reflection.md">
-              Server Reflection
+              {t("request:grpc.serverReflection")}
             </Link>{" "}
-            . Please manually add the <InlineCode>.proto</InlineCode> file to get started.
+            {t("request:grpc.noReflectionAfterBefore")} <InlineCode>.proto</InlineCode>{" "}
+            {t("request:grpc.noReflectionAfter")}
           </Banner>
         )}
       </VStack>

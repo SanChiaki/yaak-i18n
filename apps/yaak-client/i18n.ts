@@ -1,6 +1,5 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import LanguageDetector from "i18next-browser-languagedetector";
 
 // Import translations
 import commonEN from "./locales/en/common.json";
@@ -33,29 +32,20 @@ const resources = {
   },
 };
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources,
-    fallbackLng: "en",
-    defaultNS: "common",
-    ns: ["common", "settings", "request", "workspace", "errors"],
+i18n.use(initReactI18next).init({
+  resources,
+  lng: "en",
+  fallbackLng: "en",
+  defaultNS: "common",
+  ns: ["common", "settings", "request", "workspace", "errors"],
 
-    interpolation: {
-      escapeValue: false, // React already escapes values
-    },
+  interpolation: {
+    escapeValue: false, // React already escapes values
+  },
 
-    detection: {
-      // Order of detection methods
-      order: ["localStorage", "navigator"],
-      caches: ["localStorage"],
-      lookupLocalStorage: "yaak-language",
-    },
-
-    react: {
-      useSuspense: false,
-    },
-  });
+  react: {
+    useSuspense: false,
+  },
+});
 
 export default i18n;

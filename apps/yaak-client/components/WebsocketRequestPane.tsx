@@ -6,6 +6,7 @@ import classNames from "classnames";
 import { atom, useAtomValue } from "jotai";
 import type { CSSProperties } from "react";
 import { useCallback, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { getActiveCookieJar } from "../hooks/useActiveCookieJar";
 import { getActiveEnvironment } from "../hooks/useActiveEnvironment";
 import { activeRequestIdAtom } from "../hooks/useActiveRequestId";
@@ -64,6 +65,7 @@ const nonActiveRequestUrlsAtom = atom((get) => {
 const memoNotActiveRequestUrlsAtom = deepEqualAtom(nonActiveRequestUrlsAtom);
 
 export function WebsocketRequestPane({ style, fullHeight, className, activeRequest }: Props) {
+  const { t } = useTranslation();
   const activeRequestId = activeRequest.id;
   const tabsRef = useRef<TabsRef>(null);
   const forceUpdateKey = useRequestUpdateKey(activeRequest.id);
@@ -103,26 +105,26 @@ export function WebsocketRequestPane({ style, fullHeight, className, activeReque
     return [
       {
         value: TAB_MESSAGE,
-        label: "Message",
+        label: t("request:protocol.message"),
       } as TabItem,
       {
         value: TAB_PARAMS,
         rightSlot: <CountBadge count={urlParameterPairs.length} />,
-        label: "Params",
+        label: t("request:request.params"),
       },
       ...headersTab,
       ...authTab,
       {
         value: TAB_SETTINGS,
-        label: "Settings",
+        label: t("request:request.settings"),
         rightSlot: <CountBadge count={numSettingsOverrides} />,
       },
       {
         value: TAB_DESCRIPTION,
-        label: "Info",
+        label: t("request:request.info"),
       },
     ];
-  }, [authTab, headersTab, numSettingsOverrides, urlParameterPairs.length]);
+  }, [authTab, headersTab, numSettingsOverrides, t, urlParameterPairs.length]);
 
   const { activeResponse } = usePinnedHttpResponse(activeRequestId);
   const { mutate: cancelResponse } = useCancelHttpResponse(activeResponse?.id ?? null);
@@ -215,7 +217,7 @@ export function WebsocketRequestPane({ style, fullHeight, className, activeReque
                 isLoading && (
                   <IconButton
                     size="xs"
-                    title="Close connection"
+                    title={t("request:websocket.closeConnection")}
                     icon="x"
                     iconColor="secondary"
                     className="w-8 mr-0.5 !h-full"
@@ -235,7 +237,7 @@ export function WebsocketRequestPane({ style, fullHeight, className, activeReque
           </div>
           <Tabs
             ref={tabsRef}
-            label="Request"
+            label={t("request:request.title")}
             tabs={tabs}
             tabListClassName="mt-1 !mb-1.5"
             storageKey={TABS_STORAGE_KEY}
@@ -280,7 +282,7 @@ export function WebsocketRequestPane({ style, fullHeight, className, activeReque
             <TabContent value={TAB_DESCRIPTION}>
               <div className="grid grid-rows-[auto_minmax(0,1fr)] h-full">
                 <PlainInput
-                  label="Request Name"
+                  label={t("request:request.name")}
                   hideLabel
                   forceUpdateKey={forceUpdateKey}
                   defaultValue={activeRequest.name}
@@ -291,7 +293,7 @@ export function WebsocketRequestPane({ style, fullHeight, className, activeReque
                 />
                 <MarkdownEditor
                   name="request-description"
-                  placeholder="Request description"
+                  placeholder={t("request:request.descriptionPlaceholder")}
                   defaultValue={activeRequest.description}
                   stateKey={`description.${activeRequest.id}`}
                   forceUpdateKey={forceUpdateKey}

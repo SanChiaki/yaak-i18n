@@ -1,6 +1,7 @@
 import type { DecorationSet, ViewUpdate } from "@codemirror/view";
 import { Decoration, EditorView, hoverTooltip, MatchDecorator, ViewPlugin } from "@codemirror/view";
 import { activeWorkspaceIdAtom } from "../../../../hooks/useActiveWorkspace";
+import i18n from "../../../../i18n";
 import { copyToClipboard } from "../../../../lib/copy";
 import { createRequestAndNavigate } from "../../../../lib/createRequestAndNavigate";
 import { jotaiStore } from "../../../../lib/jotai";
@@ -42,19 +43,19 @@ const tooltip = hoverTooltip(
         const dom = document.createElement("div");
 
         const $open = document.createElement("a");
-        $open.textContent = "Open in browser";
+        $open.textContent = i18n.t("common:editor.openInBrowser");
         $open.href = link;
         $open.target = "_blank";
         $open.rel = "noopener noreferrer";
 
         const $copy = document.createElement("button");
-        $copy.textContent = "Copy to clipboard";
+        $copy.textContent = i18n.t("common:editor.copyToClipboard");
         $copy.addEventListener("click", () => {
           copyToClipboard(link);
         });
 
         const $create = document.createElement("button");
-        $create.textContent = "Create new request";
+        $create.textContent = i18n.t("common:editor.createRequest");
         $create.addEventListener("click", async () => {
           await createRequestAndNavigate({
             model: "http_request",

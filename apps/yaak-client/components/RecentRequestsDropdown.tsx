@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useActiveRequest } from "../hooks/useActiveRequest";
 import { activeWorkspaceIdAtom } from "../hooks/useActiveWorkspace";
 import { allRequestsAtom } from "../hooks/useAllRequests";
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export function RecentRequestsDropdown({ className }: Props) {
+  const { t } = useTranslation();
   const activeRequest = useActiveRequest();
   const dropdownRef = useRef<DropdownRef>(null);
   const [recentRequestIds] = useRecentRequests();
@@ -74,14 +76,14 @@ export function RecentRequestsDropdown({ className }: Props) {
       return [
         {
           key: "no-recent-requests",
-          label: "No recent requests",
+          label: t("request:request.noRecent"),
           disabled: true,
         },
       ];
     }
 
     return recentRequestItems.slice(0, 20);
-  }, [recentRequestIds]);
+  }, [recentRequestIds, t]);
 
   return (
     <Dropdown ref={dropdownRef} items={items}>

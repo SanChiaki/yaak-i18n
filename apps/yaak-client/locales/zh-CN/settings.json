@@ -2,35 +2,298 @@
   "title": "设置",
   "general": {
     "title": "通用",
-    "description": "配置更新行为等通用设置。"
+    "description": "配置更新行为等通用设置。",
+    "workspace": "工作区",
+    "requestTimeout": {
+      "title": "请求超时",
+      "description": "请求的最长持续时间（毫秒）。设为 0 表示禁用。"
+    },
+    "validateCertificates": {
+      "title": "验证 TLS 证书",
+      "description": "关闭后将跳过服务器证书验证。"
+    },
+    "followRedirects": {
+      "title": "跟随重定向",
+      "description": "自动跟随 HTTP 重定向。"
+    },
+    "sendCookies": {
+      "title": "自动发送 Cookie",
+      "description": "将当前 Cookie 容器中匹配的 Cookie 附加到发出的请求。"
+    },
+    "storeCookies": {
+      "title": "自动保存 Cookie",
+      "description": "将 Set-Cookie 响应头中的 Cookie 保存到当前 Cookie 容器。"
+    },
+    "appInfo": {
+      "title": "应用信息",
+      "version": "版本",
+      "versionDescription": "当前 Yaak 版本。",
+      "dataDirectory": "数据目录",
+      "dataDirectoryDescription": "Yaak 存储应用数据的位置。",
+      "logsDirectory": "日志目录",
+      "logsDirectoryDescription": "Yaak 写入应用日志的位置。"
+    }
+  },
+  "modelSettings": {
+    "requests": "请求",
+    "cookies": "Cookie"
   },
   "interface": {
     "title": "界面",
-    "description": "自定义 Yaak 的外观和感觉。"
+    "description": "自定义 Yaak 的外观和使用体验。",
+    "workspaces": {
+      "title": "工作区",
+      "behavior": "打开工作区的方式",
+      "description": "选择打开另一个工作区时的处理方式。",
+      "ask": "每次询问",
+      "current": "在当前窗口打开",
+      "new": "在新窗口打开"
+    },
+    "fonts": {
+      "title": "字体",
+      "interface": "界面字体",
+      "interfaceDescription": "Yaak 界面控件使用的字体。",
+      "interfaceSize": "界面字号",
+      "editor": "编辑器字体",
+      "editorDescription": "请求和响应编辑器使用的字体。",
+      "editorSize": "编辑器字号",
+      "systemDefault": "系统默认"
+    },
+    "editor": {
+      "title": "编辑器",
+      "keymap": "编辑器键位映射",
+      "keymapDescription": "文本编辑器使用的快捷键预设。",
+      "defaultKeymap": "默认",
+      "softWrap": "自动换行",
+      "softWrapDescription": "对请求和响应编辑器中的长行自动换行。",
+      "coloredMethods": "为请求方法着色",
+      "coloredMethodsDescription": "为 HTTP 请求方法使用不同的颜色。"
+    },
+    "window": {
+      "title": "窗口",
+      "nativeTitlebar": "原生标题栏",
+      "nativeTitlebarDescription": "使用操作系统标准标题栏和窗口控件。",
+      "applyRestart": "应用并重启",
+      "hideControls": "隐藏窗口控件",
+      "hideControlsDescription": "在 Windows 或 Linux 上隐藏关闭、最大化和最小化控件。"
+    },
+    "personalUse": {
+      "section": "许可证",
+      "hideBadge": "隐藏个人使用标记",
+      "hideBadgeDescription": "在界面中隐藏个人使用标记。",
+      "confirmTitle": "确认个人使用",
+      "confirm": "确认",
+      "greeting": "你好",
+      "freeForPersonal": "Yaak 可免费用于个人项目和学习。",
+      "workRequiresLicense": "如果你在工作中使用 Yaak，则需要许可证。",
+      "supportMessage": "许可证收入帮助 Yaak 保持独立和可持续发展。",
+      "purchase": "购买许可证",
+      "requiredText": "个人使用"
+    }
   },
   "theme": {
     "title": "主题",
-    "description": "选择主题来自定义 Yaak 的外观。"
+    "description": "选择主题来打造你的 Yaak，或者",
+    "createYourOwn": "创建自己的主题",
+    "section": "主题",
+    "appearance": "外观模式",
+    "appearanceDescription": "选择跟随系统外观或使用固定模式。",
+    "automatic": "自动",
+    "light": "浅色",
+    "dark": "深色",
+    "lightTheme": "浅色主题",
+    "lightThemeDescription": "Yaak 处于浅色模式时使用的主题。",
+    "darkTheme": "深色主题",
+    "darkThemeDescription": "Yaak 处于深色模式时使用的主题。",
+    "preview": "预览",
+    "previewLabel": "预览"
   },
   "hotkeys": {
     "title": "快捷键",
-    "description": "查看和自定义键盘快捷键。"
+    "description": "查看和自定义键盘快捷键。",
+    "heading": "键盘快捷键",
+    "instructions": "点击菜单按钮以添加、移除或重置键盘快捷键。",
+    "filter": "筛选",
+    "filterPlaceholder": "筛选快捷键...",
+    "scope": "范围",
+    "action": "操作",
+    "shortcut": "快捷键",
+    "add": "添加键盘快捷键",
+    "remove": "移除",
+    "removeAll": "移除所有快捷键",
+    "reset": "恢复默认",
+    "disabled": "已禁用",
+    "actionsMenu": "快捷键操作",
+    "recordFor": "为 {{label}} 录制组合键",
+    "inputLabel": "键盘快捷键输入",
+    "pressKeys": "请按下按键...",
+    "cancel": "取消",
+    "save": "保存",
+    "scopes": {
+      "app": "应用",
+      "command_palette": "命令面板",
+      "cookies_editor": "Cookie 编辑器",
+      "editor": "编辑器",
+      "environment_editor": "环境编辑器",
+      "hotkeys": "快捷键",
+      "model": "请求",
+      "request": "请求",
+      "switcher": "请求切换器",
+      "settings": "设置",
+      "sidebar": "侧边栏",
+      "url_bar": "URL 栏",
+      "workspace_settings": "工作区设置"
+    },
+    "actions": {
+      "app": {
+        "zoom_in": "放大",
+        "zoom_out": "缩小",
+        "zoom_reset": "恢复实际大小"
+      },
+      "command_palette": { "toggle": "打开或关闭命令面板" },
+      "cookies_editor": { "show": "显示 Cookie" },
+      "editor": { "autocomplete": "触发自动补全" },
+      "environment_editor": { "toggle": "编辑环境" },
+      "hotkeys": { "showHelp": "显示键盘快捷键" },
+      "model": {
+        "create": "新建请求",
+        "duplicate": "复制请求"
+      },
+      "request": {
+        "rename": "重命名当前请求",
+        "send": "发送当前请求"
+      },
+      "switcher": {
+        "next": "转到上一个请求",
+        "prev": "转到下一个请求",
+        "toggle": "打开或关闭请求切换器"
+      },
+      "settings": { "show": "打开设置" },
+      "sidebar": {
+        "filter": "筛选侧边栏",
+        "expand_all": "展开所有文件夹",
+        "collapse_all": "折叠所有文件夹",
+        "selected": {
+          "delete": "删除侧边栏所选项目",
+          "duplicate": "复制侧边栏所选项目",
+          "move": "将所选项目移至工作区",
+          "rename": "重命名侧边栏所选项目"
+        },
+        "focus": "聚焦或打开/关闭侧边栏",
+        "context_menu": "显示上下文菜单"
+      },
+      "url_bar": { "focus": "聚焦 URL" },
+      "workspace_settings": { "show": "打开工作区设置" }
+    }
   },
   "plugins": {
     "title": "插件",
-    "description": "管理已安装的插件。"
+    "description": "管理已安装的插件。",
+    "discover": "发现",
+    "installed": "已安装",
+    "bundled": "内置",
+    "noun": "插件",
+    "add": "添加插件",
+    "reload": "重新加载插件",
+    "documentation": "查看文档",
+    "disable": "禁用插件",
+    "enable": "启用插件",
+    "updateTo": "更新到 {{version}}",
+    "update": "更新",
+    "installVersion": "安装 {{version}}",
+    "install": "安装",
+    "uninstall": "卸载",
+    "uninstallAction": "卸载插件",
+    "search": "搜索",
+    "searchPlaceholder": "搜索插件...",
+    "noneFound": "未找到插件",
+    "displayName": "显示名称",
+    "name": "名称",
+    "version": "版本",
+    "installedEmpty": "插件可以扩展 Yaak 的功能。",
+    "installedEmptyAction": "添加第一个插件即可开始使用。",
+    "bundledEmpty": "未找到内置插件。",
+    "uninstallTitle": "卸载插件",
+    "uninstallConfirm": "永久卸载 {{name}}？"
   },
   "proxy": {
     "title": "代理",
-    "description": "配置 HTTP 代理设置。"
+    "description": "为 HTTP 请求配置代理服务器，可用于企业防火墙、流量调试或指定基础设施路由。",
+    "section": "代理",
+    "mode": "代理模式",
+    "modeDescription": "选择 Yaak 发现或使用代理设置的方式。",
+    "automatic": "自动检测代理",
+    "custom": "自定义代理配置",
+    "none": "不使用代理",
+    "customSection": "自定义代理",
+    "enable": "启用代理",
+    "enableDescription": "临时禁用代理而不丢失配置。",
+    "httpTraffic": "HTTP 流量代理",
+    "httpDescription": "未加密 HTTP 流量使用的代理主机。",
+    "httpsTraffic": "HTTPS 流量代理",
+    "httpsDescription": "HTTPS 流量使用的代理主机。",
+    "bypass": "代理绕过",
+    "bypassDescription": "无需经过代理的主机列表，以逗号分隔。",
+    "authentication": "身份验证",
+    "enableAuthentication": "启用身份验证",
+    "enableAuthenticationDescription": "在代理请求中发送代理凭据。",
+    "user": "用户名",
+    "userDescription": "代理身份验证用户名。",
+    "password": "密码",
+    "passwordDescription": "代理身份验证密码。"
   },
   "certificates": {
     "title": "证书",
-    "description": "管理客户端证书。"
+    "description": "按域名添加和管理 TLS 证书。",
+    "clientTitle": "客户端证书",
+    "add": "添加证书",
+    "configure": "配置证书",
+    "disable": "禁用证书",
+    "enable": "启用证书",
+    "remove": "移除证书",
+    "host": "主机",
+    "port": "端口",
+    "crtFile": "CRT 文件",
+    "keyFile": "KEY 文件",
+    "pfxFile": "PFX 文件",
+    "certificateNoun": "证书",
+    "keyNoun": "密钥",
+    "passphrase": "口令",
+    "deleteTitle": "删除证书",
+    "deleteDescription": "永久删除 {{host}} 的证书？",
+    "unnamed": "此证书"
   },
   "license": {
     "title": "许可证",
-    "description": "管理你的 Yaak 许可证。"
+    "description": "管理你的 Yaak 许可证。",
+    "active": "你的许可证已激活",
+    "trialDays_one": "{{count}} 天",
+    "trialDays_other": "{{count}} 天",
+    "trialRemaining": "可用于评估 Yaak 的商业用途。",
+    "personalAlwaysFree": "个人使用永久免费。",
+    "learnMore": "了解更多",
+    "personalTrialEnded": "你的商业用途试用期已结束。",
+    "personalOnly": "你仍可继续将 Yaak 用于个人用途。",
+    "commercialRequired": "商业用途需要许可证。",
+    "invalidBeforeSignIn": "许可证无效。请",
+    "signIn": "登录",
+    "invalidAfterSignIn": "以查看详情",
+    "expiredBeforeDate": "许可证已于",
+    "expiredBeforeResubscribe": "过期。请",
+    "resubscribe": "重新订阅",
+    "expiredAfterResubscribe": "以继续接收更新。",
+    "whatsNew": "查看最新版本的新功能",
+    "paymentAttention": "你的付款方式需要处理。",
+    "reactivateBeforeBilling": "要重新激活许可证，请",
+    "updateBilling": "更新账单信息",
+    "reactivateAfterBilling": "。",
+    "checkFailed": "许可证检查失败：{{message}}（代码：{{code}}）",
+    "deactivate": "停用许可证",
+    "support": "专属支持",
+    "activate": "激活许可证",
+    "purchase": "购买许可证",
+    "key": "许可证密钥",
+    "submit": "提交"
   },
   "language": {
     "title": "语言",
@@ -53,6 +316,18 @@
       "description": "选择是自动安装更新还是手动安装。",
       "auto": "自动",
       "manual": "手动"
+    },
+    "autoDownload": {
+      "title": "自动下载更新",
+      "description": "在后台下载 Yaak 更新，以便随时安装。"
+    },
+    "notifications": {
+      "title": "检查通知",
+      "description": "定期连接 Yaak 服务器以检查相关通知。"
+    },
+    "analytics": {
+      "title": "发送匿名使用统计",
+      "description": "Yaak 采用本地优先设计，不收集分析或使用数据。"
     },
     "checkForUpdates": "检查更新",
     "checking": "正在检查更新..."

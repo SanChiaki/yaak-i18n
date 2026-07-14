@@ -52,6 +52,7 @@ import { jsonc, jsoncLanguage } from "@shopify/lang-jsonc";
 import { graphql } from "cm6-graphql";
 import type { GraphQLSchema } from "graphql";
 import { activeRequestIdAtom } from "../../../hooks/useActiveRequestId";
+import i18n from "../../../i18n";
 import type { WrappedEnvironmentVariable } from "../../../hooks/useEnvironmentVariables";
 import { jotaiStore } from "../../../lib/jotai";
 import { renderMarkdown } from "../../../lib/markdown";
@@ -285,8 +286,8 @@ export const multiLineExtensions = ({ hideGutter }: { hideGutter?: boolean }) =>
       el.onclick = onclick;
       el.className = "cm-foldPlaceholder";
       el.innerText = prepared || "…";
-      el.title = "unfold";
-      el.ariaLabel = "folded code";
+      el.title = i18n.t("common:editor.unfold");
+      el.ariaLabel = i18n.t("common:editor.foldedCode");
       return el;
     },
     /**

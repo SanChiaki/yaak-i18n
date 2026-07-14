@@ -6,6 +6,8 @@ import type {
   WorkspaceAction,
 } from "@yaakapp-internal/plugins";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { localizePluginText } from "../lib/localizePluginText";
 import { invokeCmd } from "../lib/tauri";
 import { usePluginsKey } from "./usePlugins";
 
@@ -14,6 +16,7 @@ export type CallableWorkspaceAction = Pick<WorkspaceAction, "label" | "icon"> & 
 };
 
 export function useWorkspaceActions() {
+  const { i18n } = useTranslation();
   const pluginsKey = usePluginsKey();
 
   const actionsResult = useQuery<CallableWorkspaceAction[]>({
@@ -23,8 +26,11 @@ export function useWorkspaceActions() {
 
   // oxlint-disable-next-line react-hooks/exhaustive-deps
   const actions = useMemo(() => {
-    return actionsResult.data ?? [];
-  }, [JSON.stringify(actionsResult.data)]);
+    return (actionsResult.data ?? []).map((action) => ({
+      ...action,
+      label: localizePluginText(action.label),
+    }));
+  }, [actionsResult.data, i18n.resolvedLanguage]);
 
   return actions;
 }
