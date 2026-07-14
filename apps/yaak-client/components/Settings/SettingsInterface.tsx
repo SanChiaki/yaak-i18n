@@ -44,7 +44,7 @@ export function SettingsInterface() {
   const settings = useAtomValue(settingsAtom);
   const fonts = useFonts();
   const { t } = useTranslation();
-  const { currentLanguage, changeLanguage } = useLanguage();
+  const { changeLanguage } = useLanguage();
 
   if (settings == null || workspace == null) {
     return null;
