@@ -1,0 +1,18 @@
+{
+  "allTraffic": "全部流量",
+  "close": "关闭",
+  "domains": "域名",
+  "error": "错误",
+  "maximize": "最大化",
+  "method": "方法",
+  "minimize": "最小化",
+  "noTraffic": "暂无流量",
+  "running": "运行中 :{{port}}",
+  "selectRequest": "选择一个请求以查看详情",
+  "startProxy": "启动代理",
+  "status": "状态",
+  "stopProxy": "停止代理",
+  "toggleSidebar": "打开或关闭侧边栏",
+  "type": "类型",
+  "unmaximize": "还原"
+}

@@ -3,7 +3,7 @@ import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
 import { useMemo } from "react";
 import { useIsFullscreen } from "../hooks/useIsFullscreen";
 import { HEADER_SIZE_LG, HEADER_SIZE_MD, WINDOW_CONTROLS_WIDTH } from "../lib/constants";
-import { WindowControls } from "./WindowControls";
+import { type WindowControlLabels, WindowControls } from "./WindowControls";
 
 interface HeaderSizeProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
@@ -15,6 +15,7 @@ interface HeaderSizeProps extends HTMLAttributes<HTMLDivElement> {
   hideWindowControls: boolean;
   useNativeTitlebar: boolean;
   interfaceScale: number;
+  windowControlLabels: WindowControlLabels;
 }
 
 export function HeaderSize({
@@ -29,6 +30,7 @@ export function HeaderSize({
   hideWindowControls,
   useNativeTitlebar,
   interfaceScale,
+  windowControlLabels,
 }: HeaderSizeProps) {
   const isFullscreen = useIsFullscreen();
   const finalStyle = useMemo<CSSProperties>(() => {
@@ -88,6 +90,7 @@ export function HeaderSize({
           osType={osType}
           hideWindowControls={hideWindowControls}
           useNativeTitlebar={useNativeTitlebar}
+          labels={windowControlLabels}
         />
       )}
     </div>

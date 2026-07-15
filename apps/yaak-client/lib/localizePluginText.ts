@@ -249,6 +249,28 @@ export const builtInPluginTextKeys: Record<string, string> = {
     "common:pluginText.redirectUriDescription",
   Verifier: "common:pluginText.verifier",
   "Yaak official format": "common:pluginText.yaakFormatDescription",
+  "NTLM is still in beta. Please submit any issues to [Feedback](https://yaak.app/feedback).":
+    "common:pluginText.ntlmBetaDescription",
+  "OAuth 1.0 is still in beta. Please submit any issues to [Feedback](https://yaak.app/feedback).":
+    "common:pluginText.oauth1BetaDescription",
+  "-----BEGIN RSA PRIVATE KEY-----\nPrivate key in PEM format\n-----END RSA PRIVATE KEY-----":
+    "common:pluginText.rsaPrivateKeyPlaceholder",
+  '"Client Secret" sends client_secret. \n"Client Assertion" sends a signed JWT.':
+    "common:pluginText.clientCredentialsMethodDescription",
+  "Open authorization URL in your system browser instead of the embedded browser. Useful when the OAuth provider blocks embedded browsers or you need existing browser sessions.":
+    "common:pluginText.externalBrowserDescription",
+  "Redirect URI to Register": "common:pluginText.redirectUriToRegister",
+  'Select which token to send in the "Authorization: Bearer" header. Most APIs expect access_token, but some (like OpenID Connect) require id_token.':
+    "common:pluginText.authorizationTokenDescription",
+  "Automatically generated when not set": "common:pluginText.automaticallyGenerated",
+  "input text": "common:pluginText.inputTextPlaceholder",
+  "Enter Value": "common:pluginText.enterValue",
+  "Copy to Clipboard": "common:pluginText.copyToClipboard",
+  Cancel: "common:cancel",
+  "Port for the local callback server. Defaults to 8765 if empty.":
+    "common:pluginText.callbackPortDescription",
+  "Unable to find NTLM challenge in WWW-Authenticate response headers":
+    "common:pluginText.ntlmChallengeNotFound",
 };
 
 export function localizePluginText(text: string): string {
@@ -263,6 +285,11 @@ export function localizePluginText(text: string): string {
       sent: Number(partiallyFailed[1]),
       failed: Number(partiallyFailed[2]),
     });
+  }
+
+  const failedSnippet = text.match(/^Failed to generate snippet: (.+)$/s);
+  if (failedSnippet != null) {
+    return i18n.t("common:pluginText.failedToGenerateSnippet", { error: failedSnippet[1] });
   }
 
   const key = builtInPluginTextKeys[text];

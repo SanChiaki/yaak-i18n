@@ -9,6 +9,7 @@ import {
   TruncatedWideTableCell,
 } from "@yaakapp-internal/ui";
 import classNames from "classnames";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   exchanges: HttpExchange[];
@@ -17,8 +18,9 @@ interface Props {
 }
 
 export function ExchangesTable({ exchanges, style, className }: Props) {
+  const { t } = useTranslation();
   if (exchanges.length === 0) {
-    return <p className="text-text-subtlest text-sm">No traffic yet</p>;
+    return <p className="text-text-subtlest text-sm">{t("noTraffic")}</p>;
   }
 
   return (
@@ -26,10 +28,10 @@ export function ExchangesTable({ exchanges, style, className }: Props) {
       <Table scrollable className="px-2">
         <TableHead>
           <TableRow>
-            <TableHeaderCell>Method</TableHeaderCell>
+            <TableHeaderCell>{t("method")}</TableHeaderCell>
             <TableHeaderCell>URL</TableHeaderCell>
-            <TableHeaderCell>Status</TableHeaderCell>
-            <TableHeaderCell>Type</TableHeaderCell>
+            <TableHeaderCell>{t("status")}</TableHeaderCell>
+            <TableHeaderCell>{t("type")}</TableHeaderCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -54,7 +56,8 @@ export function ExchangesTable({ exchanges, style, className }: Props) {
 }
 
 function StatusBadge({ status, error }: { status: number | null; error: string | null }) {
-  if (error) return <span className="text-xs text-danger">Error</span>;
+  const { t } = useTranslation();
+  if (error) return <span className="text-xs text-danger">{t("error")}</span>;
   if (status == null) return <span className="text-xs text-text-subtlest">—</span>;
 
   const color =

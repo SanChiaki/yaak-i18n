@@ -52,6 +52,7 @@ export function Workspace() {
   // First, subscribe to some things applicable to workspaces
   useGlobalWorkspaceHooks();
 
+  const { t } = useTranslation();
   const workspaces = useAtomValue(workspacesAtom);
   const settings = useAtomValue(settingsAtom);
   const osType = type();
@@ -81,6 +82,12 @@ export function Workspace() {
       hideWindowControls={settings.hideWindowControls}
       useNativeTitlebar={settings.useNativeTitlebar}
       interfaceScale={settings.interfaceScale}
+      windowControlLabels={{
+        close: t("common:windowControls.close"),
+        maximize: t("common:windowControls.maximize"),
+        minimize: t("common:windowControls.minimize"),
+        unmaximize: t("common:windowControls.unmaximize"),
+      }}
     >
       <div className="absolute inset-0 pointer-events-none">
         <div style={environmentBgStyle} className="absolute inset-0 opacity-[0.07]" />
@@ -115,6 +122,12 @@ export function Workspace() {
         hideWindowControls={settings.hideWindowControls}
         useNativeTitlebar={settings.useNativeTitlebar}
         interfaceScale={settings.interfaceScale}
+        windowControlLabels={{
+          close: t("common:windowControls.close"),
+          maximize: t("common:windowControls.maximize"),
+          minimize: t("common:windowControls.minimize"),
+          unmaximize: t("common:windowControls.unmaximize"),
+        }}
       >
         <SidebarActions floating />
       </HeaderSize>

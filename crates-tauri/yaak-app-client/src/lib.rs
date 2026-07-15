@@ -1598,6 +1598,20 @@ async fn cmd_new_main_window(app_handle: AppHandle, url: &str) -> YaakResult<()>
 }
 
 #[tauri::command]
+#[allow(unused_variables)]
+async fn cmd_refresh_window_menu<R: Runtime>(
+    window: WebviewWindow<R>,
+    language: &str,
+) -> YaakResult<()> {
+    #[cfg(not(target_os = "linux"))]
+    {
+        let menu = window_menu::app_menu_for_language(window.app_handle(), language)?;
+        window.app_handle().set_menu(menu)?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
 async fn cmd_check_for_updates<R: Runtime>(
     window: WebviewWindow<R>,
     yaak_updater: State<'_, Mutex<YaakUpdater>>,
@@ -1790,6 +1804,7 @@ pub fn run() {
             cmd_metadata,
             cmd_new_child_window,
             cmd_new_main_window,
+            cmd_refresh_window_menu,
             cmd_plugin_info,
             cmd_reload_plugins,
             cmd_render_template,

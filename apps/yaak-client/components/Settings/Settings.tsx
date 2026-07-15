@@ -105,6 +105,12 @@ export default function Settings({ hide }: Props) {
           hideWindowControls={settings.hideWindowControls}
           useNativeTitlebar={settings.useNativeTitlebar}
           interfaceScale={settings.interfaceScale}
+          windowControlLabels={{
+            close: t("common:windowControls.close"),
+            maximize: t("common:windowControls.maximize"),
+            minimize: t("common:windowControls.minimize"),
+            unmaximize: t("common:windowControls.unmaximize"),
+          }}
         >
           <HStack
             space={2}

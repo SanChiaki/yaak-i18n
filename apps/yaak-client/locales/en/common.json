@@ -60,6 +60,12 @@
   "invalidValue": "Invalid value",
   "hello": "Hello",
   "and": "and",
+  "windowControls": {
+    "close": "Close",
+    "maximize": "Maximize",
+    "minimize": "Minimize",
+    "unmaximize": "Restore"
+  },
   "menu": {
     "settings": "Settings",
     "keyboardShortcuts": "Keyboard Shortcuts",
@@ -511,6 +517,20 @@
     "redirectUriDescription": "URI the OAuth provider redirects to after authorization. Yaak intercepts this automatically in its embedded browser so any valid URI will work.",
     "verifier": "Verifier",
     "yaakFormatDescription": "Yaak official format",
+    "ntlmBetaDescription": "NTLM is still in beta. Please submit any issues to [Feedback](https://yaak.app/feedback).",
+    "oauth1BetaDescription": "OAuth 1.0 is still in beta. Please submit any issues to [Feedback](https://yaak.app/feedback).",
+    "rsaPrivateKeyPlaceholder": "-----BEGIN RSA PRIVATE KEY-----\nPrivate key in PEM format\n-----END RSA PRIVATE KEY-----",
+    "clientCredentialsMethodDescription": "\"Client Secret\" sends client_secret.\n\"Client Assertion\" sends a signed JWT.",
+    "externalBrowserDescription": "Open authorization URL in your system browser instead of the embedded browser. Useful when the OAuth provider blocks embedded browsers or you need existing browser sessions.",
+    "redirectUriToRegister": "Redirect URI to Register",
+    "authorizationTokenDescription": "Select which token to send in the \"Authorization: Bearer\" header. Most APIs expect access_token, but some (like OpenID Connect) require id_token.",
+    "automaticallyGenerated": "Automatically generated when not set",
+    "inputTextPlaceholder": "input text",
+    "enterValue": "Enter Value",
+    "copyToClipboard": "Copy to Clipboard",
+    "callbackPortDescription": "Port for the local callback server. Defaults to 8765 if empty.",
+    "ntlmChallengeNotFound": "Unable to find NTLM challenge in WWW-Authenticate response headers",
+    "failedToGenerateSnippet": "Failed to generate snippet: {{error}}",
     "sentRequests_one": "Sent {{count}} request",
     "sentRequests_other": "Sent {{count}} requests",
     "sentAndFailed": "Sent {{sent}}, failed {{failed}}"

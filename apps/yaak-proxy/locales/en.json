@@ -1,0 +1,18 @@
+{
+  "allTraffic": "All Traffic",
+  "close": "Close",
+  "domains": "Domains",
+  "error": "Error",
+  "maximize": "Maximize",
+  "method": "Method",
+  "minimize": "Minimize",
+  "noTraffic": "No traffic yet",
+  "running": "Running :{{port}}",
+  "selectRequest": "Select a request to view details",
+  "startProxy": "Start Proxy",
+  "status": "Status",
+  "stopProxy": "Stop Proxy",
+  "toggleSidebar": "Toggle sidebar",
+  "type": "Type",
+  "unmaximize": "Restore"
+}

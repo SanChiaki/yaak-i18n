@@ -60,6 +60,12 @@
   "invalidValue": "无效的值",
   "hello": "你好",
   "and": "和",
+  "windowControls": {
+    "close": "关闭",
+    "maximize": "最大化",
+    "minimize": "最小化",
+    "unmaximize": "还原"
+  },
   "menu": {
     "settings": "设置",
     "keyboardShortcuts": "键盘快捷键",
@@ -511,6 +517,20 @@
     "redirectUriDescription": "OAuth 提供方在授权后重定向到的 URI。Yaak 会在嵌入式浏览器中自动拦截，因此任意有效 URI 均可使用。",
     "verifier": "验证码",
     "yaakFormatDescription": "Yaak 官方格式",
+    "ntlmBetaDescription": "NTLM 仍处于测试阶段。如有问题，请通过[反馈](https://yaak.app/feedback)提交。",
+    "oauth1BetaDescription": "OAuth 1.0 仍处于测试阶段。如有问题，请通过[反馈](https://yaak.app/feedback)提交。",
+    "rsaPrivateKeyPlaceholder": "-----BEGIN RSA PRIVATE KEY-----\nPEM 格式的私钥\n-----END RSA PRIVATE KEY-----",
+    "clientCredentialsMethodDescription": "“客户端密钥”会发送 client_secret。\n“客户端断言”会发送签名 JWT。",
+    "externalBrowserDescription": "在系统浏览器而非嵌入式浏览器中打开授权 URL。适用于 OAuth 提供方阻止嵌入式浏览器或需要使用现有浏览器会话的情况。",
+    "redirectUriToRegister": "需要注册的重定向 URI",
+    "authorizationTokenDescription": "选择要在“Authorization: Bearer”请求头中发送的令牌。大多数 API 使用 access_token，但 OpenID Connect 等服务可能需要 id_token。",
+    "automaticallyGenerated": "未设置时自动生成",
+    "inputTextPlaceholder": "输入文本",
+    "enterValue": "输入值",
+    "copyToClipboard": "复制到剪贴板",
+    "callbackPortDescription": "本地回调服务器端口。留空时默认为 8765。",
+    "ntlmChallengeNotFound": "未在 WWW-Authenticate 响应头中找到 NTLM 质询",
+    "failedToGenerateSnippet": "生成代码片段失败：{{error}}",
     "sentRequests_one": "已发送 {{count}} 个请求",
     "sentRequests_other": "已发送 {{count}} 个请求",
     "sentAndFailed": "已发送 {{sent}} 个，失败 {{failed}} 个"

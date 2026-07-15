@@ -4,6 +4,7 @@ import { LazyMotion, MotionConfig } from "motion/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { ProxyLayout } from "./components/ProxyLayout";
+import { initI18n } from "./i18n";
 import { listen, rpc } from "./lib/rpc";
 import { initHotkeys } from "./lib/hotkeys";
 import { applyChange, dataAtom, replaceAll } from "./lib/store";
@@ -29,16 +30,18 @@ void listen("model_write", (payload) => {
 
 const motionFeatures = () => import("framer-motion").then((mod) => mod.domAnimation);
 
-createRoot(document.getElementById("root") as HTMLElement).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Provider store={jotaiStore}>
-        <LazyMotion strict features={motionFeatures}>
-          <MotionConfig transition={{ duration: 0.1 }}>
-            <ProxyLayout />
-          </MotionConfig>
-        </LazyMotion>
-      </Provider>
-    </QueryClientProvider>
-  </StrictMode>,
-);
+void initI18n().then(() => {
+  createRoot(document.getElementById("root") as HTMLElement).render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={jotaiStore}>
+          <LazyMotion strict features={motionFeatures}>
+            <MotionConfig transition={{ duration: 0.1 }}>
+              <ProxyLayout />
+            </MotionConfig>
+          </LazyMotion>
+        </Provider>
+      </QueryClientProvider>
+    </StrictMode>,
+  );
+});

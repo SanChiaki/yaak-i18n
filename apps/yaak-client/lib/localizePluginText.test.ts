@@ -32,6 +32,9 @@ describe("plugin text localization", () => {
     expect(localizePluginText("Sent 1 request")).toBe("已发送 1 个请求");
     expect(localizePluginText("Sent 3 requests")).toBe("已发送 3 个请求");
     expect(localizePluginText("Sent 2, failed 1")).toBe("已发送 2 个，失败 1 个");
+    expect(localizePluginText("Failed to generate snippet: unsupported target")).toBe(
+      "生成代码片段失败：unsupported target",
+    );
   });
 
   test("preserves unknown third-party plugin text", async () => {

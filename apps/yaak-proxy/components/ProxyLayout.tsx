@@ -2,6 +2,7 @@ import { HeaderSize, IconButton, SidebarLayout, SplitLayout } from "@yaakapp-int
 import classNames from "classnames";
 import { useAtomValue } from "jotai";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "react-use";
 import { useRpcQueryWithEvent } from "../hooks/useRpcQueryWithEvent";
 import { getOsType } from "../lib/tauri";
@@ -10,6 +11,7 @@ import { ExchangesTable } from "./ExchangesTable";
 import { filteredExchangesAtom, Sidebar } from "./Sidebar";
 
 export function ProxyLayout() {
+  const { t } = useTranslation();
   const os = getOsType();
   const exchanges = useAtomValue(filteredExchangesAtom);
   const [sidebarWidth, setSidebarWidth] = useLocalStorage("sidebar_width", 250);
@@ -37,13 +39,19 @@ export function ProxyLayout() {
         hideWindowControls={false}
         useNativeTitlebar={false}
         interfaceScale={1}
+        windowControlLabels={{
+          close: t("close"),
+          maximize: t("maximize"),
+          minimize: t("minimize"),
+          unmaximize: t("unmaximize"),
+        }}
         className="x-theme-appHeader bg-surface"
       >
         <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center w-full h-full pointer-events-none">
           <div className="flex items-center pl-1 pointer-events-auto">
             <IconButton
               size="sm"
-              title="Toggle sidebar"
+              title={t("toggleSidebar")}
               icon={isHidden ? "left_panel_hidden" : "left_panel_visible"}
               iconColor="secondary"
               onClick={() => {
@@ -64,9 +72,10 @@ export function ProxyLayout() {
           <div className="flex items-center gap-1 pr-1 pointer-events-auto">
             {isRunning ? (
               <>
-                <span className="text-2xs text-success">Running :9090</span>
+                <span className="text-2xs text-success">{t("running", { port: 9090 })}</span>
                 <ActionIconButton
                   action={{ scope: "global", action: "proxy_stop" }}
+                  title={t("stopProxy")}
                   icon="circle_stop"
                   iconColor="secondary"
                   size="sm"
@@ -75,6 +84,7 @@ export function ProxyLayout() {
             ) : (
               <ActionIconButton
                 action={{ scope: "global", action: "proxy_start" }}
+                title={t("startProxy")}
                 icon="circle_play"
                 iconColor="secondary"
                 size="sm"
@@ -108,10 +118,16 @@ export function ProxyLayout() {
                 hideWindowControls={false}
                 useNativeTitlebar={false}
                 interfaceScale={1}
+                windowControlLabels={{
+                  close: t("close"),
+                  maximize: t("maximize"),
+                  minimize: t("minimize"),
+                  unmaximize: t("unmaximize"),
+                }}
               >
                 <IconButton
                   size="sm"
-                  title="Toggle sidebar"
+                  title={t("toggleSidebar")}
                   icon="left_panel_visible"
                   iconColor="secondary"
                   onClick={() => setFloatingSidebarHidden(true)}
@@ -136,7 +152,7 @@ export function ProxyLayout() {
               style={style}
               className="p-3 text-text-subtlest text-sm border-t border-border-subtle"
             >
-              Select a request to view details
+              {t("selectRequest")}
             </div>
           )}
         />

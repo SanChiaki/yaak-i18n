@@ -5,7 +5,20 @@ use tauri::menu::{
     WINDOW_SUBMENU_ID,
 };
 
+fn is_chinese_locale(locale: Option<&str>) -> bool {
+    let normalized = locale.unwrap_or_default().trim().to_ascii_lowercase().replace('_', "-");
+    normalized == "zh"
+        || normalized.starts_with("zh-cn")
+        || normalized.starts_with("zh-hans")
+        || normalized.starts_with("zh-sg")
+}
+
 pub fn app_menu<R: Runtime>(app_handle: &AppHandle<R>) -> tauri::Result<Menu<R>> {
+    let system_locale = tauri_plugin_os::locale();
+    let is_chinese = is_chinese_locale(system_locale.as_deref());
+    let label = |english: &'static str, chinese: &'static str| {
+        if is_chinese { chinese } else { english }
+    };
     let pkg_info = app_handle.package_info();
     let config = app_handle.config();
     let about_metadata = AboutMetadata {
@@ -19,14 +32,14 @@ pub fn app_menu<R: Runtime>(app_handle: &AppHandle<R>) -> tauri::Result<Menu<R>>
     let window_menu = Submenu::with_id_and_items(
         app_handle,
         WINDOW_SUBMENU_ID,
-        "Window",
+        label("Window", "窗口"),
         true,
         &[
-            &PredefinedMenuItem::minimize(app_handle, None)?,
-            &PredefinedMenuItem::maximize(app_handle, None)?,
+            &PredefinedMenuItem::minimize(app_handle, Some(label("Minimize", "最小化")))?,
+            &PredefinedMenuItem::maximize(app_handle, Some(label("Maximize", "最大化")))?,
             #[cfg(target_os = "macos")]
             &PredefinedMenuItem::separator(app_handle)?,
-            &PredefinedMenuItem::close_window(app_handle, None)?,
+            &PredefinedMenuItem::close_window(app_handle, Some(label("Close Window", "关闭窗口")))?,
         ],
     )?;
 
@@ -38,11 +51,15 @@ pub fn app_menu<R: Runtime>(app_handle: &AppHandle<R>) -> tauri::Result<Menu<R>>
     let help_menu = Submenu::with_id_and_items(
         app_handle,
         HELP_SUBMENU_ID,
-        "Help",
+        label("Help", "帮助"),
         true,
         &[
             #[cfg(not(target_os = "macos"))]
-            &PredefinedMenuItem::about(app_handle, None, Some(about_metadata.clone()))?,
+            &PredefinedMenuItem::about(
+                app_handle,
+                Some(label("About", "关于")),
+                Some(about_metadata.clone()),
+            )?,
         ],
     )?;
 
@@ -60,16 +77,26 @@ pub fn app_menu<R: Runtime>(app_handle: &AppHandle<R>) -> tauri::Result<Menu<R>>
                 pkg_info.name.clone(),
                 true,
                 &[
-                    &PredefinedMenuItem::about(app_handle, None, Some(about_metadata))?,
+                    &PredefinedMenuItem::about(
+                        app_handle,
+                        Some(label("About", "关于")),
+                        Some(about_metadata),
+                    )?,
                     &PredefinedMenuItem::separator(app_handle)?,
-                    &PredefinedMenuItem::services(app_handle, None)?,
+                    &PredefinedMenuItem::services(app_handle, Some(label("Services", "服务")))?,
                     &PredefinedMenuItem::separator(app_handle)?,
-                    &PredefinedMenuItem::hide(app_handle, None)?,
-                    &PredefinedMenuItem::hide_others(app_handle, None)?,
+                    &PredefinedMenuItem::hide(
+                        app_handle,
+                        Some(&format!("{} {}", label("Hide", "隐藏"), pkg_info.name)),
+                    )?,
+                    &PredefinedMenuItem::hide_others(
+                        app_handle,
+                        Some(label("Hide Others", "隐藏其他")),
+                    )?,
                     &PredefinedMenuItem::separator(app_handle)?,
                     &MenuItemBuilder::with_id(
                         "hacked_quit".to_string(),
-                        format!("Quit {}", app_handle.package_info().name),
+                        format!("{} {}", label("Quit", "退出"), app_handle.package_info().name),
                     )
                     .accelerator("CmdOrCtrl+q")
                     .build(app_handle)?,
@@ -84,35 +111,41 @@ pub fn app_menu<R: Runtime>(app_handle: &AppHandle<R>) -> tauri::Result<Menu<R>>
             )))]
             &Submenu::with_items(
                 app_handle,
-                "File",
+                label("File", "文件"),
                 true,
                 &[
-                    &PredefinedMenuItem::close_window(app_handle, None)?,
+                    &PredefinedMenuItem::close_window(
+                        app_handle,
+                        Some(label("Close Window", "关闭窗口")),
+                    )?,
                     #[cfg(not(target_os = "macos"))]
-                    &PredefinedMenuItem::quit(app_handle, None)?,
+                    &PredefinedMenuItem::quit(app_handle, Some(label("Quit", "退出")))?,
                 ],
             )?,
             &Submenu::with_items(
                 app_handle,
-                "Edit",
+                label("Edit", "编辑"),
                 true,
                 &[
-                    &PredefinedMenuItem::undo(app_handle, None)?,
-                    &PredefinedMenuItem::redo(app_handle, None)?,
+                    &PredefinedMenuItem::undo(app_handle, Some(label("Undo", "撤销")))?,
+                    &PredefinedMenuItem::redo(app_handle, Some(label("Redo", "重做")))?,
                     &PredefinedMenuItem::separator(app_handle)?,
-                    &PredefinedMenuItem::cut(app_handle, None)?,
-                    &PredefinedMenuItem::copy(app_handle, None)?,
-                    &PredefinedMenuItem::paste(app_handle, None)?,
-                    &PredefinedMenuItem::select_all(app_handle, None)?,
+                    &PredefinedMenuItem::cut(app_handle, Some(label("Cut", "剪切")))?,
+                    &PredefinedMenuItem::copy(app_handle, Some(label("Copy", "复制")))?,
+                    &PredefinedMenuItem::paste(app_handle, Some(label("Paste", "粘贴")))?,
+                    &PredefinedMenuItem::select_all(app_handle, Some(label("Select All", "全选")))?,
                 ],
             )?,
             &Submenu::with_items(
                 app_handle,
-                "View",
+                label("View", "显示"),
                 true,
                 &[
                     #[cfg(target_os = "macos")]
-                    &PredefinedMenuItem::fullscreen(app_handle, None)?,
+                    &PredefinedMenuItem::fullscreen(
+                        app_handle,
+                        Some(label("Enter Full Screen", "进入全屏幕")),
+                    )?,
                 ],
             )?,
             &window_menu,
@@ -120,19 +153,37 @@ pub fn app_menu<R: Runtime>(app_handle: &AppHandle<R>) -> tauri::Result<Menu<R>>
             #[cfg(dev)]
             &Submenu::with_items(
                 app_handle,
-                "Develop",
+                label("Develop", "开发"),
                 true,
                 &[
-                    &MenuItemBuilder::with_id("dev.refresh".to_string(), "Refresh")
+                    &MenuItemBuilder::with_id("dev.refresh".to_string(), label("Refresh", "刷新"))
                         .accelerator("CmdOrCtrl+Shift+r")
                         .build(app_handle)?,
-                    &MenuItemBuilder::with_id("dev.toggle_devtools".to_string(), "Open Devtools")
-                        .accelerator("CmdOrCtrl+Option+i")
-                        .build(app_handle)?,
+                    &MenuItemBuilder::with_id(
+                        "dev.toggle_devtools".to_string(),
+                        label("Open Devtools", "打开开发者工具"),
+                    )
+                    .accelerator("CmdOrCtrl+Option+i")
+                    .build(app_handle)?,
                 ],
             )?,
         ],
     )?;
 
     Ok(menu)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_chinese_locale;
+
+    #[test]
+    fn detects_chinese_system_locales() {
+        assert!(is_chinese_locale(Some("zh-CN")));
+        assert!(is_chinese_locale(Some("zh_Hans_CN")));
+        assert!(is_chinese_locale(Some("zh-SG")));
+        assert!(!is_chinese_locale(Some("zh-Hant-TW")));
+        assert!(!is_chinese_locale(Some("en-US")));
+        assert!(!is_chinese_locale(None));
+    }
 }

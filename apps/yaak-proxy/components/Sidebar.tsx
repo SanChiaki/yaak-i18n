@@ -4,6 +4,7 @@ import { selectedIdsFamily, Tree } from "@yaakapp-internal/ui";
 import { atom, useAtomValue } from "jotai";
 import { atomFamily } from "jotai-family";
 import { useCallback } from "react";
+import i18n from "../i18n";
 import { httpExchangesAtom } from "../lib/store";
 
 /** A node in the sidebar tree — either a domain or a path segment. */
@@ -73,7 +74,7 @@ function collectNodes(node: TreeNode<SidebarItem>, map: Map<string, SidebarItem>
  *       /orders
  */
 function buildTree(exchanges: HttpExchange[]): TreeNode<SidebarItem> {
-  const root: SidebarItem = { id: "root", label: "All Traffic", exchangeIds: [] };
+  const root: SidebarItem = { id: "root", label: i18n.t("allTraffic"), exchangeIds: [] };
   const rootNode: TreeNode<SidebarItem> = {
     item: root,
     parent: null,
@@ -166,7 +167,7 @@ function buildTree(exchanges: HttpExchange[]): TreeNode<SidebarItem> {
   // Add a "Domains" folder between root and domain nodes
   const allExchangeIds = exchanges.map((ex) => ex.id);
   const domainsFolder: TreeNode<SidebarItem> = {
-    item: { id: "domains", label: "Domains", exchangeIds: allExchangeIds },
+    item: { id: "domains", label: i18n.t("domains"), exchangeIds: allExchangeIds },
     parent: rootNode,
     depth: 1,
     children: [],
