@@ -1,6 +1,6 @@
 import type { HttpResponseEvent } from "@yaakapp-internal/models";
 import { describe, expect, test } from "vite-plus/test";
-import { getCookieCounts } from "./model_util";
+import { getCookieCounts, getResponseSaveInfo } from "./model_util";
 
 function makeEvent(type: string, name: string, value: string): HttpResponseEvent {
   return {
@@ -87,5 +87,78 @@ describe("getCookieCounts", () => {
       makeEvent("header_down", "SET-COOKIE", "b=2; Path=/"),
     ];
     expect(getCookieCounts(events)).toEqual({ sent: 1, received: 1 });
+  });
+});
+
+describe("getResponseSaveInfo", () => {
+  test("uses the filename and type from response headers", () => {
+    expect(
+      getResponseSaveInfo(
+        [
+          { name: "Content-Disposition", value: 'attachment; filename="quarterly report.pdf"' },
+          { name: "Content-Type", value: "application/pdf" },
+        ],
+        "response",
+      ),
+    ).toEqual({ filename: "quarterly report.pdf", fileExtension: "pdf" });
+  });
+
+  test("prefers an RFC 5987 UTF-8 filename", () => {
+    expect(
+      getResponseSaveInfo(
+        [
+          {
+            name: "Content-Disposition",
+            value:
+              "attachment; filename=report.xlsx; filename*=UTF-8''%E6%9C%88%E5%BA%A6%E6%8A%A5%E5%91%8A.xlsx",
+          },
+          {
+            name: "Content-Type",
+            value: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          },
+        ],
+        "response",
+      ),
+    ).toEqual({ filename: "月度报告.xlsx", fileExtension: "xlsx" });
+  });
+
+  test("adds the Content-Type extension when the header filename has none", () => {
+    expect(
+      getResponseSaveInfo(
+        [
+          { name: "Content-Disposition", value: "attachment; filename=preview" },
+          { name: "Content-Type", value: "image/png" },
+        ],
+        "response",
+      ),
+    ).toEqual({ filename: "preview.png", fileExtension: "png" });
+  });
+
+  test("uses the filename extension for a generic binary Content-Type", () => {
+    expect(
+      getResponseSaveInfo(
+        [
+          { name: "Content-Disposition", value: 'attachment; filename="archive.zip"' },
+          { name: "Content-Type", value: "application/octet-stream" },
+        ],
+        "response",
+      ),
+    ).toEqual({ filename: "archive.zip", fileExtension: "zip" });
+  });
+
+  test("falls back to the request name and strips path components", () => {
+    expect(
+      getResponseSaveInfo(
+        [{ name: "Content-Disposition", value: 'attachment; filename="../../exports/data.csv"' }],
+        "get-export",
+      ),
+    ).toEqual({ filename: "data.csv", fileExtension: "csv" });
+
+    expect(
+      getResponseSaveInfo(
+        [{ name: "Content-Type", value: "application/json; charset=utf-8" }],
+        "get-user",
+      ),
+    ).toEqual({ filename: "get-user.json", fileExtension: "json" });
   });
 });
